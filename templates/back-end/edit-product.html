@@ -1,0 +1,417 @@
+{% extends 'back-end/template.html' %}
+
+{% block content %}
+<style>
+   
+      
+    .selectBox {
+      position: relative;
+    }
+    
+    .selectBox select {
+      width: 100%;
+      font-weight: bold;
+    }
+    
+    .overSelect {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+    }
+    
+    #checkboxes {
+      width:100%;
+      display: none;
+      border: 1px #dadada solid;
+    }
+    
+    #checkboxes label {
+      display: block;
+    }
+    
+    #checkboxes label:hover {
+      background-color: #1e90ff;
+    }
+</style>
+        <form class="theme-form theme-form-2 mega-form" method="POST" enctype="multipart/form-data" action="{% url 'addproduct_crud' pro_id %}?slug=update">
+
+            <div class="page-body">
+
+                <!-- New Product Add Start -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-sm-8 m-auto">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="card-header-2">
+                                                <h5>Product Information</h5>
+                                            </div>
+
+                                               {% csrf_token %}
+                                               <input type="hidden"id="product_id" value="{{product.id}}">
+                                            <div class="mb-4 row align-items-center">
+                                                <label class="form-label-title col-sm-3 mb-0">Brand Name</label>
+                                                <div class="col-sm-9">
+                                                    <select name="brand_id" onmousedown="this.setAttribute('oldValue', this.value);" onmouseup="if (this.getAttribute('oldValue') !== this.value) { updateURL_b(); }" class="form-control" id="brand-dropdown">
+                                                        {% if  selected_brand %}
+                                                        
+                                                            <option disabled selected>--- Select -- </option>
+                                                            {% for brand in brands %}
+                                                            
+                                                                {% if brand.id == selected_brand.id %}
+                                                                <option value="{{brand.id}}" selected>{{brand.name}}</option>
+                                                                {% else %}
+                                                                <option value="{{brand.id}}">{{brand.name}}</option>
+                                                                {% endif %}
+                                                                
+                                                            {% endfor %}
+
+                                                            {% else %}  
+                                                            <option disabled selected>--- Select -- </option>
+
+                                                            {% for brand in brands %}
+                                                            
+                                                                {% if brand.id == product.brand.id %}
+                                                                <option value="{{brand.id}}" selected>{{brand.name}}</option>
+                                                                {% else %}
+                                                                <option value="{{brand.id}}">{{brand.name}}</option>
+                                                                {% endif %}
+                                                                
+                                                            {% endfor %}
+
+
+                                                        {% endif %}
+
+
+                                                    </select>
+                                                </div>
+
+
+
+                                                <label class="form-label-title col-sm-3 mb-0">Category Name</label>
+                                                <div class="col-sm-9">
+                                                    <select name="category_id" onmousedown="this.setAttribute('oldValue', this.value);" onmouseup="if (this.getAttribute('oldValue') !== this.value) { updateURL_c(); }" class="form-control" id="category-dropdown">
+                                                            {% if selected_brand %}
+                                                                <option disabled selected>--- Select -- </option>
+
+        
+                                                                {% for category in categories %}
+
+                                                                    {% if category.id == selected_category.id %}
+                                                                        <option value="{{category.id}}" selected>{{category.name}}</option>
+                                                                    {% else %}
+                                                                        <option value="{{category.id}}">{{category.name}}</option>
+                                                                    {% endif %}
+                                                                {% endfor %}
+
+                                                            {% else %}
+
+
+                                                            <option disabled selected>--- Select -- </option>
+
+                                                            {% for category in product.brand.productcategory_set.all %}
+
+                                                            {% if category.id == product.category.id %}
+                                                                <option value="{{category.id}}" selected>{{category.name}}</option>
+                                                            {% else %}
+                                                                <option value="{{category.id}}">{{category.name}}</option>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                            {% endif %}
+                                                        </select>
+                                                        
+                                                    </div>
+
+
+
+
+
+                                            
+                                                    <label class="form-label-title col-sm-3 mb-0">Subcategory Name</label>
+                                                    <div class="col-sm-9">
+                                                        <select name="subcategory_id" onmousedown="this.setAttribute('oldValue', this.value);" onmouseup="if (this.getAttribute('oldValue') !== this.value) { updateURL_sc(); }" class="form-control" id="subcategory-dropdown">
+                                                            {% if  selected_category %}
+                                                            <option disabled selected>--- Select -- </option>
+                                                            {% for subcategory in subcategories %}
+                                                            {% if subcategory.id == selected_subcategory.id %}
+
+                                                                        <option value="{{subcategory.id}}" selected>{{subcategory.name}}</option>
+                                                                    {% else %}
+                                                                        <option value="{{subcategory.id}}">{{subcategory.name}}</option>
+                                                                    {% endif %}
+                                                                {% endfor %}
+
+
+
+                                                            {% else %}
+
+
+                                                            <option disabled selected>--- Select -- </option>
+
+                                                            {% for subcategory in product.category.productsubcategory_set.all %}
+                                                            {% if subcategory.id == product.subcategory.id %}
+
+                                                                <option value="{{subcategory.id}}" selected>{{subcategory.name}}</option>
+                                                            {% else %}
+                                                                <option value="{{subcategory.id}}">{{subcategory.name}}</option>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                            {% endif %}
+                                                        </select>
+                                                    </div>
+                                            
+
+
+
+                                                    <label class="form-label-title col-sm-3 mb-0">Detail Category Name</label>
+                                                    <div class="col-sm-9">
+                                                        <select name="detail_category_id"  class="form-control" id="detailcategory-dropdown">
+                                                            {% if selected_subcategory %}
+                                                            
+                                                           
+                                                            <option disabled selected>--- Select -- </option>
+    
+                                                            {% for detailcategory in detail_categories %}
+                                                                {% if detailcategory.id == detailcategory_id %}
+                                                                    <option value="{{detailcategory.id}}" selected>{{detailcategory.name}}</option>
+                                                                {% else %}
+                                                                    <option value="{{detailcategory.id}}">{{detailcategory.name}}</option>
+                                                                {% endif %}
+                                                            {% endfor %}
+
+
+                                                            {% else %}
+                                                            <option disabled selected>--- Select -- </option>
+    
+                                                            {% for detailcategory in product.subcategory.productdetailcategory_set.all %}
+                                                                {% if detailcategory.id == product.detail_category.id %}
+                                                                    <option value="{{detailcategory.id}}" selected>{{detailcategory.name}}</option>
+                                                                {% else %}
+                                                                    <option value="{{detailcategory.id}}">{{detailcategory.name}}</option>
+                                                                {% endif %}
+                                                            {% endfor %}
+
+                                                            {% endif %}
+
+                                                        </select>
+                                                    </div>
+                                            </div>
+                                            
+           
+                                        </div>
+                                    </div>
+
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="card-header-2">
+                                                <h5>Size Quantity Price</h5>
+                                            </div>
+
+                                
+                                                <div class="multiselect mb-4 multiselect row align-items-center">
+                                                    
+                                                    <div class="selectBox col-md-9 col-lg-10" onclick="showCheckboxes()">
+                                                      <select name="products" class="js-example-basic-single form-control">
+                                                        <option>Select an option</option>
+                                                      </select>
+                                                      <div class="overSelect"></div>
+                                                    </div>
+
+
+                                                    <div id="checkboxes" class="col-md-9 col-lg-10 form-control">
+                                                        {% for sqp in sqpies %}
+                                                        <label for="{{ forloop.counter }}">
+                                                            <input type="checkbox" id="{{ forloop.counter }}" value="{{ sqp.id }}" {% if sqp in product.size_quantity_price.all %}checked{% endif %} onclick="updateSelectedProducts()" />{{ sqp.name }}
+                                                        </label>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" name="selectedsqp" id="selectedsqp">
+                                        </div>
+                                    </div>
+
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="card-header-2">
+                                                <h5>Product Details</h5>
+                                            </div>
+
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <div class="mb-4 row align-items-center">
+                                                            <label class="form-label-title col-sm-3 mb-0">Product
+                                                                Name</label>
+                                                                <div class="col-sm-9">
+                                                                    <input class="form-control" type="text" name="product_name" value="{{product.name}}"
+                                                                        placeholder="Product Name">
+                                                                </div>
+                                                        </div>
+
+                                                        <div class="mb-4 row align-items-center">
+                                                            <label class="form-label-title col-sm-3 mb-0">Product
+                                                                description</label>
+                                                                <div class="col-sm-9">
+                                                                    <textarea class="form-control" id="product_description" name="product_description" rows="3">{{product.description}}</textarea>
+
+                                                                </div>
+                                                        </div>
+
+                                                        <div class="mb-4 row align-items-center">
+                                                            <label class="form-label-title col-sm-3 mb-0">Additional info:
+                                                            </label>
+                                                                <div class="col-sm-9">
+                                                                    <textarea class="form-control" id="additional_info" name="additional_info" rows="3">{{ product.additional_info }}</textarea>
+                                                                </div>
+                                                        </div>
+
+                                                        <div class="mb-4 row align-items-center">
+                                                            <label class="form-label-title col-sm-3 mb-0">Care
+                                                                Instructions</label>
+                                                                <div class="col-sm-9">
+                                                                    <textarea class="form-control" id="care_instructions" name="care_instructions" rows="3">{{product.care_instructions }}</textarea>
+
+                                                                </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="card-header-2">
+                                                <h5>Product Images</h5>
+                                            </div>
+
+                                            
+
+                                                <div class="row align-items-center">
+                                                    <div class="table-image">
+                                                        <img src="../../media/{{product.img}}" class="img-fluid " style="width: 20%;"
+                                                            alt="">
+                                                    </div>
+                                                    <label class="col-sm-3 col-form-label form-label-title">Thumbnail
+                                                        Image</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control form-choose" type="file" name="thumbnail_img"
+                                                            id="formFileMultiple1" multiple>
+                                                    </div>
+                                                </div>
+                                        </div>
+                                    </div>
+
+                                    
+                                    
+
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="card-header-2">
+                                                <h5>Search engine listing</h5>
+                                            </div>
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-sm-3 mb-0">Meta Tags</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="search" name="meta_tags" value="{{product.meta_tags}}"
+                                                            >
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-4 row">
+                                                    <label class="form-label-title col-sm-3 mb-0">Meta
+                                                        description</label>
+                                                    <div class="col-sm-9">
+                                                        <textarea class="form-control" name="meta_description" rows="3" value='{{product.meta_description}}'>{{product.meta_description}}</textarea>
+                                                    </div>
+                                                </div>
+
+                                                
+                                        </div>
+                                        
+                                        <button class="btn btn-theme">submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- New Product Add End -->
+
+                <!-- footer Start -->
+                 
+                <!-- footer En -->
+            </div>
+        </form>
+           
+            
+            <script>
+                CKEDITOR.replace('product_description');
+                CKEDITOR.replace('additional_info');
+                CKEDITOR.replace('care_instructions');
+                    var brand = document.getElementById('brand-dropdown');
+                    var category = document.getElementById('category-dropdown');
+                    var subcategory = document.getElementById('subcategory-dropdown');
+                    var detailcategory = document.getElementById('detailcategory-dropdown');
+                    var product_id = document.getElementById('product_id').value;
+                    var url = `http://127.0.0.1:8000/dashboard/add-product_crud/${product_id}?slug=update&`;
+                    function updateURL_b(){
+                        url += 'brand_id=' + brand.value;
+                        location.href = url;
+                    }
+                    
+                    function updateURL_c(){
+                            url += 'brand_id=' + brand.value;
+                            url += '&category_id=' + category.value;
+                            location.href = url;
+
+                        }
+                    function updateURL_sc(){
+                            url += 'brand_id=' + brand.value;
+                            url += '&category_id=' + category.value;
+                            url += '&subcategory_id=' + subcategory.value;
+                            location.href = url;
+
+                        }
+
+
+
+                
+                function showCheckboxes() {
+                    // Toggle the visibility of checkboxes
+                    var checkboxes = document.getElementById("checkboxes");
+                    checkboxes.style.display = checkboxes.style.display === "block" ? "none" : "block";
+                  }
+                  
+                  function updateSelectedProducts() {
+                    var checkboxes = document.querySelectorAll("#checkboxes input[type='checkbox']:checked");
+                    var selectedProductIds = Array.from(checkboxes).map(function(checkbox) {
+                      return checkbox.value;
+                    });
+                    var selectedProductsInput = document.getElementById("selectedsqp");
+                    selectedProductsInput.value = selectedProductIds.join(",");
+                    console.log(selectedProductsInput.value)
+                  }          
+            </script>
+            <script>
+                function showChargeCheckboxes() {
+                    var checkboxes = document.getElementById("chargeCheckboxes");
+                    checkboxes.style.display = checkboxes.style.display === "block" ? "none" : "block";
+                }
+                
+                function updateSelectedCharges() {
+                    var checkboxes = document.querySelectorAll("#chargeCheckboxes input[type='checkbox']:checked");
+                    var selectedChargeIds = Array.from(checkboxes).map(function(checkbox) {
+                        return checkbox.value;
+                    });
+                    var selectedChargesInput = document.getElementById("selectedcharge");
+                    selectedChargesInput.value = selectedChargeIds.join(",");
+                    console.log(selectedChargesInput.value);
+                }
+            </script>
+          
+         
+            
+            {% endblock content %}

@@ -1,0 +1,95 @@
+{% extends 'back-end/template.html' %}
+{% block content %}
+
+            <!-- Container-fluid starts-->
+            <div class="page-body">
+                <!-- All User Table Start -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card card-table">
+                                <div class="card-body">
+                                    <div class="title-header option-title">
+                                        <h5>Size Quantity Price</h5>
+                                        <a href="{% url 'sqp_crud' %}?slug=Add"
+                                        class="align-items-center btn btn-theme d-flex">
+                                        <i data-feather="plus-square"></i>Add New
+                                    </a>
+                                    </div>
+
+                                    <div class="table-responsive category-table">
+                                        <div>
+                                            <table class="table all-package theme-table" id="table_id">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Img</th>
+                                                        <th>id</th>
+                                                        <th>Color</th>
+                                                        <th>Quantity</th>
+                                                        <th>Price</th>
+                                                        <th>discount</th>
+                                                        <th>discount_percentage</th>
+                                                        <th>discounted_price</th>
+
+                                                        <th>Option</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    {% for sqp in sqp_list %}
+                                                    <tr>
+                                                        <td>
+                                                            <div class="table-image">
+                                                                <img src="../../media/{{sqp.img}}" class="img-fluid"
+                                                                    alt="">
+                                                            </div>
+                                                        </td>
+                                                        <td>{{sqp.name}}</td>
+                                                        <td>{{sqp.color}}</td>
+                                                        <td>{{sqp.quantity}}</td>
+                                                        <td>£{{sqp.price}}</td>
+                                                        
+                                                        <td>{{sqp.discount}}</td>
+
+                                                        <td>{{sqp.discount_percentage}}</td>
+                                                        <td>£{{sqp.discounted_price}}</td>
+                                                        
+
+
+                                                        <td>
+                                                            <ul>
+                                                                
+                                                                <li>
+                                                                    <a href="{% url 'sqp_crud' %}?slug=Update&id={{sqp.id}}">
+                                                                        <i class="ri-pencil-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a href="{% url 'sqp_crud' %}?slug=Delete&id={{sqp.id}}" >
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- All User Table Ends-->
+
+                
+            </div>
+            <!-- Container-fluid end -->
+    
+        <!-- Page Body End -->
+        {% endblock content %}
+
+  

@@ -1,0 +1,91 @@
+{% extends "back-end/template.html" %}
+
+{% block content %}
+
+            <!-- Container-fluid starts-->
+            <div class="page-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="card-header-2">
+                                        <h5>Upload Image</h5>
+                                    </div>
+
+                                    
+                                    <form class="theme-form theme-form-2 mega-form" method="POST" enctype="multipart/form-data" action="{% url 'img_products' id %}?slug=Add">
+                                        {% csrf_token %}
+                                        <div class="row align-items-center">
+                                            <label class="col-sm-3 col-form-label form-label-title">Product
+                                                Image</label>
+                                            <div class="col-sm-9">
+                                                <input class="form-control form-choose" type="file" name="img"
+                                                    id="formFileMultiple1" multiple>
+                                                    <button class="btn btn-theme">submit</button>
+                                            </div>
+                                        </div>
+                                        
+                                    </form>
+                                    </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="title-header option-title justify-content-start">
+                                        <h5>Media Library</h5>
+                                        {% comment %} <div class="selected-options">
+                                            <ul>
+                                                <li>selected(0)</li>
+                                                <li><a href="#"><i class="ri-download-2-line"></i></a></li>
+                                                <li><a href="#"><i class="ri-delete-bin-line"></i></a></li>
+                                            </ul>
+                                        </div> {% endcomment %}
+                                       
+                                    </div>
+                                    <div
+                                        class="row row-cols-xl-6 row-cols-md-5 row-cols-sm-3 row-cols-2 g-sm-3 g-2 media-library-sec ratio_square">
+                                        
+                                        {% for i in product_imgs %}
+                                        <div>
+                                            <div class="library-box" style="height:150px">
+                                                <input type="checkbox" id="myCheckbox{{forloop.counter}}" />
+                                                <label for="myCheckbox{{forloop.counter}}" class="p-0">
+                                                    <div>
+                                                        <img src="../../media/{{i.img}}"
+                                                            class="img-fluid" style="object-fit:cover;" alt="{prdocut.name}">
+                                                    </div>
+                                                    <div class="dropdown">
+                                                        <a class="" href="#" role="button" id="dropdownMenuLink"
+                                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="ri-more-fill"></i>
+                                                        </a>
+
+                                                        <ul class="dropdown-menu dropdown-menu-end"
+                                                            aria-labelledby="dropdownMenuLink">
+                                                            <li><a class="dropdown-item d-flex align-items-center"
+                                                                    href="#"><i
+                                                                        class="ri-download-2-line me-2"></i>Download</a>
+                                                            </li>
+                                                            <li><a class="dropdown-item d-flex align-items-center"
+                                                                href="{% url 'img_products' id %}?slug=delete&img_id={{i.id}}"><i
+                                                                        class="ri-delete-bin-line me-2"></i>Delete</a>
+                                                            </li>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Container-fluid Ends-->
+
+                
+            </div>
+        
+            {% endblock content %}

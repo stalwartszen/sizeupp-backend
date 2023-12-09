@@ -1,0 +1,648 @@
+{% extends "back-end/template.html" %}
+{% block style %}
+<style>
+    .dropbtn {
+      background-color: #760718;
+      color: white;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .dropbtn:hover, .dropbtn:focus {
+      background-color: #3e8e41;
+    }
+    
+    #myInput {
+      box-sizing: border-box;
+      background-image: url('searchicon.png');
+      background-position: 14px 12px;
+      background-repeat: no-repeat;
+      font-size: 16px;
+      padding: 14px 20px 12px 45px;
+      border: none;
+      width:100%;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    #myInput:focus {outline: 3px solid #ddd;}
+    
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f6f6f6;
+      width: max-content;
+      overflow: auto;
+      border: 1px solid #ddd;
+      z-index: 1;
+    }
+    
+    .dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+    
+    .dropdown a:hover {background-color: #ddd;}
+    
+    .show {display: block;}
+    .qty-input{
+        padding: 0;
+        margin: 0;
+        text-align: center;
+    
+    }
+    </style>
+{% endblock style %}
+{% block content %}
+
+            <!-- tracking section start -->
+            <div class="page-body">
+                <!-- tracking table start -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card">
+                                <div class="card-body">
+                                  {% if order_deatils == None %}
+                                  <form class="theme-form theme-form-2 mega-form" method="POST" action="{% url 'pos' %}?userinfo=Add">
+                                    {% csrf_token %}
+                                    
+                                    
+                                    
+                                    
+                                        
+
+
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="form-label-title col-sm-3 mb-0">Customer Name</label>
+                                        <div class="col-sm-9">
+                                            <input class="form-control" type="text" id="Customer_name" name="customer_name" >
+                                        </div>
+                                    </div>
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="form-label-title col-sm-3 mb-0">Customer Email</label>
+                                        <div class="col-sm-9">
+                                            <input class="form-control" type="text" id="Customer_email" name="customer_email" >
+                                        </div>
+                                    </div>
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="form-label-title col-sm-3 mb-0">Customer contact No.</label>
+                                        <div class="col-sm-9">
+                                            <input class="form-control" type="text" id="Customer_contact" name='customer_contact' >
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xxl-6 col-lg-12 col-sm-6">
+                                            <div class="mb-md-4 mb-3 custom-form">
+                                                <label for="exampleFormControlInput" class="form-label">Address Line 1</label>
+                                                <div class="custom-input">
+                                                    <input type="text" name="address_line_1" class="form-control" id="exampleFormControlInput"
+                                                        value="{{address.address_line_1}}">
+                                                </div>
+                                            </div>
+                                        </div>
+            
+                                        <div class="col-xxl-6 col-lg-12 col-sm-6">
+                                            <div class="mb-md-4 mb-3 custom-form">
+                                                <label for="exampleFormControlInput1" class="form-label">Address Line 2</label>
+                                                <div class="custom-input">
+                                                    <input type="text" name="address_line_2" class="form-control" id="exampleFormControlInput1"
+                                                        value="{{address.address_line_2}}">
+                                                </div>
+                                            </div>
+                                        </div>
+            
+                                        <div class="col-xxl-2 col-lg-12 col-sm-6">
+                                            <div class="mb-md-4 mb-3 custom-form">
+                                                <label for="exampleFormControlInput2" class="form-label">City</label>
+                                                <div class="custom-input">
+                                                    <input type="text" name="city" class="form-control" id="exampleFormControlInput2"
+                                                        value="{{address.city}}">
+                                                </div>
+                                            </div>
+                                        </div>
+            
+                                        <div class="col-xxl-3 col-lg-12 col-sm-6">
+                                            <div class="mb-md-4 mb-3 custom-form">
+                                                <label for="exampleFormControlInput3" class="form-label">State</label>
+                                                <div class="custom-input">
+                                                    <input type="text" name="state" class="form-control" id="exampleFormControlInput3"
+                                                        value="{{address.state}}" >
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xxl-3 col-lg-12 col-sm-6">
+                                            <div class="mb-md-4 mb-3 custom-form">
+                                                <label for="exampleFormControlInput3" class="form-label">Country</label>
+                                                <div class="custom-input">
+                                                    <input type="text" name="country"class="form-control" id="exampleFormControlInput3"
+                                                        value="{{address.country}}" >
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xxl-3 col-lg-12 col-sm-6">
+                                            <div class="mb-md-4 mb-3 custom-form">
+                                                <label for="exampleFormControlInput3" class="form-label">Postal Code/ Zip Code</label>
+                                                <div class="custom-input">
+                                                    <input type="text" name="postal_code"class="form-control" id="exampleFormControlInput3"
+                                                        value="{{address.postal_code}}" >
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+            
+                                        
+                                    </div>
+
+                                  
+                                    <button class="btn btn-theme">submit</button>
+                                    
+
+                                </form>
+                                  {% else %}
+
+                                  <form class="theme-form theme-form-2 mega-form "  method="POST" action="{% url 'pos' %}?userinfo=Update">
+                                    {% csrf_token %}
+                                    
+                                    
+                                    
+                                    
+                                        
+
+
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="form-label-title col-sm-3 mb-0">Customer Name</label>
+                                        <div class="col-sm-9">
+                                            <input class="form-control" type="text" value="{{order_deatils.customer_name}}" id="Customer_name" name="customer_name" >
+                                        </div>
+                                    </div>
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="form-label-title col-sm-3 mb-0">Customer Email</label>
+                                        <div class="col-sm-9">
+                                            <input class="form-control" type="text" id="Customer_email" value="{{order_deatils.customer_email}}" name="customer_email" >
+                                        </div>
+                                    </div>
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="form-label-title col-sm-3 mb-0">Customer contact No.</label>
+                                        <div class="col-sm-9">
+                                            <input class="form-control" type="text" id="Customer_contact" value="{{order_deatils.customer_contact}}" name='customer_contact' >
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xxl-6 col-lg-12 col-sm-6">
+                                            <div class="mb-md-4 mb-3 custom-form">
+                                                <label for="exampleFormControlInput" class="form-label">Address Line 1</label>
+                                                <div class="custom-input">
+                                                    <input type="text" name="address_line_1" class="form-control" id="exampleFormControlInput"
+                                                        value="{{order_deatils.address_line_1}}">
+                                                </div>
+                                            </div>
+                                        </div>
+            
+                                        <div class="col-xxl-6 col-lg-12 col-sm-6">
+                                            <div class="mb-md-4 mb-3 custom-form">
+                                                <label for="exampleFormControlInput1" class="form-label">Address Line 2</label>
+                                                <div class="custom-input">
+                                                    <input type="text" name="address_line_2" class="form-control" id="exampleFormControlInput1"
+                                                        value="{{order_deatils.address_line_2}}">
+                                                </div>
+                                            </div>
+                                        </div>
+            
+                                        <div class="col-xxl-2 col-lg-12 col-sm-6">
+                                            <div class="mb-md-4 mb-3 custom-form">
+                                                <label for="exampleFormControlInput2" class="form-label">City</label>
+                                                <div class="custom-input">
+                                                    <input type="text" name="city" class="form-control" id="exampleFormControlInput2"
+                                                        value="{{order_deatils.city}}">
+                                                </div>
+                                            </div>
+                                        </div>
+            
+                                        <div class="col-xxl-3 col-lg-12 col-sm-6">
+                                            <div class="mb-md-4 mb-3 custom-form">
+                                                <label for="exampleFormControlInput3" class="form-label">State</label>
+                                                <div class="custom-input">
+                                                    <input type="text" name="state" class="form-control" id="exampleFormControlInput3"
+                                                        value="{{order_deatils.state}}" >
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xxl-3 col-lg-12 col-sm-6">
+                                            <div class="mb-md-4 mb-3 custom-form">
+                                                <label for="exampleFormControlInput3" class="form-label">Country</label>
+                                                <div class="custom-input">
+                                                    <input type="text" name="country"class="form-control" id="exampleFormControlInput3"
+                                                        value="{{order_deatils.country}}" >
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xxl-3 col-lg-12 col-sm-6">
+                                            <div class="mb-md-4 mb-3 custom-form">
+                                                <label for="exampleFormControlInput3" class="form-label">Postal Code/ Zip Code</label>
+                                                <div class="custom-input">
+                                                    <input type="text" name="postal_code"class="form-control" id="exampleFormControlInput3"
+                                                        value="{{order_deatils.postal_code}}" >
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+            
+                                        
+                                    </div>
+
+                                  
+                                    <button class="btn btn-theme">submit</button>
+                                    
+
+                                </form>
+                                  {% endif %}
+                                   
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="title-header title-header-block package-card">
+                                        <div>
+                                            <h5>Create Order </h5>
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="bg-inner cart-section order-details-table">
+                                        <div class="row g-4">
+                                            <div class="col-xl-8">
+                                                    <div class="dropdown">
+                                                        <button onclick="myFunction()" class="dropbtn">Add Products</button>
+                                                        <div id="myDropdown" class="dropdown-content">
+                                                          <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
+                                                          {% for pro in product_list %}
+                                                          
+                                                          <a href="{% url 'pos' %}?aproduct={{pro.product.id}}&sqp={{pro.sqp.id}}">{{pro.product.name}} -( {% if pro.sqp.color %}
+                                                            {{pro.sqp.color}}
+                                                          
+                                                          {% else %}
+                                                          {{pro.sqp.size}}
+                                                          {% endif %})
+                                                           - £{{pro.sqp.price}}
+                                                        </a>
+                                                          {% endfor %}
+                                                          
+                                                        </div>
+                                                      </div>
+                                                      
+                                              </div>
+                                              
+
+                                            <div class="col-xl-8">
+                                                <div class="table-responsive table-details">
+                                                    <table class="table cart-table table-borderless">
+                                                        <thead>
+                                                            <tr>
+                                                                <th >#</th>
+                                                                <th >Name</th>
+                                                                <th >Quantity</th>
+                                                                <th >Price</th>
+                                                                <th >Discount</th>
+                                                                <th >Total</th>
+                                                                <th >Delete</th>
+                                                                
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            {% for item in request.session.selected_product_list %}
+                                                            <tr>
+                                                                <td>
+                                                                    <h5>{{forloop.counter}}</h5>
+                                 
+                                                                </td>
+                                                                <td style="white-space: normal;">
+                                                                    <h5 style="white-space: normal;">{{item.product}}-({{item.sqp.color}})-({{item.sqp.size}})</h5>
+                                                                </td>
+                                                                <td>
+                                                                    <p>Quantity</p>
+                                                                    <div class="quantity-price">
+                                                                        <div class="cart_qty">
+                                                                            <div class="input-group">
+                                                                                <button type="button" class="btn qty-left-minus"
+                                                                                    data-type="minus" data-field="">
+                                                                                    <i class="fa fa-minus ms-0" aria-hidden="true"></i>
+                                                                                </button>
+                        
+                                                                                <input type="hidden" class = 'item_id' id ='item_id' value='{{item.product}}'>
+                                                                                <input type="hidden" class = 'sqp_code' id ='sqp_code' value='{{item.sqp.id}}'>
+                        
+                                                                                <input class="form-control input-number qty-input" id="qtyinput"  name="qty" type="text"
+                                                                                    name="quantity" value="{{item.qty}}">
+                                                                                <button type="button" class="btn qty-right-plus"
+                                                                                    data-type="plus" data-field="">
+                                                                                    <i class="fa fa-plus ms-0" aria-hidden="true"></i>
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>                                                                
+                                                                </td>
+                                                                <td>
+                                                                    <h5>£{{item.sqp.price|floatformat:2}}</h5>
+                                                                </td>
+                                                                <td>
+                                                                    <h5>-£{{item.discount_price|floatformat:2}}</h5>
+                                                                </td>
+                                                                
+                                                                <td>
+                                                                    <h5>£{{item.total|floatformat:2}}</h5>
+                                                                </td>
+                                                                <td>
+                                                                    <a href="{% url 'pos' %}?rm_product={{item.product}}" ><i class="fas  fa-trash"></i></a>
+                                                                </td>
+                                                                
+                                                            </tr>
+                                                            {% endfor %}
+                                                            
+                                                        </tbody>
+
+                                                        {% comment %} <tfoot>
+                                                            <tr class="table-order">
+                                                                <td colspan="3">
+                                                                    <h5>Subtotal :</h5>
+                                                                </td>
+                                                                <td>
+                                                                    <h4>£{{request.session.sub_total}}</h4>
+                                                                </td>
+                                                            </tr>
+
+
+                                                            
+                                                            <tr class="table-order">
+                                                                <td colspan="3">
+                                                                    <h5>Shipping :</h5>
+                                                                    <select name="Dcountry" id="Dcountry" onchange="handleCountrySelection()" required>
+
+                                                                        {% if order_deatils.deliveryCountry %}
+                                                                       
+                                
+                                                                        <option value="None" >--select--</option>
+                                                                        {% for i in delivery_charges %}
+                                
+                                                                            {% if order_deatils.deliveryCountry == i.country_name %}
+                                                                                <option value="{{i.id}}"  selected>{{i.country_name}}</option>
+                                                                            {% else %}
+                                                                                <option value="{{i.id}}">{{i.country_name}}</option>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                
+                                                                         
+                                                                        {% else %}
+                                                                        <option value="None" selected>--select--</option>
+                                                                        {% for i in delivery_charges %}
+                                
+                                                                        {% if order_deatils.deliveryCountry == i.country_name %}
+                                                                            <option value="{{i.id}}"  selected>{{i.country_name}}</option>
+                                                                        {% else %}
+                                                                            <option value="{{i.id}}">{{i.country_name}}</option>
+                                                                        {% endif %}
+                                                                        {% endfor %}
+                                
+                                                                        {% endif %}
+                                                                    </select>
+                                                                </td>
+                                                                <td>
+                                                                    <h4>£{{order_deatils.deliveryCharges}}</h4>
+                                                                </td>
+                                                            </tr>
+
+                                                            
+
+                                                            <tr class="table-order">
+                                                                <td colspan="3">
+                                                                    <h4 class="theme-color fw-bold">Total Price :</h4>
+                                                                </td>
+                                                                <td>
+                                                                    <h4 class="theme-color fw-bold">£{{order_deatils.payment_amount}}</h4>
+                                                                </td>
+                                                            </tr>
+                                                          
+                                                        </tfoot> {% endcomment %}
+                                                    </table>
+                                                    
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xl-4">
+                                                <form action="{% url 'pos' %}?createorder=True" method="POST">
+                                                    {% csrf_token %}
+                                                <div class="order-success">
+                                                    <div class="row g-4">
+                                                        <div class="col-xxl-6 col-lg-12 col-sm-6">
+                                                          <div class="mb-md-4 mb-3 custom-form">
+                                                            <label for="exampleFormControlInput1" class="form-label">Sub Total</label>
+                                                            <div class="custom-input">
+                                                              <input type="text" name="sub_total" class="form-control" id="sub_total" value="{{request.session.sub_total}}">
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                        <div class="col-xxl-6 col-lg-12 col-sm-6">
+                                                          <div class="mb-md-4 mb-3 custom-form">
+                                                            <label for="exampleFormControlInput1" class="form-label">Tax Percentage</label>
+                                                            <div class="custom-input">
+                                                              <input type="text" name="tax_percentage" class="form-control" value="0" id="tax_percentage" oninput="calculateTotal()">
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                        <div class="col-xxl-12 col-lg-12 col-sm-6">
+                                                          <div class="mb-md-4 mb-3 custom-form d-flex">
+                                                            <label for="exampleFormControlInput1" class="form-label">Discount:</label>
+                                                            <div class="custom-input">
+                                                              <select type="text" name="discount_type" class="form-control" id="discount_type" onchange="calculateTotal()">
+                                                                <option value="Percentage">Percentage</option>
+                                                                <option value="Amount">Amount</option>
+                                                              </select>
+                                                            </div>
+                                                            <div class="custom-input">
+                                                              <input type="text" name="discount" class="form-control" value="0" id="discount" oninput="calculateTotal()">
+                                                            </div>
+                                                          </div>
+                                                        </div>
+
+                                                        <div class="col-xxl-12 col-lg-12 col-sm-6">
+                                                            <div class="mb-md-4 mb-3 custom-form d-flex">
+                                                              <label for="exampleFormControlInput1" class="form-label">Shipping:</label>
+                                                              <div class="custom-input">
+                                                                <select name="Dcountry" id="Dcountry" class="form-control" onchange="handleCountrySelection()" required>
+
+                                                                    {% if dcharg %}
+                                                                   
+                            
+                                                                    <option value="None" >--select--</option>
+                                                                    {% for i in delivery_charges %}
+                            
+                                                                        {% if dcharg.country_name == i.country_name %}
+                                                                            <option value="{{i.id}}"  selected>{{i.country_name}}</option>
+                                                                        {% else %}
+                                                                            <option value="{{i.id}}">{{i.country_name}}</option>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                            
+                                                                     
+                                                                    {% else %}
+                                                                    <option value="None" selected>--select--</option>
+                                                                    {% for i in delivery_charges %}
+                            
+                                                                    {% if deliveryCharges.country_name == i.country_name %}
+                                                                        <option value="{{i.id}}"  selected>{{i.country_name}}</option>
+                                                                    {% else %}
+                                                                        <option value="{{i.id}}">{{i.country_name}}</option>
+                                                                    {% endif %}
+                                                                    {% endfor %}
+                            
+                                                                    {% endif %}
+                                                                </select>
+                                                              </div>
+                                                              <div class="custom-input">
+                                                                <input type="text" name="Dcountry_amount" class="form-control" value="{{dcharg.charges}}" id="Dcountry_amount" oninput="calculateTotal()">
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                        <div class="col-xxl-12 col-lg-12 col-sm-6">
+                                                          <div class="mb-md-4 mb-3 custom-form d-flex">
+                                                            <label for="exampleFormControlInput1" class="form-label">Total (in £):</label>
+                                                            <div class="custom-input">
+                                                              <input type="text" name="total" class="form-control" id="total" readonly>
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                        <div class="delivery-sec">
+                                                          <button type="submit" class="btn btn-secondary">Create Order</button>
+                                                          <a class="btn btn-secondary">Delete Order</a>
+                                                        </div>
+                                                      </div>
+                                                </div>
+                                            </form>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <!-- section end -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- tracking table end -->
+
+            </div>
+
+            <script>
+                /* When the user clicks on the button,
+                toggle between hiding and showing the dropdown content */
+                function myFunction() {
+                  document.getElementById("myDropdown").classList.toggle("show");
+                }
+                
+                function filterFunction() {
+                  var input, filter, ul, li, a, i;
+                  input = document.getElementById("myInput");
+                  filter = input.value.toUpperCase();
+                  div = document.getElementById("myDropdown");
+                  a = div.getElementsByTagName("a");
+                  for (i = 0; i < a.length; i++) {
+                    txtValue = a[i].textContent || a[i].innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                      a[i].style.display = "";
+                    } else {
+                      a[i].style.display = "none";
+                    }
+                  }
+                }
+              
+
+                function handleCountrySelection() {
+                    var selectElement = document.getElementById("Dcountry");
+                    var selectedCountryId = selectElement.value;
+                    var destinationURL = `/dashboard/pos?Dcountry=${selectedCountryId}` ;
+            
+                    // Redirect to the destination URL
+                    window.location.href = destinationURL;
+                }
+
+                window.addEventListener('DOMContentLoaded', function() {
+                    calculateTotal();
+                  });
+                  function calculateTotal() {
+                    var subTotal = parseFloat(document.getElementById("sub_total").value);
+                    var taxPercentage = parseFloat(document.getElementById("tax_percentage").value);
+                    var discountType = document.getElementById("discount_type").value;
+                    var discount = parseFloat(document.getElementById("discount").value);
+                    var dCountryAmount = parseFloat(document.getElementById("Dcountry_amount").value);
+                  
+                    var total = subTotal;
+                  
+                    if (!isNaN(taxPercentage)) {
+                      var taxAmount = subTotal * (taxPercentage / 100);
+                      total += taxAmount;
+                    }
+                  
+                    if (subTotal <= 100 && !isNaN(dCountryAmount)) {
+                      total += dCountryAmount;
+                    }
+                  
+                    if (discountType === "Percentage") {
+                      var discountAmount = total * (discount / 100);
+                      total -= discountAmount;
+                    } else if (discountType === "Amount") {
+                      total -= discount;
+                    }
+                  
+                    document.getElementById("total").value = total.toFixed(2);
+                  }
+  
+            </script>
+            <script>
+  
+
+                    // Get all the plus and minus buttons and the quantity inputs
+                const plusButtons = document.querySelectorAll('.qty-right-plus');
+                const minusButtons = document.querySelectorAll('.qty-left-minus');
+                const quantityInputs = document.querySelectorAll('.qty-input');
+                
+                // Add an event listener to each plus button
+                plusButtons.forEach((plusButton, index) => {
+                    const item_id = document.querySelectorAll('.item_id')[index].value;
+
+                    const sqp_code = document.querySelectorAll('.sqp_code')[index].value;
+                    plusButton.addEventListener('click', function() {
+                    let currentQuantity = parseInt(quantityInputs[index].value);
+                    currentQuantity++;
+                    quantityInputs[index].value = currentQuantity;
+                    window.location.href = `/dashboard/pos/?orderitem_name=${item_id}&qty=${currentQuantity}&sqp=${sqp_code}`;
+                    });
+                });
+                
+                // Add an event listener to each minus button
+                minusButtons.forEach((minusButton, index) => {
+                    const item_id = document.querySelectorAll('.item_id')[index].value;
+
+                    const sqp_code = document.querySelectorAll('.sqp_code')[index].value;
+                    minusButton.addEventListener('click', function() {
+                    let currentQuantity = parseInt(quantityInputs[index].value);
+                    if (currentQuantity > 1) {
+                        currentQuantity--;
+                    }
+                    quantityInputs[index].value = currentQuantity;
+                    window.location.href = `/dashboard/pos/?orderitem_name=${item_id}&qty=${currentQuantity}&sqp=${sqp_code}`;
+                    });
+                });
+                
+            </script>
+            {% endblock content %}

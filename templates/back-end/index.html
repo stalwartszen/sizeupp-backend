@@ -1,0 +1,417 @@
+{% extends 'back-end/template.html' %}
+{% block content %}
+
+            <!-- index body start -->
+            <div class="page-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <!-- chart caard section start -->
+                        <div class="col-sm-6 col-xxl-3 col-lg-6">
+                            <div class="main-tiles border-5 border-0  card-hover card o-hidden">
+                                <div class="custome-1-bg b-r-4 card-body">
+                                    <div class="media align-items-center static-top-widget">
+                                        <div class="media-body p-0">
+                                            <span class="m-0">Total Revenue</span>
+                                            <h4 class="mb-0 counter">£ {{revenue}}
+                                             
+                                            </h4>
+                                        </div>
+                                        <div class="align-self-center text-center">
+                                            <i class="ri-database-2-line"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 col-xxl-3 col-lg-6">
+                            <div class="main-tiles border-5 card-hover border-0 card o-hidden">
+                                <div class="custome-2-bg b-r-4 card-body">
+                                    <div class="media static-top-widget">
+                                        <div class="media-body p-0">
+                                            <span class="m-0"> Orders Delivered</span>
+                                            <h4 class="mb-0 counter">{{order_count}}
+                                               
+                                            </h4>
+                                        </div>
+                                        <div class="align-self-center text-center">
+                                            <i class="ri-shopping-bag-3-line"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 col-xxl-3 col-lg-6">
+                            <div class="main-tiles border-5 card-hover border-0 card o-hidden">
+                                <div class="custome-4-bg b-r-4 card-body">
+                                    <div class="media static-top-widget">
+                                        <div class="media-body p-0">
+                                            <span class="m-0">New Orders</span>
+                                            <h4 class="mb-0 counter">{{orders|length}}
+                                             
+                                            </h4>
+                                        </div>
+
+                                        <div class="align-self-center text-center">
+                                            <i class="ri-shopping-bag-3-line"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 col-xxl-3 col-lg-6">
+                            <div class="main-tiles border-5 card-hover border-0  card o-hidden">
+                                <div class="custome-3-bg b-r-4 card-body">
+                                    <div class="media static-top-widget">
+                                        <div class="media-body p-0">
+                                            <span class="m-0">Total Products</span>
+                                            <h4 class="mb-0 counter">{{products|length}}
+                                                <a href="{% url 'addproduct' %}?status=add" class="badge badge-light-secondary grow">
+                                                    ADD NEW</a>
+                                            </h4>
+                                        </div>
+
+                                        <div class="align-self-center text-center">
+                                            <i class="ri-chat-3-line"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+
+                     
+
+
+                        <!-- Earning chart star-->
+                        <div class="col-xl-12">
+                            <div class="card o-hidden card-hover">
+                                <div class="card-header border-0 pb-1">
+                                    <div class="card-header-title">
+                                        <h4>Revenue Report</h4>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div id="report">
+                                        <canvas id="myChart" style="width:100%;max-width:"></canvas>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Earning chart  end-->
+
+
+                        <!-- Best Selling Product Start -->
+                        <div class="col-xl-6 col-md-12">
+                            <div class="card o-hidden card-hover">
+                                <div class="card-header card-header-top card-header--2 px-0 pt-0">
+                                    <div class="card-header-title">
+                                        <h4>Best Selling Product</h4>
+                                    </div>
+
+                                    <div class="best-selling-box d-sm-flex d-none">
+                                        {% comment %} <span>Short By:</span>
+                                        <div class="dropdown">
+                                            <button class="btn p-0 dropdown-toggle" type="button"
+                                                id="dropdownMenuButton1" data-bs-toggle="dropdown"
+                                                data-bs-auto-close="true">Today</button>
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                <li><a class="dropdown-item" href="#">Action</a></li>
+                                                <li><a class="dropdown-item" href="#">Another action</a></li>
+                                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                            </ul>
+                                        </div> {% endcomment %}
+                                    </div>
+                                </div>
+
+                                <div class="card-body p-0">
+                                    <div>
+                                        <div class="table-responsive">
+                                            <table class="best-selling-table w-image
+                                            w-image
+                                            w-image table border-0">
+                                                <tbody>
+                                                    {% for i  in top_selling_products_list %}
+                                                    
+                                                    <tr>
+                                                        <td>
+                                                            <div class="best-product-box">
+                                                                <div class="product-image">
+                                                                    <img src="../../media/{{i.product.img}}"
+                                                                        class="img-fluid" alt="Product">
+                                                                </div>
+                                                                <div class="product-name">
+                                                                    <h5>{{i.product.name}}</h5>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+
+                                                     
+
+                                                        <td>
+                                                            <div class="product-detail-box">
+                                                                <h6>Orders</h6>
+                                                                <h5>{{i.orders}}</h5>
+                                                            </div>
+                                                        </td>
+
+                                                       
+                                                    </tr>
+
+                                                    {% endfor %}
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Best Selling Product End -->
+
+
+                        <!-- Recent orders start-->
+                        <div class="col-xl-6">
+                            <div class="card o-hidden card-hover">
+                                <div class="card-header card-header-top card-header--2 px-0 pt-0">
+                                    <div class="card-header-title">
+                                        <h4>Recent Orders</h4>
+                                    </div>
+
+                                   
+                                </div>
+
+                                <div class="card-body p-0">
+                                    <div>
+                                        <div class="table-responsive">
+                                            <table class="best-selling-table table border-0">
+                                                <tbody>
+                                                    {% for order in orders %}
+                                                    
+                                                    <tr>
+                                                        <td>
+                                                            <div class="best-product-box">
+                                                                <div class="product-name">
+                                                                    <h5>Order Id:</h5>
+                                                                    <a href="{% url 'order_details' order.serial_id %}">#{{order.serial_id}}</a>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+
+                                                        <td>
+
+                                                            <div class="product-detail-box">
+                                                                <h6>Delivery Status</h6>
+                                                                <h5>{{order.delivery_status}}</h5>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="product-detail-box">
+                                                                <h6>Date Placed</h6>
+                                                                <h5>{{order.created_at}}</h5>
+                                                            </div>
+                                                        </td>
+
+                                                        <td>
+
+                                                            <div class="product-detail-box">
+                                                                <h6>Price</h6>
+                                                                <h5>£ {{order.payment_amount}}</h5>
+                                                            </div>
+                                                        </td>
+
+                                                        
+
+                                                        <td>
+                                                            <div class="product-detail-box">
+                                                                <h6>Payment</h6>
+                                                                {% if order.payment_status == 'Completed' %}
+                                                                <h5 class="text-success">Paid</h5>
+
+                                                                {% else %}
+                                                                <h5 class="text-danger">Unpaid</h5>
+                                                                {% endif %}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+
+                                                    {% endfor %}
+
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Recent orders end-->
+
+                        <!-- Earning chart star-->
+                        {% comment %} <div class="col-xl-6">
+                            <div class="card o-hidden card-hover">
+                                <div class="card-header border-0 mb-0">
+                                    <div class="card-header-title">
+                                        <h4>Earning</h4>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div id="bar-chart-earning"></div>
+                                </div>
+                            </div>
+                        </div> {% endcomment %}
+                        <!-- Earning chart end-->
+
+
+                     
+
+                        {% comment %} <!-- visitors chart start-->
+                        <div class="col-xxl-4 col-md-6">
+                            <div class="h-100">
+                                <div class="card o-hidden card-hover">
+                                    <div class="card-header border-0">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="card-header-title">
+                                                <h4>Visitors</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body pt-0">
+                                        <div class="pie-chart">
+                                            <div id="pie-chart-visitors"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- visitors chart end--> {% endcomment %}
+
+
+                        <!-- To Do List start-->
+                        <div class="col-xxl-4 col-md-6">
+                            <div class="card o-hidden card-hover">
+                                <div class="card-header border-0">
+                                    <div class="card-header-title">
+                                        <h4>To Do List</h4>
+                                    </div>
+                                </div>
+
+                                <div class="card-body pt-0">
+                                    <ul class="to-do-list">
+                                        {% for i  in todolist %}
+                                        <li class="to-do-item ">
+                                                <form class="row g-2 w-100" >
+                                                <div class="form-check user-checkbox col-2">
+                                                
+                                                    <input class="checkbox_animated check-it" type="checkbox" value=""
+                                                    id="flexCheckDefault">
+                                                    <input type="hidden" id="hiddenid" value="{{i.id}}">
+
+                                                </div>
+                                                <div class="to-do-list-name col-8">
+                                                    <strong>{{i.name}}</strong>
+                                                </div>
+                                            </form>
+                                            </li>
+                                        {% endfor %}
+
+                                        <li class="to-do-item">
+                                            <form class="row g-2" action="{% url 'todoList_crud' %}" method="POST">
+                                                    {% csrf_token %}
+                                                <div class="col-8">
+                                                    <input type="text" class="form-control" id="name" name="name"
+                                                        placeholder="Enter Task Name">
+                                                </div>
+                                                <div class="col-4">
+                                                    <button type="submit" class="btn btn-primary w-100 h-100">Add
+                                                        task</button>
+                                                </div>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- To Do List end-->
+
+
+                    </div>
+                    
+                </div>
+                <!-- Container-fluid Ends-->
+
+                <!-- footer start-->
+                 
+                <!-- footer End-->
+            </div>
+            <!-- index body end -->
+
+        <script>
+                // Get all the checkboxes with the class "check-it"
+            const checkboxes = document.querySelectorAll('.check-it');
+
+            // Attach a click event listener to each checkbox
+            checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('click', function() {
+                // Check if the checkbox is checked
+                if (this.checked) {
+                // Define the URL to navigate to
+                const id = document.getElementById('hiddenid').value;
+                const url = `/dashboard/todolist?CHECKED=TRUE&id=${id}`;
+
+                // Navigate to the URL
+                window.location.href = url;
+                }
+            });
+            });
+        </script>
+        
+    
+        <script>
+                    // Fetch revenue data from backend
+                    fetch("/dashboard/revenue-data")
+                    .then(response => response.json())
+                    .then(data => {
+                      const xValues = data.map(item => Object.keys(item)[0]);
+                      const yValues = data.map(item => Object.values(item)[0]);
+    console.log(xValues,yValues)
+    new Chart("myChart", {
+      type: "line",
+      data: {
+        labels: xValues,
+        datasets: [
+          {
+            label: "Revenue",
+
+            fill: true,
+            lineTension: 0,
+            backgroundColor: "#b45665", // Set the desired background color
+            borderColor: "#5e131f",
+            data: yValues
+          }
+        ]
+      },
+      options: {
+        legend: { display: false },
+        scales: {
+          yAxes: [{ ticks: { min: 0, max: 100 } }]
+        }
+      }
+    });
+  })
+  .catch(error => {
+    console.error("Error fetching revenue data:", error);
+  });
+
+                  
+
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+                
+            {% endblock content %}
+       

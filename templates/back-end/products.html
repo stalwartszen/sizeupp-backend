@@ -1,0 +1,113 @@
+{% extends 'back-end/template.html' %}
+<style>
+    td{
+        justify-content: start !important;
+        display: flex !important;
+    }
+</style>
+            {% block content %}
+
+<!-- Container-fluid starts-->
+
+            <div class="page-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card card-table">
+                                <div class="card-body">
+                                    <div class="title-header option-title d-sm-flex d-block">
+                                        <h5>Products List</h5>
+                                        <div class="right-options">
+                                            <ul>
+                                                {% comment %} <li>
+                                                    <a href="javascript:void(0)">import</a>
+                                                </li> {% endcomment %}
+                                                <li>
+                                                    <a href="{% url 'products_dashboard' %}?action=export">Export</a>
+                                                </li>
+                                                <li>
+                                                    <a class="btn btn-solid" href="{% url 'addproduct' %}">Add Product</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="table-responsive">
+                                            <table class="table all-package theme-table table-product" id="table_id">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Option</th>
+                                                        <th>Product Image</th>
+                                                        <th>Product Name</th>
+                                                        <th>Brand</th>
+
+                                                        <th>Category</th>
+                                                        <th>Sub Category</th>
+                                                        <th>Detail Category</th>
+
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    {% for pro in products %}
+                                                    <tr>
+                                                        <td >
+                                                            <ul style="    display: flex;
+                                                            justify-content: center;">
+                                                                <li style="padding:5%">
+                                                                    <a href="{% url 'img_products' pro.id %}">
+                                                                        <i class="ri-eye-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li style="padding:5%">
+                                                                    <a href="{% url 'addproduct_crud' pro.id %}?slug=update">
+                                                                        <i class="ri-pencil-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li style="padding:5%">
+                                                                    <a href="{% url 'addproduct_crud' pro.id %}?slug=delete" >
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </td>
+                                                        <td>
+                                                            <div class="table-image">
+                                                                <img src="../..{{pro.img}}" class="img-fluid"
+                                                                    alt="">
+                                                            </div>
+                                                        </td>
+
+                                                        
+                                                        <td>{{pro.name}}</td>
+
+                                                        <td>{{pro.brand.name}}</td>
+                                                        <td>{{pro.category.name}}</td>
+                                                        <td>{{pro.subcategory.name}}</td>
+                                                        <td>{{pro.detail_category.name}}</td>
+                                                        
+
+                                                       
+                                                        
+
+                                                        
+                                                    </tr>
+                                                    {% endfor %}
+                                                    
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Container-fluid Ends-->
+
+                
+            </div>
+            {% endblock content %}            
+ 

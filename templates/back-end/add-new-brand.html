@@ -1,0 +1,138 @@
+{% extends 'back-end/template.html' %}
+{% block content %}
+            <div class="page-body">
+
+                <!-- New Product Add Start -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-sm-8 m-auto">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="card-header-2">
+                                                <h5>Brand Information</h5>
+                                            </div>
+                                            {% if slug == 'Add' %}
+                                            
+                                            <form class="theme-form theme-form-2 mega-form" method="POST" action="{% url 'brand_dashboard' %}?slug=Add">
+                                                {% csrf_token %}
+                                                
+                                                
+                                                
+                                                
+                                                    
+
+
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-sm-3 mb-0">Brnad Name</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text" id="category_name" name="brand_name" placeholder="Brand Name">
+                                                    </div>
+                                                </div>
+                                                <div class="mb-4 row align-items-center">
+                                                    
+                                                    <label class="form-label-title col-sm-3 mb-0">Brand Details</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text" id="details" name="details"  placeholder="Details" >
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-4 row align-items-center">
+                                                    
+                                                    <label class="form-label-title col-sm-3 mb-0"> Address</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text" id="address" name="address"  placeholder="Address" >
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-4 row align-items-center">
+                                                    
+                                                    <label class="form-label-title col-sm-3 mb-0"> Contact</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text" id="contact" name="contact"  placeholder="Contact" >
+
+                                                    </div>
+                                                </div>
+
+                                              
+                                                <button class="btn btn-theme">submit</button>
+                                                
+
+                                            </form>
+
+
+
+
+                                            {% else %}
+                                            <form class="theme-form theme-form-2 mega-form" method="POST" action="{% url 'brand_dashboard' %}?slug=Update&id={{brand.id}}">
+                                                {% csrf_token %}
+                                                
+
+                                                    
+                                                <div class="mb-4 row align-items-center">
+                                                    
+                                                    <label class="form-label-title col-sm-3 mb-0">Brand Name</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text" id="category_name" name="brand_name"  placeholder="{{brand.name}}" value="{{brand.name}}">
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-4 row align-items-center">
+                                                    
+                                                    <label class="form-label-title col-sm-3 mb-0">Brand Details</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text" id="details" name="details"  placeholder="{{brand.details}}" value="{{brand.details}}">
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-4 row align-items-center">
+                                                    
+                                                    <label class="form-label-title col-sm-3 mb-0"> Address</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text" id="address" name="address"  placeholder="{{brand.address}}" value="{{brand.address}}">
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-4 row align-items-center">
+                                                    
+                                                    <label class="form-label-title col-sm-3 mb-0"> Contact</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text" id="contact" name="contact"  placeholder="{{brand.contact}}" value="{{brand.contact}}">
+
+                                                    </div>
+                                                </div>
+
+
+                                        
+                                                <button class="btn btn-theme">submit</button>
+                                                
+
+                                            </form>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- New Product Add End -->
+
+                <!-- footer Start -->
+                 
+                <!-- footer En -->
+            </div>
+
+
+         
+            
+            {% endblock content %}
+
+    

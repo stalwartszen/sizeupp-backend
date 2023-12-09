@@ -1,0 +1,114 @@
+{% extends 'back-end/template.html' %}
+{% block content %}
+            <div class="page-body">
+
+                <!-- New Product Add Start -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-sm-8 m-auto">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="card-header-2">
+                                                <h5>Sub Category Information</h5>
+                                            </div>
+                                            {% if slug == 'Add' %}
+                                            
+                                            <form class="theme-form theme-form-2 mega-form" method="POST" action="{% url 'sub_category_crud' %}?slug=Add">
+                                                {% csrf_token %}
+                                                
+                                                
+                                                
+                                                <div class="mb-4 row align-items-center">
+                                                    
+                                                    <label class="form-label-title col-sm-3 mb-0">Category Name</label>
+                                                    <div class="col-sm-9">
+                                                        <select name="category_name" class="form-control" id="brandSelect">
+                                                            {% for cat in categories %}
+                                                            <option value="{{cat.name}},{{cat.brand.name}}">{{cat.name}} - ({{cat.brand.name}})</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>                                        
+                                                </div>
+                                                    
+
+
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-sm-3 mb-0">Sub Category Name</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text" id="sub_category_name" name="sub_category_name" placeholder="Sub Category Name">
+                                                    </div>
+                                                </div>
+
+                                              
+                                                <button class="btn btn-theme">submit</button>
+                                                
+
+                                            </form>
+
+
+
+
+                                            {% else %}
+                                            <form class="theme-form theme-form-2 mega-form" method="POST" action="{% url 'sub_category_crud' %}?slug=Update&id={{subcategory.id}}">
+                                                {% csrf_token %}
+                                                
+
+
+                                                <div class="mb-4 row align-items-center">
+
+                                                    <label class="form-label-title col-sm-3 mb-0">Category Name</label>
+                                                    <div class="col-sm-9">
+                                                        <select name="category_name" class="form-control">
+                                                            {% for cat in categories %}
+                                                            {% if cat.name == subcategory.category.name %}
+                                                            <option value="{{cat.name}},{{cat.brand.name}}" selected>{{cat.name}} -({{cat.brand.name}})</option>
+
+                                                            {% else %}
+                                                            <option value="{{cat.name}},{{cat.brand.name}}">{{cat.name}}-({{cat.brand.name}})</option>
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+
+                                        
+                                                </div>
+                                                    
+                                                <div class="mb-4 row align-items-center">
+                                                    
+                                                    <label class="form-label-title col-sm-3 mb-0">Sub Category Name</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text" id="category_name" name="sub_category_name"  placeholder="{{subcategory.name}}" value="{{subcategory.name}}">
+
+                                                    </div>
+                                                </div>
+
+
+                                        
+                                                <button class="btn btn-theme">submit</button>
+                                                
+
+                                            </form>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- New Product Add End -->
+
+                <!-- footer Start -->
+                 
+                <!-- footer En -->
+            </div>
+
+
+         
+            
+            {% endblock content %}
+
+    

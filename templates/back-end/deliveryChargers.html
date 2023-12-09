@@ -1,0 +1,97 @@
+{% extends "back-end/template.html" %}
+{% block content %}
+
+            <!-- Texes Table Section Start -->
+            <div class="page-body">
+
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card card-table">
+                                <!-- Table Start -->
+                                <div class="card-body">
+                                    <div class="title-header option-title">
+                                        <h5>Delivery Charges</h5>
+                                        <a href="{% url 'taxes_dashboard' %}?slug=add"
+                                        class="align-items-center btn btn-theme d-flex">
+                                        <i data-feather="plus-square"></i>Add New
+                                    </a>
+                                    </div>
+                                  
+                                    <div class="table-responsive">
+                                        <table class="table all-package theme-table coupon-list-table" id="table_id">
+                                            <thead>
+                                                <tr>
+                                                   
+                                                    <th>Country Name</th>
+                                                    <th>Rate</th>
+                                                    <th>Options</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                {% for i in delivery_charges %}
+                                                <tr>
+                                                    
+                                                    <td>{{i.country_name}}</td>
+                                                   
+                                                    
+                                                    <td>£ {{i.charges}}</td>
+
+                                                    <td>
+                                                        <ul>
+                                                            <li>
+                                                                <a href="{% url 'taxes_dashboard' %}?slug=update&id={{i.id}}">
+                                                                    <i class="ri-pencil-line"></i>
+                                                                </a>
+                                                            </li>
+
+                                                            <li>
+                                                                <a href="{% url 'taxes_dashboard' %}?slug=delete&id={{i.id}}" >
+                                                                    <i class="ri-delete-bin-line"></i>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                               
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <!-- Table End -->
+
+                                <!-- Pagination Start -->
+                                <!-- <div class="pagination-box">
+                                    <nav class="ms-auto me-auto" aria-label="...">
+                                        <ul class="pagination pagination-primary">
+                                            <li class="page-item disabled">
+                                                <a class="page-link" href="javascript:void(0)">Previous</a>
+                                            </li>
+                                            <li class="page-item active">
+                                                <a class="page-link" href="javascript:void(0)">1</a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="javascript:void(0)">2</a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="javascript:void(0)">3</a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="javascript:void(0)">Next</a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div> -->
+                                <!-- Pagination End -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Container-fluid Ends-->
+
+                
+            </div>
+            <!-- Texes Table Section End -->
+            {% endblock content %}

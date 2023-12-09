@@ -1,0 +1,111 @@
+{% extends "back-end/template.html" %}
+{% block content %}
+
+            <!-- Texes Table Section Start -->
+
+        {% if status == 'ADD' %} 
+                    <div class="page-body">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="row">
+                                        <div class="col-sm-8 m-auto">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="card-header-2">
+                                                        <h5>Colour Family </h5>
+                                                    </div>
+                                                    
+        
+                                                    <form class="theme-form theme-form-2 mega-form" method="POST" action="{% url 'colour_family_dashboard' %}">
+                                                        {% csrf_token %}
+                                                        
+        
+                                                            
+                                                        <div class="mb-4 row align-items-center">
+                                                            
+                                                            <label class="form-label-title col-sm-3 mb-0">Colour Name</label>
+                                                            <div class="col-sm-9">
+                                                                <input class="form-control" type="text" id="category_name" name="name"  placeholder="Colour Name">
+        
+                                                            </div>
+                                                        </div>
+
+                                                        <button class="btn btn-theme">submit</button>
+                                                        
+        
+                                                    </form>
+        
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                
+                    </div>
+        
+        {% else %}
+            <div class="page-body">
+
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card card-table">
+                                <!-- Table Start -->
+                                <div class="card-body">
+                                    <div class="title-header option-title">
+                                        <h5>Colour Family</h5>
+                                        <a href="{% url 'colour_family_dashboard' %}?slug=add"
+                                        class="align-items-center btn btn-theme d-flex">
+                                        <i data-feather="plus-square"></i>Add New
+                                    </a>
+                                    </div>
+                                 
+                                    <div class="table-responsive">
+                                        <table class="table all-package theme-table coupon-list-table" id="table_id">
+                                            <thead>
+                                                <tr>
+                                                   
+                                                    <th>Colour Name</th>
+                                                    <th>Options</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                {% for i in family %}
+                                                <tr>
+                                                    
+                                                    <td>{{i.name}}</td>
+                                                   
+                            
+                                                    <td>
+                                                        <ul>
+                                                           
+
+                                                            <li>
+                                                                <a href="{% url 'colour_family_dashboard' %}?slug=delete&id={{i.id}}" >
+                                                                    <i class="ri-delete-bin-line"></i>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                               
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Container-fluid Ends-->
+
+                
+            </div>
+        {% endif %}
+            <!-- Texes Table Section End -->
+            {% endblock content %}

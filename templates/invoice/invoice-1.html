@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="multikart" />
+    <meta name="keywords" content="multikart" />
+    <meta name="author" content="multikart" />
+    <link
+      rel="shortcut icon"
+      href="../../static/backend_assets/assets/images/favicon.png"
+      type="image/x-icon"
+    />
+    <title>Zeba | Invoice #{{order.serial_id}}</title>
+
+    <!--Google font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200;300;400;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Icons -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="../../static/assets-invoice/css/vendors/font-awesome.css"
+    />
+
+    <!-- Bootstrap css -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="../../static/assets-invoice/css/vendors/bootstrap.css"
+    />
+
+    <!-- Theme css -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="../../static/assets-invoice/css/style.css"
+    />
+
+    <style>
+      *{
+        font-family:sans-serif !important;
+      }
+      @media print {
+        .btn {
+          display: none;
+        }
+      }
+
+      .invoice-table-2 table th,
+      .invoice-table-2 table td {
+        padding: 9px 0;
+      }
+      .custom{
+        font-weight: 200;
+        padding:0px !important;
+      }
+      
+      .new-total{
+        font-weight: 400;
+
+      }
+      .custom-table{
+        display: flex;
+    flex-direction: row-reverse;
+      }
+      .tr td{
+        padding:0px !important;
+      }
+    </style>
+  </head>
+
+  <body class="bg-light">
+    <section class="theme-invoice-1">
+      <div class="container">
+        <div class="row">
+          <div class="col-xxl-108 col-xl-8 mx-auto my-3">
+            <div class="invoice-wrapper">
+              <div class="invoice-header border-bottom">
+                <div class="header-image d-flex">
+                  
+                  <div class="container d-flex row p-2 m-auto">
+                    <span>
+                      Bentley House 202 Market Street, 
+                    </span>
+                    <span>Shipley West Yorkshire, BD18 2BY</span>
+                    <span>
+                      Tel:01274 598894
+
+                    </span>
+                  </div>
+                  <img
+                    src="../../static/assets/images/logo/logo_5.png"
+                    class="img-fluid"
+                    alt="logo"
+                  />
+                </div>
+              </div>
+              <div class="invoice-body container">
+                <div class="top-sec">
+                  <div class="row">
+                    <div class="col-12">
+                      <div class="details-box">
+                        <div  style="width: 70%">
+                          <div>
+                            <ul class="row">
+                              <li>
+                              
+                                <span >{{order.customer_name}} </span>
+                              </li>
+                              
+
+                              <li>
+                                <span 
+                                  >{{order.address_line_1}},{{order.address_line_2}}
+                               {{order.city}}, {{order.state}},
+                                  {{order.country}} -{{order.postal_code}}</span
+                                >
+                              </li>
+
+                          </ul>
+
+                          </div>
+                        </div>
+
+                        <div >
+                          <ul class="row">
+                            <li >
+                              Issue Date :
+                              <span 
+                                >{{order.created_at}}</span
+                              >
+                            </li>
+                            <li >
+                              Invoice No :
+                              <span >#{{order.serial_id}}</span>
+
+                            </li>
+                            <li >
+                              Email :
+                              <span 
+                                >{{order.customer_email}}</span
+                              >
+                            </li>
+                            <li >
+                              Payment Mode :
+                              <span 
+                                >
+                                {% if order.payment_id == 'Cash On Counter' %}
+                                {{order.payment_id}}
+                                {% else %}
+                                  Paypal - ( {{order.payment_id}})
+                                {% endif %}
+                               </span
+                              >
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+               
+                <div class="invoice-table-2">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Sr</th>
+                          <th>PCode</th>
+                          <th class="text-start">Product Description</th>
+                          <th>Qty</th>
+                          <th>Unit  Price</th>
+                          <th>Unit Discount</th>
+                          <th>Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for i in order.order_items.all %}
+
+
+                        <tr class="tr">
+                          <td ><span class="custom">{{forloop.counter}}</span></td>
+                          <td ><span class="custom" >
+                                {{i.sqp_code}}
+                          </span></td>
+
+                          <td >
+                            <ul class="text-start item-detail">
+                              <li style="white-space: normal;  
+                              "> <span class="custom" >
+
+                                {{i.product.name}} -
+
+                                Colour : {{i.color}} -
+                                
+                                Size:{{i.size}} 
+
+                                
+                              </span>
+                              </li>
+                              
+                             
+                             
+                            </ul>
+                          </td>
+                          <td ><span class="custom" >{{i.quantity}}</span></td>
+                          <td>
+                            <span class="custom" >£{{i.price}}</span>
+                          </td>
+                          
+                         
+                          <td>
+                            <span class="custom" >
+                              -£ {% if i.discount_price == None %}0.00 {% else %}{{i.discount_price}} {% endif %}
+                             </span>
+                          </td>
+                          
+                          <td>
+                            <span class="custom" style="padding-right: 0px !important;">£{{i.total| floatformat:2}}</span>
+                          </td>
+                          
+                       
+                        </tr>
+
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="price-box">
+                    <table class="table  custom-table">
+                      <body>
+                        <tr class="th" style="border: 0px ; border-style:hidden;">
+                          <th class="text-end new-total">Sub Total </th>
+                          
+                          <th class=" text-end new-total" style="padding-right: 19px;">£{{order.sub_total|floatformat:2}}</th>
+
+                        </tr>
+                        <tr class="th"style="border: 0;border-style:hidden">
+                          <th class="text-end new-total">Delivery Charges</th>
+                          
+                          <th class=" text-end new-total"  style="padding-right: 19px;">£ {% if order.deliveryCharges %}
+                            {{order.deliveryCharges|floatformat:2}}
+                          {% else %}
+                          0.00 
+                          {% endif %}</th>
+
+                        </tr>
+
+
+                        {% if order.discount_percentage or order.discount_amount %}
+                        
+                        <tr class="th"style="border: 0;border-style:hidden">
+                          <th class="text-end new-total">Discount {% if order.discount_percentage %}
+                          Percentage
+                          {% else %}
+                          Amount
+                          {% endif %}</th>
+                          
+                          <th class=" text-end new-total"  style="padding-right: 19px;">{% if order.discount_percentage %}
+                            {{order.discount_percentage|floatformat:2}}%
+                          {% elif order.discount_amount %}
+                            {{order.discount_amount|floatformat:2}}
+                            {% else %}
+                            £ 0.00
+                          {% endif %}</th>
+
+                        </tr>
+                        {% endif %}
+
+
+
+                        <tr class="th"style="border: 0;border-style:hidden  ">
+                          <th class="text-end new-total">Grand Total</th>
+                          
+                          <th class=" text-end new-total" style="padding-right: 19px;">£{{order.payment_amount|floatformat:2}}</th>
+
+                        </tr>
+                      </body>
+                    </table>
+                </div>
+
+
+              <div class="invoice-footer">
+                
+
+                <div class="button-group">
+                  <ul>
+                    <li>
+                      <button
+                        class="btn theme-bg-color text-white rounded"
+                        onclick="window.print();"
+                      >
+                        Export As PDF
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="container justify-content-center m-auto d-flex mt-5">
+                <h4>
+                  Thank you for shopping ! 
+                </h4>
+                </div>
+                <div class="container justify-content-center m-auto d-flex"><span >Visit Again </span>
+                <a class="text" href="http://SizeUpp.co.uk" style="margin-left: 5px;"target='_blank'>http://SizeUpp.co.uk</a>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

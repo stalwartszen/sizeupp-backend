@@ -1,0 +1,80 @@
+{% extends 'back-end/template.html' %}
+{% block content %}
+
+            <!-- Container-fluid starts-->
+            <div class="page-body">
+                <!-- All User Table Start -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card card-table">
+                                <div class="card-body">
+                                    <div class="title-header option-title">
+                                        <h5>All Category</h5>
+                                        <a href="{% url 'category_crud' %}"
+                                        class="align-items-center btn btn-theme d-flex">
+                                        <i data-feather="plus-square"></i>Add New
+                                    </a>
+                                    </div>
+
+                                    <div class="table-responsive category-table">
+                                        <div>
+                                            <table class="table all-package theme-table" id="table_id">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Category Name</th>
+                                                        <th>Brand Name</th>
+
+                                                        <th>Option</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    {% for cat in categories %}
+                                                    <tr>
+                                                        <td>{{cat.name}}</td>
+
+                                                        <td>{{cat.brand.name}}</td>
+
+                                                       
+
+                                                       
+
+
+                                                        <td>
+                                                            <ul>
+                                                                
+                                                                <li>
+                                                                    <a href="{% url 'category_crud' %}?slug=Update&id={{cat.id}}">
+                                                                        <i class="ri-pencil-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a href="{% url 'category_crud' %}?slug=Delete&id={{cat.id}}" >
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- All User Table Ends-->
+
+                
+            </div>
+            <!-- Container-fluid end -->
+    
+        <!-- Page Body End -->
+        {% endblock content %}
+
+  

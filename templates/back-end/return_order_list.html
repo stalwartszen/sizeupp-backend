@@ -1,0 +1,193 @@
+{% extends "back-end/template.html" %}
+{% block content %}
+
+            <!-- Ticket Section Start -->
+            <div class="page-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card card-table">
+                                <!-- Table Start -->
+                                <div class="card-body">
+                                    <div class="title-header option-title">
+                                        <h5>Support Ticket</h5>
+                                    </div>
+                                    <div>
+                                        <div class="table-responsive">
+                                            <table class="table ticket-table all-package theme-table" id="table_id">
+                                                <thead>
+                                                    <tr>
+                                                        <th>
+                                                            <div class="check-box-contain">
+                                                                <span>Ticket Number</span>
+                                                            </div>
+                                                        </th>
+                                                        <th>
+                                                            <span>Order Id</span>
+                                                        </th>
+                                                        <th>
+                                                            <span>Date</span>
+                                                        </th>
+
+                                                        <th>
+                                                            <span>Reason</span>
+                                                        </th>
+                                                      
+                                                        <th>
+                                                            <span>Options</span>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for i in return_orders %}
+                                                    <tr>
+                                                        <td>
+                                                            <div class="check-box-contain">
+                                                                <span># {{i.id}}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>{{i.order.serial_id}}</td>
+
+                                                        <td>{{i.created}}</td>
+                                                        <td>{{i.issue}}</td>
+                                                        
+                                                        <td>
+                                                            <ul>
+                                                                <li>
+                                                                    <button type="button" class="btn btn-primary" onclick="openModal(event, '{{i.order.customer_name}}', '{{i.order.customer_email}}', '{{i.order.serial_id}}', '{{i.issue}}', '{{i.product}}', '{{i.feedback}}')">
+                                                                        <i class="ri-eye-line"></i>
+                                                                    </button>
+                                                                </li>
+                                                                <li>
+                                                                    <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModalToggle">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                            
+                                         
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xxl-6 col-lg-12 col-sm-6">
+                        <div class="mb-md-4 mb-3 custom-form">
+                            <label for="modal-name" class="form-label">Name</label>
+                            <div class="custom-input">
+                                <input type="text" id="modal-name"  class="form-control" disabled>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xxl-6 col-lg-12 col-sm-6">
+                        <div class="mb-md-4 mb-3 custom-form">
+                            <label for="modal-email" class="form-label">email</label>
+                            <div class="custom-input">
+                                <input type="text" id="modal-email" class="form-control" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-6 col-lg-12 col-sm-6">
+                        <div class="mb-md-4 mb-3 custom-form">
+                            <label for="modal-number" class="form-label">Order ID</label>
+                            <div class="custom-input">
+                                <input type="text" id="modal-number" class="form-control" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-6 col-lg-12 col-sm-6">
+                        <div class="mb-md-4 mb-3 custom-form">
+                            <label for="modal-issue" class="form-label">Reason</label>
+                            <div class="custom-input">
+                                <input type="text" id="modal-issue" class="form-control" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-6 col-lg-12 col-sm-6">
+                        <div class="mb-md-4 mb-3 custom-form">
+                            <label for="modal-product" class="form-label">product</label>
+                            <div class="custom-input">
+                                <input type="text" id="modal-product" class="form-control" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-6 col-lg-12 col-sm-6">
+                        <div class="mb-md-4 mb-3 custom-form">
+                            <label for="modal-message" class="form-label">message</label>
+                            <div class="custom-input">
+                                <textarea type="text" id="modal-message" class="form-control" disabled></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Other fields -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="modal-close-btn" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+                                            
+                                          
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Table End -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+             
+                <!-- Footer Start -->
+                 
+                <!-- Footer End -->
+            </div>
+
+                
+                    <script>
+                        function openModal(event, name, email, number, issue, product, message) {
+                            event.preventDefault();
+                            document.getElementById("modal-name").value = name;
+
+                            document.getElementById("modal-email").value = email;
+                            document.getElementById("modal-number").value = number;
+                            document.getElementById("modal-issue").value = issue;
+                            document.getElementById("modal-product").value = product;
+                            document.getElementById("modal-message").value = message;
+
+                    
+                            // Open the modal
+                            $('#exampleModalCenter').modal('show');
+                        }
+                        document.getElementById("modal-close-btn").addEventListener("click", function() {
+                            var modal = document.getElementById("exampleModalCenter");
+                            var modalBackdrop = document.querySelector(".modal-backdrop");
+                            
+                            // Hide the modal and remove the backdrop
+                            modal.style.display = "none";
+                            modalBackdrop.remove();
+                        });
+                    </script>
+                    
+                
+
+            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+            {% endblock content %}

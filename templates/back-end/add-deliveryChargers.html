@@ -1,0 +1,123 @@
+{% extends 'back-end/template.html' %}
+{% block content %}
+            <div class="page-body">
+
+                <!-- New Product Add Start -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-sm-8 m-auto">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            
+                                            <div class="card-header-2">
+                                                <h5>Category Information</h5>
+                                            </div>
+                                            {% if slug == 'add' %}
+                                            
+                                            <form class="theme-form theme-form-2 mega-form" method="POST" action="{% url 'taxes_dashboard' %}?slug=add">
+                                                {% csrf_token %}
+                                                
+
+                                                <div class="mb-4 row align-items-center">
+                                                    
+                                                    <label class="form-label-title col-sm-3 mb-0">Country Name</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text" id="tax_name" name="name"  placeholder="Name or Code">
+
+                                                    </div>
+                                                </div>
+                                         
+                                                    
+                                               
+                                               
+                                                <div class="mb-4 row align-items-center">
+                                                    
+                                                    <label class="form-label-title col-sm-3 mb-0">Charges (in £)</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="number" id="charges" name="charges" step=0.01 min=0 value=0 placeholder="Charges in £">
+
+                                                    </div>
+                                                </div>
+                                                <div class="mb-4 row align-items-center">
+                                                    
+                                                    <label class="form-label-title col-sm-3 mb-0">Details </label>
+                                                    <div class="col-sm-9">
+                                                        <textarea class="form-control" type="text" id="category_name" name="details"  placeholder="More Details"></textarea>
+
+                                                    </div>
+                                                </div>
+
+
+                                        
+                                                <button class="btn btn-theme">submit</button>
+                                                
+
+                                            </form>
+
+
+
+
+                                            {% elif slug == 'update' %}
+                                            <form class="theme-form theme-form-2 mega-form" method="POST" action="{% url 'taxes_dashboard' %}?slug=update&id={{delivery_charges.id}}">
+                                                {% csrf_token %}
+                                                
+
+                                                <div class="mb-4 row align-items-center">
+                                                    
+                                                    <label class="form-label-title col-sm-3 mb-0">Country Name</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text" id="tax_name" name="name"  placeholder="{{delivery_charges.country_name}}" value="{{delivery_charges.country_name}}">
+
+                                                    </div>
+                                                </div>
+                                         
+                                                    
+                                          
+                                                <div class="mb-4 row align-items-center">
+                                                    
+                                                    <label class="form-label-title col-sm-3 mb-0">Charges </label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="number" step=0.01 min=0 id="charges" name="charges"  placeholder="{{delivery_charges.charges}}" value="{{delivery_charges.charges}}">
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-4 row align-items-center">
+                                                    
+                                                    <label class="form-label-title col-sm-3 mb-0">Details </label>
+                                                    <div class="col-sm-9">
+                                                        <textarea class="form-control" type="text" id="category_name" name="details"  placeholder="{{delivery_charges.details}}" value="{{delivery_charges.details}}"></textarea>
+
+                                                    </div>
+                                                </div>
+
+
+                                        
+                                                <button class="btn btn-theme">submit</button>
+                                                
+
+                                            </form>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- New Product Add End -->
+
+                <!-- footer Start -->
+                 
+                <!-- footer En -->
+            </div>
+
+
+         
+            
+            {% endblock content %}
+
+    

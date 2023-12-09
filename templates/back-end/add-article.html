@@ -1,0 +1,353 @@
+{% extends 'back-end/template.html' %}
+
+{% block content %}
+<style>
+   
+      
+    .selectBox {
+      position: relative;
+    }
+    
+    .selectBox select {
+      width: 100%;
+      font-weight: bold;
+    }
+    
+    .overSelect {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+    }
+    
+    #checkboxes {
+      width:100%;
+      display: none;
+      border: 1px #dadada solid;
+    }
+    
+    #checkboxes label {
+      display: block;
+    }
+    
+    #checkboxes label:hover {
+      background-color: #1e90ff;
+    }
+</style>
+    {% if slug == 'Add' %}
+    
+    <form class="theme-form theme-form-2 mega-form" method="POST" enctype="multipart/form-data" action="{% url 'all_articles' %}?slug=Add">
+        {% csrf_token %}
+        <div class="page-body">
+
+            <!-- New Product Add Start -->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-sm-8 m-auto">
+                               
+
+
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="card-header-2">
+                                            <h5>Product Details</h5>
+                                        </div>
+
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-3 mb-0">Article
+                                                            Name</label>
+                                                            <div class="col-sm-9">
+                                                                <input class="form-control" type="text" name="name"
+                                                                    placeholder="Article Name">
+                                                            </div>
+                                                    </div>
+                                                    <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-3 mb-0">Writer
+                                                            Name</label>
+                                                            <div class="col-sm-9">
+                                                                <input class="form-control" type="text" name="writer"
+                                                                    placeholder="Writer Name">
+                                                            </div>
+                                                    </div>
+                                                    <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-3 mb-0">Short Description
+                                                            </label>
+                                                            <div class="col-sm-9">
+                                                                <input class="form-control" type="text" name="description"
+                                                                    placeholder="Descriptione">
+                                                            </div>
+                                                    </div>
+
+                                                    <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-3 mb-0">Article
+                                                            Content</label>
+                                                            <div class="col-sm-9">
+                                                                <textarea class="form-control" id="content" name="content" rows="3"></textarea>
+
+                                                            </div>
+                                                    </div>
+
+
+                                                    
+                                                </div>
+                                            </div>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="card-header-2">
+                                            <h5>Article Images</h5>
+                                        </div>
+
+                                        
+
+                                            <div class="row align-items-center">
+                                                <label class="col-sm-3 col-form-label form-label-title">Thumbnail
+                                                    Image</label>
+                                                <div class="col-sm-9">
+                                                    <input class="form-control form-choose" type="file" name="thumbnail_img"
+                                                        id="formFileMultiple1" multiple>
+                                                </div>
+                                            </div>
+                                    </div>
+                                </div>
+
+                                
+
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="card-header-2">
+                                            <h5>Search engine listing</h5>
+                                        </div>
+                                            <div class="mb-4 row align-items-center">
+                                                <label class="form-label-title col-sm-3 mb-0">Meta Tags</label>
+                                                <div class="col-sm-9">
+                                                    <input class="form-control" type="search" name="meta_tags"
+                                                        >
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-4 row">
+                                                <label class="form-label-title col-sm-3 mb-0">Meta
+                                                    description</label>
+                                                <div class="col-sm-9">
+                                                    <textarea class="form-control" name="meta_description" rows="3"></textarea>
+                                                </div>
+                                            </div>
+
+                                            
+                                    </div>
+                                    
+                                    <button class="btn btn-theme">submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- New Product Add End -->
+
+            <!-- footer Start -->
+            <div class="container-fluid">
+                <footer class="footer">
+                    <div class="row">
+                        <div class="col-md-12 footer-copyright text-center">
+                            <p class="mb-0">Copyright 2022 © Zeba Interior by himani'cc.com</p>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+            <!-- footer En -->
+        </div>
+    </form>
+    {% else %}
+    <form class="theme-form theme-form-2 mega-form" method="POST" enctype="multipart/form-data" action="{% url 'all_articles' %}?slug=update&id={{article.id}}">
+        {% csrf_token %}
+        <div class="page-body">
+
+            <!-- New Product Add Start -->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-sm-8 m-auto">
+                               
+
+
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="card-header-2">
+                                            <h5>Product Details</h5>
+                                        </div>
+
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-3 mb-0">Article
+                                                            Name</label>
+                                                            <div class="col-sm-9">
+                                                                <input class="form-control" type="text" name="name" value='{{article.name}}'
+                                                                    placeholder="Article Name">
+                                                            </div>
+                                                    </div>
+                                                    <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-3 mb-0">Writer
+                                                            Name</label>
+                                                            <div class="col-sm-9">
+                                                                <input class="form-control" type="text" name="writer" value='{{article.writer}}'
+                                                                    placeholder="Writer Name">
+                                                            </div>
+                                                    </div>
+                                                    <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-3 mb-0">Short Description
+                                                            </label>
+                                                            <div class="col-sm-9">
+                                                                <input class="form-control" type="text" name="description" value='{{article.description}}'
+                                                                    placeholder="Descriptione">
+                                                            </div>
+                                                    </div>
+
+                                                    <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-3 mb-0">Article Content</label>
+                                                        <div class="col-sm-9">
+                                                            <textarea class="form-control" id="content" name="content" rows="3">{{ article.content }}</textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="card-header-2">
+                                            <h5>Article Images</h5>
+                                        </div>
+
+                                        
+
+                                            <div class="row align-items-center">
+                                                <label class="col-sm-3 col-form-label form-label-title">Thumbnail
+                                                    Image</label>
+                                                
+                                                    <div>
+                                                        <div class="library-box" style="height:150px">
+                                                                <div>
+                                                                    <img src="../../media/{{article.thumbnail}}"
+                                                                        class="img-fluid" style="object-fit:cover;" id="thumbnailPreview" alt="{prdocut.name}">
+
+
+
+                                                                </div>
+                                                               
+                                                        </div>
+                                                    </div>
+
+                                                <div class="col-sm-9">
+                                                    <input class="form-control form-choose" type="file" name="thumbnail_img" id="formFileMultiple1" onchange="handleThumbnailChange(event)">
+
+                                                </div>
+                                            </div>
+                                    </div>
+                                </div>
+
+                                
+
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="card-header-2">
+                                            <h5>Search engine listing</h5>
+                                        </div>
+                                            <div class="mb-4 row align-items-center">
+                                                <label class="form-label-title col-sm-3 mb-0">Meta Tags</label>
+                                                <div class="col-sm-9">
+                                                    <input class="form-control" type="search" name="meta_tags" value='{{article.meta_tags}}'
+                                                        >
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-4 row">
+                                                <label class="form-label-title col-sm-3 mb-0">Meta
+                                                    description</label>
+                                                <div class="col-sm-9">
+                                                    <textarea class="form-control" name="meta_description" value='{{article.meta_description}}' rows="3"></textarea>
+                                                </div>
+                                            </div>
+
+                                            
+                                    </div>
+                                    
+                                    <button class="btn btn-theme">submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- New Product Add End -->
+
+            <!-- footer Start -->
+            <div class="container-fluid">
+                <footer class="footer">
+                    <div class="row">
+                        <div class="col-md-12 footer-copyright text-center">
+                            <p class="mb-0">Copyright 2022 © Zeba Interior by himani'cc.com</p>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+            <!-- footer En -->
+        </div>
+    </form>
+    {% endif %}
+           <script>
+            CKEDITOR.replace('content');
+
+           </script>
+          
+           
+<script>
+    // Assuming you have the backend content stored in a variable named `backendContent`
+    var backendContent = '{{ article.content }}';
+
+    // Replace single quotes with escaped single quotes
+    backendContent = backendContent.replace(/'/g, "\\'");
+
+    // Replace newline characters with escaped newline characters
+    backendContent = backendContent.replace(/\n/g, "\\n");
+
+    // Replace the textarea with CKEditor
+    CKEDITOR.replace('content');
+
+    // Wait for CKEditor to be fully loaded
+    CKEDITOR.on('instanceReady', function (evt) {
+        // Get the CKEditor instance
+        var editor = evt.editor;
+
+        // Set the backend content in CKEditor
+        editor.setData(backendContent);
+    });
+    function handleThumbnailChange(event) {
+        var fileInput = event.target;
+        var thumbnailPreview = document.getElementById('thumbnailPreview');
+        
+        if (fileInput.files && fileInput.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                thumbnailPreview.src = e.target.result;
+            };
+
+            reader.readAsDataURL(fileInput.files[0]);
+        }}
+</script>
+        
+        
+        
+        {% endblock content %}

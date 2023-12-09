@@ -1,0 +1,83 @@
+{% extends "back-end/template.html" %}
+{% block content %}
+
+            <!-- Coupon list table starts-->
+            <div class="page-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card card-table">
+                                <div class="card-body">
+                                    <div class="title-header option-title">
+                                        <h5>Coupon List</h5>
+                                        <div class="right-options">
+                                            <ul>
+                                                <li>
+                                                    <a class="btn btn-solid" href="{% url 'coupons_list' %}?slug=Add">Add Coupon</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="table-responsive">
+                                            <table class="table all-package coupon-list-table table-hover theme-table"
+                                                id="table_id">
+                                                <thead>
+                                                    <tr>
+                                                        
+                                                        <th>Code</th>
+                                                        <th>Discount Percentage</th>
+                                                        <th>Status</th>
+                                                        <th>Option</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    {% for coupon in coupons %}
+                                                    <tr>
+                                                        
+                                                        <td>{{coupon.code}}</td>
+                                                        <td class="theme-color">{{coupon.percentage}}%</td>
+                                                        <td class="menu-status">
+                                                            {% if coupon.active %}
+                                                            
+                                                            <span class="green">Active</span>
+                                                            {% else %}
+                                                            <span class="danger">Deactive</span>
+
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="{% url 'coupon_crud' coupon.id %}?slug=update">
+                                                                        <i class="ri-pencil-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a href="{% url 'coupon_crud' coupon.id %}?slug=delete" >
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Pagination End -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Container-fluid Ends-->
+
+                <!-- footer start-->
+                 
+            </div>
+          {% endblock content %}

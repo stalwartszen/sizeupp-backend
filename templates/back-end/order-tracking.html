@@ -1,0 +1,234 @@
+{% extends "back-end/template.html" %}
+{% block content %}
+
+            <!-- Order Tracking Seation starts-->
+            <div class="page-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="title-header option-title">
+                                                <h5>Order Tracking</h5>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12 overflow-hidden">
+                                                    <div class="order-left-image">
+                                                        <div class="tracking-product-image">
+                                                            <img src="assets/images/profile/1.jpg"
+                                                                class="img-fluid w-100 blur-up lazyload" alt="">
+                                                        </div>
+
+                                                        <div class="order-image-contain">
+                                                            <div class="tracker-number">
+                                                                <p>Order Number : <span>#{{order.serial_id}}</span></p>
+                                                                <p>Order Placed : <span>{{order.created_at}}</span></p>
+                                                            </div>
+                                                            {% if order.delivery_status == 'Cancel' %}
+                                                            <h5><span style="color:red">Order Is  canceled by user. </span></h5>
+
+                                                            {% else %}
+                                                            <h5>Your items is on the way. </h5>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <ol class="progtrckr">
+                                                    
+                                                    <li class="progtrckr-todo" id="1">
+                                                        <h5>Order Processing</h5>
+                                                        <h6>Done</h6>
+
+                                                    </li>
+                                                    <li class="progtrckr-todo" id="2">
+                                                        <h5>Pre-Production</h5>
+                                                        <h6>Done</h6>
+
+                                                    </li>
+                                                    <li class="progtrckr-todo" id="3">
+                                                        <h5>In Production</h5>
+                                                        <h6>Processing</h6>
+                                                    </li>
+                                                    <li class="progtrckr-todo" id ="4">
+                                                        <h5>Shipped</h5>
+                                                        <h6>Pending</h6>
+                                                    </li>
+                                                    <li class="progtrckr-todo" id="5">
+                                                        <h5>Delivered</h5>
+                                                        <h6>Pending</h6>
+                                                    </li>
+                                                </ol>
+
+                                                <div class="col-12">
+                                                    <div class="tracker-table">
+                                                        <div class="">
+                                                            <form action="{% url 'order_tracking' order.serial_id %}" method ="POST">
+                                                                {% csrf_token %}
+                                                                    <div class="right-sidebar-box">
+                                                                    <div class="row">
+                                                                        <div class="col-xxl-3 col-lg-12 col-sm-6">
+                                                                            <div class="mb-md-4 mb-3 custom-form">
+                                                                                <label for="exampleFormControlInput1" class="form-label">Order Status</label>
+
+                                                                                    <select name="order_status" class="form-control" id="">
+                                                                                        {% if order.delivery_status == 'Cancel' %}
+                                                                                        <option value="Cancel">Cancel</option>
+                                                                                        {% else %}
+                                                                                            {% if order.delivery_status == 'Order Processing' %}
+                                                                                            <option value="Order Processing" selected>Order Processing</option>
+                                                                                            {% else %}
+                                                                                            <option value="Order Processing">Order Processing</option>
+
+                                                                                            {% endif %}
+
+
+                                                                                            {% if order.delivery_status == 'Pre-Production' %}
+
+                                                                                            <option value="Pre-Production"selected>Pre-Production</option>
+                                                                                            {% else %}
+                                                                                            <option value="Pre-Production">Pre-Production</option>
+
+                                                                                            {% endif %}
+
+
+                                                                                            {% if order.delivery_status == 'In Production' %}
+
+                                                                                            <option value="In Production"selected>In Production</option>
+                                                                                            {% else %}
+                                                                                            <option value="In Production">In Production</option>
+
+                                                                                            {% endif %}
+
+                                                                                            {% if order.delivery_status == 'Shipped' %}
+
+                                                                                            <option value="Shipped" selected>Shipped</option>
+                                                                                            {% else %}
+                                                                                            <option value="Shipped">Shipped</option>
+
+                                                                                            {% endif %}
+
+                                                                                            {% if order.delivery_status == 'Delivered' %}
+
+                                                                                            <option value="Delivered" selected>Delivered</option>
+                                                                                            {% else %}
+                                                                                            <option value="Delivered">Delivered</option>
+
+                                                                                            {% endif %}
+
+                                                                                        
+                                                                                        {% endif %}
+
+                                                                                    </select>
+
+
+                                                                                </div>
+                                                                        </div>
+                                            
+                                                                        <div class="col-xxl-3 col-lg-12 col-sm-6">
+                                                                            <div class="mb-md-4 mb-3 custom-form">
+                                                                                <label for="exampleFormControlInput1" class="form-label">Expected  Date</label>
+                                                                                <div class="custom-input">
+                                                                                    <input type="date" name="expected_date" value="{{ order.expected_date|date:'Y-m-d' }}" class="form-control" id="exampleFormControlInput1">
+                                                                                    
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-xxl-3 col-lg-12 col-sm-6">
+                                                                            <div class="mb-md-4 mb-3 custom-form">
+                                                                                <label for="exampleFormControlInput1" class="form-label">Tracking Id :</label>
+                                                                                <div class="custom-input">
+                                                                                    <input type="texr" name="tracking_id" value="{{ order.tracking_id}}" class="form-control" id="exampleFormControlInput1">
+                                                                                    
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                            
+                                                                        
+                                                                    </div>
+                                                                    <button class="btn btn-animation btn-md fw-bold ms-auto">Save</button>
+                                                                </div>
+                                                               </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% comment %} <div class="card-footer text-end border-0 pb-0 d-flex justify-content-end">
+                                            <button class="btn btn-primary me-3">Submit</button>
+                                            <button class="btn btn-outline">Cancel</button>
+                                        </div> {% endcomment %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Container-fluid Ends-->
+
+                <!-- footer start-->
+                 
+                <!-- footer end-->
+            </div>
+
+
+
+            <script>
+                window.onload = function () {
+                    // Get the delivery status from the context passed by Django
+                    var order_status = "{{ delivery_status }}";
+                    if(order_status == 'Order Processing'){
+                        document.getElementById('1').classList.remove('progtrckr-todo');
+                        document.getElementById('1').classList.add('progtrckr-done');
+                    }
+
+                    if(order_status == 'Pre-Production'){
+                        document.getElementById('1').classList.remove('progtrckr-todo');
+                        document.getElementById('1').classList.add('progtrckr-done');
+                        document.getElementById('2').classList.remove('progtrckr-todo');
+                        document.getElementById('2').classList.add('progtrckr-done');
+
+
+                    }
+
+                    if(order_status == 'In Production'){
+                        document.getElementById('1').classList.remove('progtrckr-todo');
+                        document.getElementById('1').classList.add('progtrckr-done');
+                        document.getElementById('2').classList.remove('progtrckr-todo');
+                        document.getElementById('2').classList.add('progtrckr-done');
+                        document.getElementById('3').classList.remove('progtrckr-todo');
+                        document.getElementById('3').classList.add('progtrckr-done');
+                    }
+
+                    if(order_status == 'Shipped'){
+                        document.getElementById('1').classList.remove('progtrckr-todo');
+                        document.getElementById('1').classList.add('progtrckr-done');
+                        document.getElementById('2').classList.remove('progtrckr-todo');
+                        document.getElementById('2').classList.add('progtrckr-done');
+                        document.getElementById('3').classList.remove('progtrckr-todo');
+                        document.getElementById('3').classList.add('progtrckr-done');
+                        document.getElementById('4').classList.remove('progtrckr-todo');
+                        document.getElementById('4').classList.add('progtrckr-done');
+                    }
+
+                    if(order_status == 'Delivered'){
+                        document.getElementById('1').classList.remove('progtrckr-todo');
+                        document.getElementById('1').classList.add('progtrckr-done');
+                        document.getElementById('2').classList.remove('progtrckr-todo');
+                        document.getElementById('2').classList.add('progtrckr-done');
+                        document.getElementById('3').classList.remove('progtrckr-todo');
+                        document.getElementById('3').classList.add('progtrckr-done');
+                        document.getElementById('4').classList.remove('progtrckr-todo');
+                        document.getElementById('4').classList.add('progtrckr-done');
+                        document.getElementById('5').classList.remove('progtrckr-todo');
+                        document.getElementById('5').classList.add('progtrckr-done');
+                   
+                    }
+
+                   console.log(order_status)
+                };
+            </script>
+            {% endblock content %}

@@ -1,0 +1,254 @@
+{% extends "back-end/template.html" %}
+{% block content %}
+<style>
+   
+      
+      .selectBox {
+        position: relative;
+      }
+      
+      .selectBox select {
+        width: 100%;
+        font-weight: bold;
+      }
+      
+      .overSelect {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+      }
+      
+      #checkboxes {
+        width:100%;
+        display: none;
+        border: 1px #dadada solid;
+      }
+      
+      #checkboxes label {
+        display: block;
+      }
+      
+      #checkboxes label:hover {
+        background-color: #1e90ff;
+      }
+</style>
+            <!-- Create Coupon Table start -->
+            <div class="page-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="title-header option-title">
+                                                <h5>Create Coupon</h5>
+                                            </div>
+                                            {% comment %} <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link active" id="pills-home-tab"
+                                                        data-bs-toggle="pill" data-bs-target="#pills-home"
+                                                        type="button">General</button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="pills-profile-tab"
+                                                        data-bs-toggle="pill" data-bs-target="#pills-profile"
+                                                        type="button">Restriction</button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="pills-usage-tab" data-bs-toggle="pill"
+                                                        data-bs-target="#pills-usage" type="button">Usage</button>
+                                                </li>
+                                            </ul> {% endcomment %}
+
+                                            <div class="tab-content" id="pills-tabContent">
+                                                <div class="tab-pane fade show active" id="pills-home" role="tabpanel">
+
+                                                    {% if slug == 'Add' %}
+                                                    <form class="theme-form theme-form-2 mega-form" action="{% url 'coupons_list' %}?slug=Add" method="POST">
+                                                        {% csrf_token %}
+                                                        
+                                                        <div class="card-header-1">
+                                                            <h5>General</h5>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            
+
+                                                            <div class="mb-4 row align-items-center">
+                                                                <label
+                                                                    class="col-lg-2 col-md-3 col-form-label form-label-title">Coupon
+                                                                    Code</label>
+                                                                <div class="col-md-9 col-lg-10">
+                                                                    <input class="form-control" name="code" type="text">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="mb-4 row align-items-center">
+                                                                <label
+                                                                    class="col-lg-2 col-md-3 col-form-label form-label-title">Discount
+                                                                    Percentage</label>
+                                                                <div class="col-md-9 col-lg-10">
+                                                                    <input class="form-control" name="percentage" type="number">
+                                                                </div>
+                                                            </div>                                                           
+
+                                                            <label
+                                                            class="col-sm-2 col-form-label  form-label-title">Products</label>
+                                                            <div class="multiselect mb-4 multiselect row align-items-center">
+                                                                
+                                                                <div class="selectBox col-md-9 col-lg-10" onclick="showCheckboxes()">
+                                                                  <select name="products" class="js-example-basic-single form-control">
+                                                                    <option>Select an option</option>
+                                                                  </select>
+                                                                  <div class="overSelect"></div>
+                                                                </div>
+
+
+                                                                <div id="checkboxes" class="col-md-9 col-lg-10 form-control">
+                                                                    {% for pro in products %}
+                                                                  <label for="{{forloop.counter}}">
+                                                                    <input type="checkbox" id="{{ forloop.counter }}" value="{{ pro.id }}" onclick="updateSelectedProducts()" />{{pro.name}}</label>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </div>
+                                                            <input type="hidden" name="selected_products" id="selectedProducts">
+
+
+                                                            <div class="row align-items-center">
+                                                                <label
+                                                                    class="form-label-title col-lg-2 col-md-3 mb-0">Status</label>
+                                                                <div class="col-md-9">
+                                                                    <div class="form-check user-checkbox ps-0">
+
+                                                                        <select name="active" class="form-control">
+                                                                                    <option value="False" selected>No</option>
+                                                                                    <option value="True">Yes</option>
+                                                                     
+                                                                        </select>
+
+
+                                                                        <label class="form-label-title col-md-2 mb-0">
+                                                                            Enable the Coupon</label>
+                                                                    </div>
+                                                                </div>
+                                                                <button class="btn btn-theme">submit</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                    
+                                                    {% elif slug == 'update' %}
+                                                    <form class="theme-form theme-form-2 mega-form" action="{% url 'coupon_crud' coupon.id %}?slug=update" method="POST">
+                                                        {% csrf_token %}
+                                                        
+                                                        <div class="card-header-1">
+                                                            <h5>General</h5>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            
+
+                                                            <div class="mb-4 row align-items-center">
+                                                                <label
+                                                                    class="col-lg-2 col-md-3 col-form-label form-label-title">Coupon
+                                                                    Code</label>
+                                                                <div class="col-md-9 col-lg-10">
+                                                                    <input class="form-control" value="{{coupon.code}}" name="code" type="text">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="mb-4 row align-items-center">
+                                                                <label
+                                                                    class="col-lg-2 col-md-3 col-form-label form-label-title">Discount
+                                                                    Percentage</label>
+                                                                <div class="col-md-9 col-lg-10">
+                                                                    <input class="form-control" value="{{coupon.percentage}}" name="percentage" type="number">
+                                                                </div>
+                                                            </div>                                                           
+
+                                                            <label
+                                                            class="col-sm-2 col-form-label  form-label-title">Products</label>
+                                                            <div class="multiselect mb-4 multiselect row align-items-center">
+                                                                
+                                                                <div class="selectBox col-md-9 col-lg-10" onclick="showCheckboxes()">
+                                                                  <select name="products" class="js-example-basic-single form-control">
+                                                                    <option>Select an option</option>
+                                                                  </select>
+                                                                  <div class="overSelect"></div>
+                                                                </div>
+
+
+                                                                <div id="checkboxes" class="col-md-9 col-lg-10 form-control">
+                                                                    {% for pro in products %}
+                                                                      <label for="{{ forloop.counter }}">
+                                                                        <input type="checkbox" id="{{ forloop.counter }}" value="{{ pro.id }}" {% if pro in coupon.products.all %}checked{% endif %} onclick="updateSelectedProducts()" />{{ pro.name }}
+                                                                      </label>
+                                                                    {% endfor %}
+                                                                  </div>
+                                                            </div>
+                                                            <input type="hidden" name="selected_products" id="selectedProducts">
+
+
+                                                            <div class="row align-items-center">
+                                                                <label
+                                                                    class="form-label-title col-lg-2 col-md-3 mb-0">Status</label>
+                                                                <div class="col-md-9">
+                                                                    <div class="form-check user-checkbox ps-0">
+
+                                                                        <select name="active" class="form-control">
+                                                                                    {% if coupon.active == True %}
+                                                                                    
+                                                                                    <option value="True"selected>Yes</option>
+                                                                                    <option value="False" >No</option>
+                                                                                    {% else %}
+                                                                                    
+                                                                                    <option value="True">{{coupon.active}}</option>
+                                                                                    <option value="False" selected>No</option>
+                                                                                    {% endif %}
+                                                                     
+                                                                        </select>
+
+
+                                                                        <label class="form-label-title col-md-2 mb-0">
+                                                                            Enable the Coupon</label>
+                                                                    </div>
+                                                                </div>
+                                                                <button class="btn btn-theme">submit</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                    {% endif %}
+
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+                function showCheckboxes() {
+                    // Toggle the visibility of checkboxes
+                    var checkboxes = document.getElementById("checkboxes");
+                    checkboxes.style.display = checkboxes.style.display === "block" ? "none" : "block";
+                  }
+                  
+                  function updateSelectedProducts() {
+                    var checkboxes = document.querySelectorAll("#checkboxes input[type='checkbox']:checked");
+                    var selectedProductIds = Array.from(checkboxes).map(function(checkbox) {
+                      return checkbox.value;
+                    });
+                    var selectedProductsInput = document.getElementById("selectedProducts");
+                    selectedProductsInput.value = selectedProductIds.join(",");
+                    console.log(selectedProductsInput.value)
+                  }          <!-- Create Coupon Table End -->
+
+            </script>
+            {% endblock content %}
