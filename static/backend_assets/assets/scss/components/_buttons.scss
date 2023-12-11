@@ -97,8 +97,8 @@
             overflow: hidden;
             transition: all 0.3s ease;
             position: relative;
-            background: #760718;
-            background: linear-gradient(90deg, #760718 0%, #0e947a 100%);
+            background: #f7a800;
+            background: linear-gradient(90deg, #f7a800 0%, #0e947a 100%);
             border: none;
             z-index: 0;
             &::after {
@@ -108,8 +108,8 @@
                 left: 0;
                 z-index: -1;
                 border-radius: 5px;
-                background: #760718;
-                background: linear-gradient(90deg, #0e947a 0%, #760718 100%);
+                background: #f7a800;
+                background: linear-gradient(90deg, #0e947a 0%, #f7a800 100%);
                 transition: all 0.3s ease;
             }
         }

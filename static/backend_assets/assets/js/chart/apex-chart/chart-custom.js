@@ -5,7 +5,7 @@ var options = {
         data: [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19]
     }],
 
-    colors: ['#760718'],
+    colors: ['#f7a800'],
 
     chart: {
         type: 'area',
@@ -55,7 +55,7 @@ var options = {
         colors: ['transparent']
     },
 
-    colors: ['#760718', '#2483e2', '#3d3d3d'],
+    colors: ['#f7a800', '#2483e2', '#3d3d3d'],
 
     xaxis: {
         categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'],
@@ -121,7 +121,7 @@ var options = {
         height: 300,
         type: 'bar',
     },
-    colors: ['#760718', '#2483e2', '#3d3d3d'],
+    colors: ['#f7a800', '#2483e2', '#3d3d3d'],
     plotOptions: {
         bar: {
             columnWidth: '45%',
@@ -138,7 +138,7 @@ var options = {
         categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
         labels: {
             style: {
-                colors: ['#760718', '#2483e2', '#3d3d3d'],
+                colors: ['#f7a800', '#2483e2', '#3d3d3d'],
                 fontSize: '12px'
             }
         }
@@ -169,7 +169,7 @@ var options = {
         width: [3, 3]
     },
 
-    colors: ['#760718', '#2483e2', '#e2c924'],
+    colors: ['#f7a800', '#2483e2', '#e2c924'],
 
     xaxis: {
         type: 'time',
