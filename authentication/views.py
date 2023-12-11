@@ -11,7 +11,7 @@ from django.db.models import Q
 from django.core.mail import send_mail
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.decorators.csrf import csrf_protect
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes,authentication_classes
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
@@ -26,8 +26,10 @@ from django.db.models import Sum
 from django.contrib.auth.hashers import check_password
 from django.shortcuts import render, redirect
 from taggit.models import Tag
-
-
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 
 @api_view(['GET','POST'])
 def home(request):
@@ -100,7 +102,7 @@ def signup(request):
             last_name = request.data.get('last_name')
             email = request.data.get('email')
             phone = request.data.get('phone')
-            password1 = request.data.get('password1')
+            password1 = request.data.get('password')
             newsletter = request.data.get('newsletter')
             # newsletter = True/False
             if newsletter == "on":
@@ -139,7 +141,7 @@ def signup(request):
 
             login(request, user)
 
-            return Response( status=status.HTTP_200_OK)
+            return Response({'message': 'Login successful.','user_verified':user.is_verified}, status=status.HTTP_200_OK)
 
         else:
             return Response( status=status.HTTP_400_BAD_REQUEST)
@@ -156,6 +158,7 @@ def logout_view(request):
 
 @csrf_protect
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def signin(request):
         if request.user.is_authenticated:
             return redirect('home')     
@@ -167,9 +170,14 @@ def signin(request):
             try:    
                 user = User.objects.get(email=email)
                 if check_password(password, user.password):
-                        login(request, user)
-                 
-                        return Response({'message': 'Login successful.','user_verified':user.is_verified}, status=status.HTTP_200_OK)
+                    login(request, user)
+                    token, created = Token.objects.get_or_create(user=user)
+
+                    return Response({
+                        'message': 'Login successful.',
+                        'user_verified': user.is_verified,
+                        'token': token.key,  # Include the token in the response
+                    }, status=status.HTTP_200_OK)
                 else:
                         return Response({'message': 'Invalid Password.'}, status=status.HTTP_400_BAD_REQUEST)
             except:
@@ -178,7 +186,7 @@ def signin(request):
       
 
 
-
+@api_view(['POST'])
 def forgot_password(request):
     
 
@@ -193,64 +201,68 @@ def forgot_password(request):
             user = User.objects.get(email=email)
             if pass1 != pass2:
                  messages.error(request,'Password is  not matching !')
+                 
             request.session['new_pass']={'email':email,'password':pass1}
-            return redirect('otp_forgot_pass')
+            return Response({'message': 'Email Exist'}, status=status.HTTP_200_OK)
         
 
         except User.DoesNotExist:
             # Handle the case where the user does not exist
-            messages.error(request,'Email Not Exist!!')
-            return redirect('forgot_password')
+            message='Email Not Exist!!'
+            return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
      
     # If it's a GET request, render the empty form
-    return render(request, 'registery/forgot_password.html')
 
 
-
+@api_view(['POST','GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def otp(request):
     if request.user.is_authenticated:
-        if request.user.is_verified :
-            return redirect('home')
+        if request.user.is_verified :   
+            return Response({'message': 'Verified','user_verified':user.is_verified}, status=status.HTTP_200_OK)
+
             
     if not request.user.is_verified:
 
         email = request.user.email
         user = User.objects.get(email=email)
         
-
         if request.method == 'POST':
             otp = request.data.get('otp')
-            if user.otp == otp:
+            if int(user.otp) == int(otp):
                 
                 user.is_verified = True
                 user.otp = ''
                 user.save()
 
-
-
                 login(request, user)
-
-                request.session.pop('signup_email', None)
-                messages.success(request,'OTP Correct')
-                return redirect('home')
+                return Response({'message': 'Verification Done','user_verified':user.is_verified}, status=status.HTTP_200_OK)
                             
             else:
-                messages.error(request,"OTP Invalid")
-                return redirect('otp')
+                message="OTP Invalid"
+                return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
             
-        otp = random.randint(100000, 999999)
-        user.otp = otp
-        user.save()
-        # send opt to email
-        send_email_otp(user=user,otp=otp)
-        return render(request, 'registery/otp.html',{'title':'OTP Verification'})
-        
+        if request.method == 'GET':  
+            otp = random.randint(100000, 999999)
+            user.otp = otp
+            user.save()
+            # send opt to email
+            send_email_otp(user=user,otp=otp)
+            return Response({'message': 'OTP sent on Email','user_email':user.email}, status=status.HTTP_200_OK)
 
+
+     
+@api_view(['POST'])
 def otp_forgot_pass(request):
         email = request.session['new_pass']['email']
         new_password = request.session['new_pass']['password']
+        del request.session['new_pass']
+        
         user = User.objects.get(email=email)
 
+        
+        
         if request.method == 'POST':
             otp = request.data.get('otp')
 
@@ -261,44 +273,41 @@ def otp_forgot_pass(request):
                 user.set_password(new_password)
                 user.save()
 
-                messages.success(request,'Password Has successfully changed')
-                return redirect('signin')
+                return Response({'message': 'Verification Done','user_verified':user.is_verified}, status=status.HTTP_200_OK)
                             
             else:
-                messages.error(request,"OTP Invalid")
-                return redirect('otp')
+                message="OTP Invalid"
+                return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
             
         otp = random.randint(100000, 999999)
         user.otp = otp
         user.save()
         # send opt to email
         send_email_otp(user=user,otp=otp)
-        return render(request, 'registery/otp.html',{'title':'OTP Verification','resetpass':email})
+        message= 'OTP sent on email'
+        return Response({'message': message}, status=status.HTTP_200_OK)
 
 
-
+@api_view(['GET'])
 def userprofile(request):
     if not request.user.is_authenticated:
-        return redirect('signin')
+        return Response({'message':'Login Required'}, status=status.HTTP_400_BAD_REQUEST)
     
     elif not request.user.is_verified :
-            request.session['signup_email'] = request.user.email
-            return redirect('otp')
+            return Response({'message':'Email Not Verified','user_verified':request.user.is_verified}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
     
     address = Address.objects.filter(user=request.user.id)
     orders = Order.objects.filter(customer_email = request.user.email)[::-1]
-    print(orders,"@@@@@@@@@")
-    return render(request,'user_profile/user-dashboard.html',{'title':'Profile','addresses':address,'orders':orders})
+    return Response({'title':'Profile','addresses':address,'orders':orders}, status=status.HTTP_200_OK)
 
 
-
+@api_view(['POST'])
 def address(request):
     if not request.user.is_authenticated:
-        return redirect('signin')
+        return Response({'message':'Login Required'}, status=status.HTTP_400_BAD_REQUEST)
     
     elif not request.user.is_verified :
-            request.session['signup_email'] = request.user.email
-            return redirect('otp')
+            return Response({'message':'Email Not Verified','user_verified':request.user.verified}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
     
     if request.method == 'POST':
             user = User.objects.get(id=request.user.id)
@@ -313,7 +322,6 @@ def address(request):
                     is_default = True
             else:
                     is_default = False
-
 
             addresses = Address.objects.filter(user=request.user)
             if is_default == True and addresses:
@@ -333,13 +341,10 @@ def address(request):
                 is_default = is_default,
             )
             address.save()
-            messages.success(request,"Address Added Successfully")
-            return redirect('userprofile')
+            message= "Address Added Successfully"
+            return Response({'message': message}, status=status.HTTP_200_OK)
     
-    else:
-        # Create add address html page and add path below
-        
-        return render(request,'update_forms/address_crud.html',{'title':'Add Address'})
+    
 
 
       

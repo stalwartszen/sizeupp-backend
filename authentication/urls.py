@@ -11,17 +11,19 @@ urlpatterns = [
     path('auth/signin', views.signin,name="signin"),
     path('auth/logout', views.logout,name="logout"),
     
-    
-    
-    
-    
-    
-    path('reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(template_name='registry/password_reset_confirm.html'), name='password_reset_confirm'),
 
-    path('forgot_password/',views.forgot_password,name="forgot_password"),
-    path('otp/',views.otp,name="otp"),
-    path ('otp-verification',views.otp_forgot_pass,name="otp_forgot_pass"),
+    path('auth/forgot_password/',views.forgot_password,name="forgot_password"),
+    path('auth/otp',views.otp,name="otp"),
+    path ('auth/forgot-otp',views.otp_forgot_pass,name="otp_forgot_pass"),
     path('userprofile',views.userprofile,name='userprofile'),
+
+
+
+
+
+
+
+
 
     # Update Details Url's
     path('address',views.address,name='address_add'),

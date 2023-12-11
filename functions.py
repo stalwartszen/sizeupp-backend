@@ -43,16 +43,7 @@ text-align: center; margin: 0 auto; width: 650px; font-family: 'Public Sans', sa
                         </tr>
                     </table>
 
-                    <table class="contant-table" style="margin-bottom: -6px;" align="center" border="0" cellpadding="0"
-                        cellspacing="0" width="100%">
-                        <thead>
-                            <tr>
-                                <td>
-                                    <img src="https://themes.himani'cc.com.com/fastkart/email-templete/images/welcome-poster.jpg" alt="">
-                                </td>
-                            </tr>
-                        </thead>
-                    </table>
+                 
 
                     <table class="contant-table" style="margin-top: 40px;" align="center" border="0" cellpadding="0"
                         cellspacing="0" width="100%">
@@ -68,7 +59,7 @@ text-align: center; margin: 0 auto; width: 650px; font-family: 'Public Sans', sa
                                     <p
                                         style="font-size: 14px;font-weight: 600;width: 82%;margin: 8px auto 0;line-height: 1.5;color: #939393;font-family: 'Nunito Sans', sans-serif;">
                                         We hope our product will lead you, like many other before you. to a place where
-                                        yourideas where your ideas can spark and grow.n a place where you’ll find all
+                                        your ideas where your ideas can spark and grow.n a place where you’ll find all
                                         your inspiration needs. before we get started, we’ll need to verify your email.
                                     </p>
                                 </td>
@@ -94,10 +85,8 @@ text-align: center; margin: 0 auto; width: 650px; font-family: 'Public Sans', sa
                                     <p
                                         style="font-size: 14px; font-weight: 600; width: 82%; margin: 0 auto; line-height: 1.5; color: #939393; font-family: 'Nunito Sans', sans-serif;">
                                         If you have any question, please email us at <span
-                                            class="theme-color">Fastkart@example.com</span> or vixit our <span
-                                            class="theme-color">FAQs.</span> You can also chat with a real live human
-                                        during our operating hours. they can answer questions about account or help you
-                                        with your meditation practice.</p>
+                                            class="theme-color">SizeUpp@example.com</span> or visit our <span
+                                            class="theme-color">FAQs.</span></p>
                                 </td>
                             </tr>
                         </thead>
@@ -113,7 +102,7 @@ text-align: center; margin: 0 auto; width: 650px; font-family: 'Public Sans', sa
                                     <tr>
                                         <td>
                                             <h4 style="font-size: 19px; font-weight: 700; margin: 0;">Shop For <span
-                                                    class="theme-color">Fastkart</span></h4>
+                                                    class="theme-color">Size Upp</span></h4>
                                         </td>
                                     </tr>
                                 </table>
@@ -192,7 +181,7 @@ text-align: center; margin: 0 auto; width: 650px; font-family: 'Public Sans', sa
                         <thead>
                             <tr>
                                 <td>
-                                    <img src="https://themes.himani'cc.com.com/fastkart/email-templete/images/welcome-poster.jpg" alt="">
+                                    <img src="https://themes.himani'cc.com.com/Size Upp/email-templete/images/welcome-poster.jpg" alt="">
                                 </td>
                             </tr>
                         </thead>
@@ -238,7 +227,7 @@ text-align: center; margin: 0 auto; width: 650px; font-family: 'Public Sans', sa
                                     <p
                                         style="font-size: 14px; font-weight: 600; width: 82%; margin: 0 auto; line-height: 1.5; color: #939393; font-family: 'Nunito Sans', sans-serif;">
                                         If you have any question, please email us at <span
-                                            class="theme-color">Fastkart@example.com</span> or vixit our <span
+                                            class="theme-color">Size Upp@example.com</span> or vixit our <span
                                             class="theme-color">FAQs.</span> You can also chat with a real live human
                                         during our operating hours. they can answer questions about account or help you
                                         with your meditation practice.</p>
@@ -257,7 +246,7 @@ text-align: center; margin: 0 auto; width: 650px; font-family: 'Public Sans', sa
                                     <tr>
                                         <td>
                                             <h4 style="font-size: 19px; font-weight: 700; margin: 0;">Shop For <span
-                                                    class="theme-color">Fastkart</span></h4>
+                                                    class="theme-color">Size Upp</span></h4>
                                         </td>
                                     </tr>
                                 </table>
@@ -350,7 +339,7 @@ def send_email_receipt(request,order_id,user):
                                 <thead>
                                     <tr>
                                         <td>
-                                            <img src="https://themes.himani'cc.com.com/fastkart/email-templete/images/welcome-poster.jpg" alt="">
+                                            <img src="https://themes.himani'cc.com.com/Size Upp/email-templete/images/welcome-poster.jpg" alt="">
                                         </td>
                                     </tr>
                                 </thead>
@@ -394,7 +383,7 @@ def send_email_receipt(request,order_id,user):
                                             <p
                                                 style="font-size: 14px; font-weight: 600; width: 82%; margin: 0 auto; line-height: 1.5; color: #939393; font-family: 'Nunito Sans', sans-serif;">
                                                 If you have any question, please email us at <span
-                                                    class="theme-color">Fastkart@example.com</span> or vixit our <span
+                                                    class="theme-color">Size Upp@example.com</span> or vixit our <span
                                                     class="theme-color">FAQs.</span> You can also chat with a real live human
                                                 during our operating hours. they can answer questions about account or help you
                                                 with your meditation practice.</p>
@@ -413,7 +402,7 @@ def send_email_receipt(request,order_id,user):
                                             <tr>
                                                 <td>
                                                     <h4 style="font-size: 19px; font-weight: 700; margin: 0;">Shop For <span
-                                                            class="theme-color">Fastkart</span></h4>
+                                                            class="theme-color">Size Upp</span></h4>
                                                 </td>
                                             </tr>
                                         </table>

@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'ckeditor',
     'crispy_forms',
     'taggit',
+    'rest_framework.authtoken',
 
 
 ]
