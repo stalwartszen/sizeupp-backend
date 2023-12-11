@@ -98,25 +98,14 @@ WSGI_APPLICATION = 'SizeUpp.wsgi.application'
 
 user = os.environ.get('USER')
 
-if user:
-    DATABASES = {
+DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }
         }
 
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'SizeUpp',
-            'PASSWORD': '1234',
-            'HOST': 'localhost',
-            'USER': 'postgres'
-        }
-    }
-    
+
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50 megabytes
 
 
