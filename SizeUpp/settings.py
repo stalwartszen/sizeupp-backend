@@ -35,10 +35,30 @@ INSTALLED_APPS = [
     'crispy_forms',
     'taggit',
     'rest_framework.authtoken',
+    "corsheaders",
 
 
 ]
-
+CORS_ALLOW_METHODS = (
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+)
+CORS_ALLOWED_ORIGINS = [
+    "https://read-only.traxzen.pythonanywhere.com",
+    "https://read-and-write.traxzen.pythonanywhere.com",
+]
+CORS_ALLOW_HEADERS = (
+    "accept",
+    "authorization",
+    "content-type",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+)
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
