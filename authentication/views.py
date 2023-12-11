@@ -141,7 +141,13 @@ def signup(request):
 
             login(request, user)
 
-            return Response({'message': 'Login successful.','user_verified':user.is_verified}, status=status.HTTP_200_OK)
+            token, created = Token.objects.get_or_create(user=user)
+
+            return Response({
+                        'message': 'Login successful.',
+                        'user_verified': user.is_verified,
+                        'token': token.key,  # Include the token in the response
+                    }, status=status.HTTP_200_OK)
 
         else:
             return Response( status=status.HTTP_400_BAD_REQUEST)
