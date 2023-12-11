@@ -48,9 +48,12 @@ CORS_ALLOW_METHODS = (
     "PUT",
 )
 CORS_ALLOWED_ORIGINS = [
-    "https://read-only.traxzen.pythonanywhere.com",
-    "https://read-and-write.traxzen.pythonanywhere.com",
+    "https://traxzen.pythonanywhere.com/",  # Add the http:// scheme
+    "http://*",  # Also, add the scheme for consistency
+    # Add other allowed origins as needed with the correct scheme
 ]
+CORS_ALLOW_ALL_ORIGINS = True  # Set this to False to use CORS_ALLOWED_ORIGINS
+
 CORS_ALLOW_HEADERS = (
     "accept",
     "authorization",
