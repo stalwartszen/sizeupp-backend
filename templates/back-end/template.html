@@ -12,8 +12,8 @@
     <meta name="keywords"
         content="admin ,  dashboard , flat admin , web app">
     <meta name="author" content="">
-    <link rel="icon" href="{% static 'images/favicon.png" type="image/x-icon' %}">
-    <link rel="shortcut icon" href="{% static 'images/favicon.png" type="image/x-icon' %}">
+    <link rel="icon" href="{% static 'images/favicon.png'%}" type="image/x-icon">
+    <link rel="shortcut icon" href="{% static 'images/favicon.png'%}" type="image/x-icon">
     <title> - {{title}}</title>
 
     <!-- Google font-->
@@ -22,42 +22,40 @@
         rel="stylesheet">
 
     <!-- Linear Icon css -->
-    <link rel="stylesheet" href="{% static 'css/linearicon.css' %}">
+    <link rel="stylesheet" href="{% static 'css/linearicon.css'%}">
 
     <!-- fontawesome css -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/vendors/font-awesome.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/vendors/font-awesome.css'%}">
 
     <!-- Themify icon css-->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/vendors/themify.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/vendors/themify.css'%}">
 
     <!-- ratio css -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/ratio.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/ratio.css'%}">
 
     <!-- remixicon css -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/remixicon.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/remixicon.css'%}">
 
     <!-- Feather icon css-->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/vendors/feather-icon.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/vendors/feather-icon.css'%}">
 
     <!-- Plugins css -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/vendors/scrollbar.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/vendors/animate.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/vendors/scrollbar.css'%}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/vendors/animate.css'%}">
 
     <!-- Bootstrap css-->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/vendors/bootstrap.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/vendors/bootstrap.css'%}">
 
     <!-- vector map css -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/vector-map.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/vector-map.css'%}">
 
     <!-- Slick Slider Css -->
-    <link rel="stylesheet" href="{% static 'css/vendors/slick.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendors/slick.css'%}">
 
     <!-- App css -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js' %}"></script>
-    <script
-src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js' %}">
-</script>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css'%}">
+    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 <style>
     .logo-wrapper{
         width: 75% !important;
@@ -93,16 +91,16 @@ src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js' %}">
             <div class="header-wrapper m-0">
                 <div class="header-logo-wrapper p-0">
                     <div class="logo-wrapper">
-                        <a href="{% url 'dashboard' %}">
-                            <img class="img-fluid main-logo" src="{% static 'images/logo/logo.png' %}" alt="logo">
-                            <img class="img-fluid white-logo" src="{% static 'images/logo/logo.png' %}" alt="logo">
+                        <a href="{% url 'dashboard'%}">
+                            <img class="img-fluid main-logo" src="{% static 'assets/images/logo/logo.png'%}" alt="logo">
+                            <img class="img-fluid white-logo" src="{% static 'assets/images/logo/logo.png'%}" alt="logo">
                         </a>
                     </div>
                     <div class="toggle-sidebar">
                         <i class="status_toggle middle sidebar-toggle" data-feather="align-center"></i>
-                        {% comment %} <a >
-                            <img  src="{% static 'assets/images/logo/logo.png" class="img-fluid" alt="">
-                        </a> {% endcomment %}
+                        <a >
+                            <img  src="{% static 'assets/images/logo/logo.png'%}" class="img-fluid" alt="">
+                        </a> 
                     </div>
                 </div>
                
@@ -181,8 +179,8 @@ src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js' %}">
                     </div>
                     {% comment %} <div class="logo-icon-wrapper">
                         <a>
-                            <img class="img-fluid main-logo main-white" src="{% static 'images/logo/logo.png" alt="logo">
-                            <img class="img-fluid main-logo main-dark" src="{% static 'images/logo/logo-white.png"
+                            <img class="img-fluid main-logo main-white" src="{% static 'images/logo/logo.png'%}" alt="logo">
+                            <img class="img-fluid main-logo main-dark" src="{% static 'images/logo/logo-white.png'%}"
                                 alt="logo">
                         </a>
                     </div> {% endcomment %}
@@ -270,7 +268,7 @@ src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js' %}">
                                 </li>   
 
                                 {% comment %} <li>
-                                    <a class="sidebar-link sidebar-title link-nav" href="{% url 'media_dashboard' %}">
+                                    <a class="sidebar-link sidebar-title link-nav" href="{% url 'media_dashboard">
                                         <i class="ri-price-tag-3-line"></i>
                                         <span>Product Photos</span>
                                     </a>
@@ -441,53 +439,53 @@ aria-labelledby="staticBackdropLabel" aria-hidden="true">
 <!-- Modal End -->
 
 <!-- latest js -->
-<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'js/jquery-3.6.0.min.js'%}"></script>
 
 <!-- Bootstrap js -->
-<script src="{% static 'js/bootstrap/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/bootstrap/bootstrap.bundle.min.js'%}"></script>
 
 <!-- feather icon js -->
-<script src="{% static 'js/icons/feather-icon/feather.min.js' %}"></script>
-<script src="{% static 'js/icons/feather-icon/feather-icon.js' %}"></script>
+<script src="{% static 'js/icons/feather-icon/feather.min.js'%}"></script>
+<script src="{% static 'js/icons/feather-icon/feather-icon.js'%}"></script>
 
 <!-- scrollbar simplebar js -->
-<script src="{% static 'js/scrollbar/simplebar.js' %}"></script>
-<script src="{% static 'js/scrollbar/custom.js' %}"></script>
+<script src="{% static 'js/scrollbar/simplebar.js'%}"></script>
+<script src="{% static 'js/scrollbar/custom.js'%}"></script>
 
 <!-- Sidebar jquery -->
-<script src="{% static 'js/config.js' %}"></script>
+<script src="{% static 'js/config.js'%}"></script>
 
 <!-- tooltip init js -->
-<script src="{% static 'js/tooltip-init.js' %}"></script>
+<script src="{% static 'js/tooltip-init.js'%}"></script>
 
 <!-- Plugins JS -->
-<script src="{% static 'js/sidebar-menu.js' %}"></script>
-<script src="{% static 'js/notify/bootstrap-notify.min.js' %}"></script>
-<script src="{% static 'js/notify/index.js' %}"></script>
+<script src="{% static 'js/sidebar-menu.js'%}"></script>
+<script src="{% static 'js/notify/bootstrap-notify.min.js'%}"></script>
+<script src="{% static 'js/notify/index.js'%}"></script>
 
 <!-- Apexchar js -->
-<script src="{% static 'js/chart/apex-chart/apex-chart1.js' %}"></script>
-<script src="{% static 'js/chart/apex-chart/moment.min.js' %}"></script>
-<script src="{% static 'js/chart/apex-chart/apex-chart.js' %}"></script>
-<script src="{% static 'js/chart/apex-chart/stock-prices.js' %}"></script>
-<script src="{% static 'js/chart/apex-chart/chart-custom1.js' %}"></script>
+<script src="{% static 'js/chart/apex-chart/apex-chart1.js'%}"></script>
+<script src="{% static 'js/chart/apex-chart/moment.min.js'%}"></script>
+<script src="{% static 'js/chart/apex-chart/apex-chart.js'%}"></script>
+<script src="{% static 'js/chart/apex-chart/stock-prices.js'%}"></script>
+<script src="{% static 'js/chart/apex-chart/chart-custom1.js'%}"></script>
 
 
 <!-- slick slider js -->
-<script src="{% static 'js/slick.min.js' %}"></script>
-<script src="{% static 'js/custom-slick.js' %}"></script>
+<script src="{% static 'js/slick.min.js'%}"></script>
+<script src="{% static 'js/custom-slick.js'%}"></script>
 
 <!-- customizer js -->
-<script src="{% static 'js/customizer.js' %}"></script>
+<script src="{% static 'js/customizer.js'%}"></script>
 
 <!-- ratio js -->
-<script src="{% static 'js/ratio.js' %}"></script>
+<script src="{% static 'js/ratio.js'%}"></script>
 
 <!-- sidebar effect -->
-<script src="{% static 'js/sidebareffect.js' %}"></script>
+<script src="{% static 'js/sidebareffect.js'%}"></script>
 
 <!-- Theme js -->
-<script src="{% static 'js/script.js' %}"></script>
+<script src="{% static 'js/script.js'%}"></script>
 <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/solid.js" integrity="sha384-/BxOvRagtVDn9dJ+JGCtcofNXgQO/CCCVKdMfL115s3gOgQxWaX/tSq5V8dRgsbc" crossorigin="anonymous"></script>
 <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/fontawesome.js" integrity="sha384-dPBGbj4Uoy1OOpM4+aRGfAOc0W37JkROT+3uynUgTHZCHZNMHfGXsmmvYTffZjYO" crossorigin="anonymous"></script>
 </body>
