@@ -2,7 +2,7 @@
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from .models import Brand, Product, SizeQuantityPrice, ProductCategory, ProductSubCategory, ProductDetailCategory, ProductImages, DiscountCoupon, DiscountOnProducts
+from .models import Brand, Product, SizeQuantityPrice,ProductDetailCategory, ProductCategory, ProductSubCategory, ProductImages, DiscountCoupon, DiscountOnProducts
 from django.forms import formset_factory
 
 

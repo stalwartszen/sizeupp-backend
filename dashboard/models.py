@@ -15,6 +15,8 @@ class HomeBannerImages(models.Model):
 
 class HomeTopAd(models.Model):
     ad = models.CharField(max_length=255)
+    
+    
 class HomeBannerScrolling(models.Model):
     img = models.ImageField(upload_to='Home/scrolling-banner-1155x670/')
 

@@ -13,13 +13,13 @@ class ProductDetailCategoryInline(admin.TabularInline):
     model = ProductDetailCategory
 
 
-class ProductAdmin(admin.ModelAdmin):
-    inlines = [ProductCategoryInline, ProductSubCategoryInline, ProductDetailCategoryInline]
+# class ProductAdmin(admin.ModelAdmin):
+#     inlines = [ProductCategoryInline, ProductSubCategoryInline]
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "brand":
-            kwargs["queryset"] = Brand.objects.all()
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    # def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    #     if db_field.name == "brand":
+    #         kwargs["queryset"] = Brand.objects.all()
+    #     return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 admin.site.register(SizeQuantityPrice)

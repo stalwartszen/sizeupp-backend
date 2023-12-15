@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from product.models import Product, Brand,ProductCategory, ProductDetailCategory, ProductSubCategory, SizeQuantityPrice
+from product.models import Product, Brand,ProductCategory, ProductSubCategory, SizeQuantityPrice,ProductDetailCategory
 import json
 from django.core.serializers import serialize
 
@@ -48,10 +48,9 @@ class size_quantity_price_serializer(serializers.ModelSerializer):
 
 class product_serializer(serializers.ModelSerializer):
     category = category_serializer()
-    brand = brand_serializer()
     subcategory = subcategory_serializer()
     detail_category = detail_category_serializer()
-    size_quantity_price = size_quantity_price_serializer(many=True,read_only=True)
+    # size_quantity_price = size_quantity_price_serializer(many=True,read_only=True)
     class Meta:
         model = Product
         fields = "__all__"

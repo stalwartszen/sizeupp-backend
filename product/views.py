@@ -11,6 +11,8 @@ from django.db.models import Q
 from product.serializers import product_serializer
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from dashboard.models import *
+
+
 # Create your views here.
 def paginate_items(request,products):
     page = request.GET.get('page', 1)  # Get the current page number from the request

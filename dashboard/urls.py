@@ -19,14 +19,14 @@ urlpatterns = [
     path('category-crud/',views.category_crud,name='category_crud'),
 
     path('subcategory',views.subcategory,name='sub_category_dashboard'),
-    path('subcategory-crud/',views.subcategory_by_id,name='sub_category_crud'),
+    path('subcategory-crud',views.subcategory_by_id,name='sub_category_crud'),
 
     path('detail_category',views.detail_category,name='detail_category_dashboard'),
-    path('detail_category-crud/',views.detail_category_by_id,name='detail_category_crud'),
+    path('detail_category-crud',views.detail_category_crud,name='detail_category_crud'),
 
     path('add-product',views.addproduct,name='addproduct'),
     path('add-product_crud/<uuid:id>',views.addproduct_crud,name='addproduct_crud'),
-    path('sqp_list/',views.sqp_list,name="sqp_list"),
+    # path('sqp_list/',views.sqp_list,name="sqp_list"),
     path('sqp_crud/',views.sqp_crud,name="sqp_crud"),
     # path('product/<uuid:id>/<str:slug>',views.product_by_id,name='product_crud'),
 

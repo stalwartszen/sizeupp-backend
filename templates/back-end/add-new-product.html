@@ -45,6 +45,40 @@
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-sm-8 m-auto">
+
+
+
+
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="card-header-2 d-flex">
+                                                <h5>Size Quantity Price</h5>
+                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sqpadd" >Add New SQP</button>
+
+                                            </div>
+
+                                
+                                                      {% for i in request.session.sqp_list %}
+                                                <div class="multiselect mb-4 multiselect row align-items-center">
+                                                    
+                                                    <label class="form-label-title col-sm-2 mb-0">Size:</label>
+                                                    <div class="col-sm-2">
+                                                        <input class="form-control" type="text" disabled value="{{i.size}}">
+                                                    </div>
+                                                    <label class="form-label-title col-sm-2 mb-0">Quantity:</label>
+                                                    <div class="col-sm-2">
+                                                        <input class="form-control" type="text" disabled value="{{i.quantity}}">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <button class="btn btn-danger" onclick="window.location.href='{% url 'sqp_crud' %}?slug=Delete&size={{i.size}}'">Delete</button>
+                                                    </div>
+                        
+                                                </div>
+                                                      {% endfor %}
+                                        </div>
+                                    </div>
+
+
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="card-header-2">
@@ -53,118 +87,73 @@
 
                                                {% csrf_token %}
                                             <div class="mb-4 row align-items-center">
-                                                <label class="form-label-title col-sm-3 mb-0">Brand Name </label>
-                                                <div class="col-sm-8 d-flex">
-                                                    <select name="brand_id" onmousedown="this.setAttribute('oldValue', this.value);" onmouseup="if (this.getAttribute('oldValue') !== this.value) { updateURL('brand'); }" class="form-control" id="brand-dropdown">
-                                                        {% if not brand_id %}
-                                                        
-                                                        <option  selected>--- Select -- </option>
-                                                        {% endif %}
-                                                        {% for brand in brands %}
+                           
 
-                                                            {% if brand.id == brand_id %}
-                                                                <option value="{{brand.id}}" selected>{{brand.name}}</option>
-                                                            {% else %}
-                                                                <option value="{{brand.id}}">{{brand.name}}</option>
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    </select>
 
-                                                    <a href="{% url 'brand_dashboard' %}?slug=Add" class="w-50 m-auto" target="_blank">+ New Add Brand</a>
-                                                </div>
-                                                {% if categories %}
                                                     <label class="form-label-title col-sm-3 mb-0">Category Name</label>
                                                     <div class="col-sm-8 d-flex">
-                                                        <select name="category_id" onmousedown="this.setAttribute('oldValue', this.value);" onmouseup="if (this.getAttribute('oldValue') !== this.value) { updateURL('category'); }" class="form-control" id="category-dropdown">
-                                                            {% if not category_id %}
-                                                            <option  selected>--- Select -- </option>
-                                                            {% endif %}
+                                                        <select name="category_id"  class="form-control" id="category-dropdown">
+                                                            <option value="" >--- Select -- </option>
                                                             {% for category in categories %}
+                                                                    {% if category.id == selected_category.id %}
 
-                                                                {% if category.id == category_id %}
                                                                     <option value="{{category.id}}" selected>{{category.name}}</option>
-                                                                {% else %}
-                                                                    <option value="{{category.id}}">{{category.name}}</option>
-                                                                {% endif %}
+                                                                    {% else %}
+                                                                    <option value="{{category.id}}" >{{category.name}}</option>
+
+                                                                    {% endif %}
                                                             {% endfor %}
                                                         </select>
-                                                        <a href="{% url 'category_crud' %}" class="w-50 m-auto" target="_blank">+ New Add Category</a>
+                                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#categoryadd" >Add New Category</button>
 
                                                     </div>
-                                                {% endif %}
-                                            
-                                                {% if subcategories %}
-                                                    <label class="form-label-title col-sm-3 mb-0">Subcategory Name</label>
-                                                    <div class="col-sm-8 d-flex">
-                                                        <select name="subcategory_id" onmousedown="this.setAttribute('oldValue', this.value);" onmouseup="if (this.getAttribute('oldValue') !== this.value) { updateURL('subcategory'); }" class="form-control" id="subcategory-dropdown">
-                                                            {% if not subcategory_id %}
-                                                            
-                                                            <option  selected>--- Select -- </option>
-                                                            {% endif %}
-                                                            {% for subcategory in subcategories %}
-                                                                {% if subcategory.id == subcategory_id %}
-                                                                    <option value="{{subcategory.id}}" selected>{{subcategory.name}}</option>
-                                                                {% else %}
-                                                                    <option value="{{subcategory.id}}">{{subcategory.name}}</option>
-                                                                {% endif %}
-                                                            {% endfor %}
-                                                        </select>
-                                                        <a href="{% url 'category_crud' %}" class="w-50 m-auto" target="_blank">+ New Add SubCategory</a>
+                                                    {% if selected_category %}
+                                                    
+                                                        <label class="form-label-title col-sm-3 mb-0">Subcategory Name</label>
+                                                        <div class="col-sm-8 d-flex">
+                                                            <select name="subcategory_id"  class="form-control" id="subcategory-dropdown">
+                                                                
+                                                                <option  value="">--- Select -- </option>
+                                                                {% for subcategory in subcategories %}
+                                                                        {% if subcategory.id == selected_sub_category.id %}
+                                                                        
+                                                                        <option value="{{subcategory.id}}" selected>{{subcategory.name}}</option>
+                                                                        {% else %}
+                                                                        <option value="{{subcategory.id}}">{{subcategory.name}} </option>
 
-                                                    </div>
-                                                {% endif %}
-                                            
-                                                {% if detail_categories %}
-                                                    <label class="form-label-title col-sm-3 mb-0">Detail Category Name</label>
-                                                    <div class="col-sm-5">
-                                                        <select name="detail_category_id"  class="form-control" id="detailcategory-dropdown">
-                                                            {% for detailcategory in detail_categories %}
-                                                                {% if detailcategory.id == detailcategory_id %}
-                                                                    <option value="{{detailcategory.id}}" selected>{{detailcategory.name}}</option>
-                                                                {% else %}
-                                                                    <option value="{{detailcategory.id}}">{{detailcategory.name}}</option>
-                                                                {% endif %}
-                                                            {% endfor %}
-                                                        </select>
+                                                                        {% endif %}
+                                                                {% endfor %}
+                                                            </select>
+                                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#subcategoryadd" >Add New SubCategory</button>
 
-                                                        <a href="{% url 'category_crud' %}" class="w-50 m-auto" target="_blank">+ New Add Detail Category</a>
+                                                        </div>
+                                                    {% endif %}
 
-                                                    </div>
-                                                {% endif %}
+                                                    {% if selected_sub_category %}
+                                                    
+                                                        <label class="form-label-title col-sm-3 mb-0">Detail category Name</label>
+                                                        <div class="col-sm-8 d-flex">
+                                                            <select name="detailcategory_id"  class="form-control" id="detail_subcategory-dropdown">
+                                                                
+                                                                <option  value="">--- Select -- </option>
+                                                                {% for detailsubcategory in detailcategories %}
+                                                                        
+                                                                        <option value="{{detailsubcategory.id}}">{{detailsubcategory.name}}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#detailcategoryadd" >Add New Detail Category</button>
+
+                                                        </div>
+                                                    {% endif %}
+
+                                        
                                             </div>
                                             
            
                                         </div>
                                     </div>
 
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="card-header-2 d-flex">
-                                                <h5>Size Quantity Price</h5><a href="{% url 'sqp_crud' %}?slug=Add" target="_blank" class="m-1">: + Add New SQP</a>
-                                            </div>
-
-                                
-                                                <div class="multiselect mb-4 multiselect row align-items-center">
-                                                    
-                                                    <div class="selectBox col-md-9 col-lg-10" onclick="showCheckboxes()">
-                                                      <select name="products" class="js-example-basic-single form-control">
-                                                        <option>Select an option</option>
-                                                      </select>
-                                                      <div class="overSelect"></div>
-                                                    </div>
-
-
-                                                    <div id="checkboxes" class="col-md-9 col-lg-10 form-control">
-                                                        {% for sqp in sqpies %}
-                                                        <label for="{{ forloop.counter }}">
-                                                            <input type="checkbox" id="{{ forloop.counter }}" value="{{ sqp.id }}" {% if sqp in product.size_quantity_price.all %}checked{% endif %} onclick="updateSelectedProducts()" />{{ sqp.name }}
-                                                        </label>
-                                                        {% endfor %}
-                                                    </div>
-                                                </div>
-                                                <input type="hidden" name="selectedsqp" id="selectedsqp">
-                                        </div>
-                                    </div>
+                                    
 
                                     <div class="card">
                                         <div class="card-body">
@@ -221,15 +210,90 @@
 
                                             
 
-                                                <div class="row align-items-center">
+                                                <div class="row mb-4 align-items-center">
                                                     <label class="col-sm-3 col-form-label form-label-title">Thumbnail
                                                         Image</label>
                                                     <div class="col-sm-9">
                                                         <input class="form-control form-choose" type="file" name="thumbnail_img"
-                                                            id="formFileMultiple1" multiple>
+                                                            id="formFileMultiple1"  required>
                                                     </div>
                                                 </div>
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-sm-3 mb-0">Colour Family :</label>
+                                                    <div class="col-sm-9">
+                                                        <select name="color_family" class="form-control"  required>
+
+                                                            <option  value="">--select--</option>
+
+                                                                {% for color in color_family %}
+                                                                
+                                                                <option value="{{color.name}}" >{{color.name}}</option>
+
+                                                                
+                                                                {% endfor %}
+                                                                    
+                                                             
+                                                        </select>
+                                                    </div>
+
+                                                </div>
+                                                <div class="mb-4 row align-items-center">
+                                                    
+                                                    <label class="form-label-title col-sm-3 mb-0">Color Type :</label>
+                                                    <div class="col-sm-9">
+                                                        <select class="form-control" type="text"  name="color_type" placeholder="Color ">
+                                                            <option value="single_color">Single Color</option>
+                                                            <option value="multi_color">Multi Color</option>
+
+                                                        </select>
+
+                                                    </div>                                        
+                                                </div>
+                                                <div class="mb-4 row align-items-center">
+                                                    
+                                                    <label class="form-label-title col-sm-3 mb-0">Colours :</label>
+                                                    <div class="col-sm-2">
+                                                        <input class="form-control" type="color" name="colours" placeholder="Color" multiple>
+                                                            
+                                                    </div>                                        
+                                                </div>
+
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-sm-3 mb-0">Price (₹):</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="number" step="0.01" id="price" name="price" placeholder="Price" required>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-sm-3 mb-0">Discount :</label>
+                                                    <div class="col-sm-9">
+                                                        <select name="discount" id="discount" onchange="updateDiscount()" class="form-control" >
+                                                           
+                                                                    <option value="False" selected>No</option>
+                                                                    <option value="True">Yes</option>
+                                                             
+                                                        </select>
+                                                </div>
+
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-sm-3 mb-0">Discount Percentage (%) :</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" id="discount_percentage"type="number"  step="0.01" value=0 oninput="updateDiscountedPrice()" disabled   placeholder="Discount Percentage ">
+                                                        <input class="form-control" id="update_discounted_price"type="hidden"  name="discount_percentage">
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-sm-3 mb-0">Discounted Price (₹) :</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control discounted_price" type="number" step="0.01" value=0 disabled placeholder="Discounted Price ">
+                                                        <input class="form-control " type="hidden" name="discounted_price" id="update_discounted_price">
+                                                    </div>
+                                                </div>
+
                                         </div>
+                                    </div>
                                     </div>
 
                                 
@@ -268,86 +332,465 @@
                 </div>
                 <!-- New Product Add End -->
 
-                <!-- footer Start -->
-                 
+               
                 <!-- footer En -->
             </div>
         </form>
-           
+            <!-- footer Start -->
+                 <div class="modal fade" id="sqpadd" tabindex="-1" role="dialog" aria-labelledby="sqpaddLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Add new SQP</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="sqpForm" class="theme-form theme-form-2 mega-form" method="POST" action="{% url 'sqp_crud' %}?slug=Add" enctype='multipart/form-data'>
+                                                {% csrf_token %}
+         
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-sm-3 mb-0">Size :</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text"  name="size" placeholder="Size ">
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-sm-3 mb-0">Meter :</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text"  name="meter" placeholder="Meter ">
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-sm-3 mb-0">Inches :</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text"  name="inches" placeholder="Inches ">
+                                                    </div>
+                                                </div>
+
+                                                 <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-sm-3 mb-0">Length :</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text"  name="length" placeholder="Length ">
+                                                    </div>
+                                                </div>
+
+                                                 <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-sm-3 mb-0">Width :</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text"  name="width" placeholder="Width ">
+                                                    </div>
+                                                </div>
+
+                                                 <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-sm-3 mb-0">Height :</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text"  name="height" placeholder="Height ">
+                                                    </div>
+                                                </div>
+                                                 <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-sm-3 mb-0">weight :</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text"  name="weight" placeholder="weight ">
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-sm-3 mb-0">Quantity :</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="number"  name="quantity" placeholder="Quantity " required>
+                                                    </div>
+                                                </div>
+
+                                                <button type="button" id="submitFormBtn" class="btn btn-theme">Submit</button>
+                                                
+
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                {% comment %} 
+                <div class="modal fade" id="brandadd" tabindex="-1" role="dialog" aria-labelledby="brandaddLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Add new Brand</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form class="theme-form theme-form-2 mega-form" method="POST" action="{% url 'brand_dashboard' %}?slug=Add" id="brandForm">
+                                    {% csrf_token %}
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="form-label-title col-sm-3 mb-0">Brand Name</label>
+                                        <div class="col-sm-9">
+                                            <input class="form-control" type="text" id="brand_name" name="brand_name" placeholder="Brand Name">
+                                            <input class="form-control" type="hidden"  name="redirect" value="productadd">
+                                        </div>
+                                    </div>
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="form-label-title col-sm-3 mb-0">Brand Details</label>
+                                        <div class="col-sm-9">
+                                            <input class="form-control" type="text" id="details" name="details" placeholder="Details">
+                                        </div>
+                                    </div>
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="form-label-title col-sm-3 mb-0">Address</label>
+                                        <div class="col-sm-9">
+                                            <input class="form-control" type="text" id="address" name="address" placeholder="Address">
+                                        </div>
+                                    </div>
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="form-label-title col-sm-3 mb-0">Contact</label>
+                                        <div class="col-sm-9">
+                                            <input class="form-control" type="text" id="contact" name="contact" placeholder="Contact">
+                                        </div>
+                                    </div>
+                                    <button type="button" id="submitBrandFormBtn" class="btn btn-theme">Submit</button>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div> {% endcomment %}
+
+                <div class="modal fade" id="categoryadd" tabindex="-1" role="dialog" aria-labelledby="categoryaddLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Add new Category</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                  <form id="categoryForm" class="theme-form theme-form-2 mega-form" method="POST" action="{% url 'category_crud' %}?slug=Add">
+                                                {% csrf_token %}
+                                          
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-sm-3 mb-0">Category Name</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text" id="category_name" name="category_name" placeholder="Category Name">
+                                                        <input class="form-control" type="hidden"  name="redirect" value="productadd">
+                                                    </div>
+                                                </div>
+
+                                              
+                                                <button class="btn btn-theme" id="submitCategoryFormBtn">submit</button>
+                                                
+
+                                            </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="subcategoryadd" tabindex="-1" role="dialog" aria-labelledby="categoryaddLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Add new Sub Category</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="subcategoryForm" class="theme-form theme-form-2 mega-form" method="POST" action="{% url 'sub_category_crud' %}?slug=Add">
+                                    {% csrf_token %}
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="form-label-title col-sm-3 mb-0"> Category Name</label>
+                                        <div class="col-sm-9">
+                                           <select name="category_name" id="category_name">
+                                           {% for cat in categories %}
+                                           
+                                            <option value="{{cat.name}}">{{cat.name}}</option>
+                                           {% endfor %}
+                                           </select>
+                                        </div>
+                                    </div>
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="form-label-title col-sm-3 mb-0">Sub Category Name</label>
+                                        <div class="col-sm-9">
+                                            <input class="form-control" type="text" id="sub_category_name" name="sub_category_name" placeholder="Sub Category Name">
+                                            <input class="form-control" type="hidden" name="redirect" value="productadd">
+                                        </div>
+                                    </div>
+                                    <button type="button" id="submitSubCategoryFormBtn" class="btn btn-theme">Submit</button>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="detailcategoryadd" tabindex="-1" role="dialog" aria-labelledby="categoryaddLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Add new Detail Category</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="detailcategoryForm" class="theme-form theme-form-2 mega-form" method="POST" action="{% url 'detail_category_crud' %}?slug=Add">
+                                    {% csrf_token %}
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="form-label-title col-sm-3 mb-0">Sub Category Name</label>
+                                        <div class="col-sm-9">
+                                           <select name="sub_category_name" id="sub_category_name">
+                                           {% for cat in subcategories %}
+                                           
+                                            <option value="{{cat.name}},{{cat.category.name}}">{{cat.name}}</option>
+                                           {% endfor %}
+                                           </select>
+                                        </div>
+                                    </div>
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="form-label-title col-sm-3 mb-0">Detail Category Name</label>
+                                        <div class="col-sm-9">
+                                            <input class="form-control" type="text" id="detail_category_name" name="detail_category_name" placeholder="Detail Category Name">
+                                            <input class="form-control" type="hidden" name="redirect" value="productadd">
+                                        </div>
+                                    </div>
+                                    <button type="button" id="submitDetailCategoryFormBtn" class="btn btn-theme">Submit</button>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
             
             <script>
+            
                 CKEDITOR.replace('product_description');
                 CKEDITOR.replace('additional_info');
                 CKEDITOR.replace('care_instructions');
 
-                function updateURL(param) {
-                    var brand = document.getElementById('brand-dropdown');
-                    var category = document.getElementById('category-dropdown');
-                    var subcategory = document.getElementById('subcategory-dropdown');
-                    var detailcategory = document.getElementById('detailcategory-dropdown');
-                    var url = 'http://127.0.0.1:8000/dashboard/add-product?';
+            </script>
 
-                    if (brand && brand.value) {
-                        url += 'brand_id=' + brand.value;
-                        url1 = removeParameterFromURL(url, 'category_id');
-                        console.log(url1);
-                        url2 = removeParameterFromURL(url, 'subcategory_id');
-                        console.log(url2);
-                        url3 = removeParameterFromURL(url, 'detailcategory_id');
-                        console.log(url3);
+            {% comment %} <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    var categoryDropdown = document.getElementById('category-dropdown');
+                    var subcategoryDropdown = document.getElementById('subcategory-dropdown');
 
-                
-                    }
-                    if (category && category.value) {
-                        url += '&category_id=' + category.value;
-                    }
-                    if (subcategory && subcategory.value) {
-                        url += '&subcategory_id=' + subcategory.value;
-                    }
-                    if (detailcategory && detailcategory.value) {
-                        url += '&detailcategory_id=' + detailcategory.value;
-                    }
+                    categoryDropdown.addEventListener('change', function() {
+                        updateURL();
+                    });
 
-                    location.href = url;
-                }
-                function removeParameterFromURL(url, parameter) {
-                    var urlParts = url.split('?');
-                    if (urlParts.length >= 2) {
-                        var prefix = encodeURIComponent(parameter) + '=';
-                        var params = urlParts[1].split(/[&;]/g);
-                
-                        // Remove the parameter from the array if found
-                        for (var i = params.length - 1; i >= 0; i--) {
-                            if (params[i].lastIndexOf(prefix, 0) !== -1) {
-                                params.splice(i, 1);
-                            }
+                    subcategoryDropdown.addEventListener('change', function() {
+                        updateURL();
+                    });
+
+                    function updateURL() {
+                        var url = 'http://103.160.144.37:8080/dashboard/add-product?';
+
+                        if (categoryDropdown && categoryDropdown.value) {
+                            url += 'category_id=' + categoryDropdown.value;
                         }
-                
-                        // Reconstruct the URL with the updated parameters
-                        url = urlParts[0] + '?' + params.join('&');
+                        if (subcategoryDropdown && subcategoryDropdown.value) {
+                            url += '&subcategory_id=' + subcategoryDropdown.value;
+                        }
+
+                        location.href = url;
                     }
-                
-                    return url;
-                }
+                });
+            </script> {% endcomment %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var categoryDropdown = document.getElementById('category-dropdown');
+        var subcategoryDropdown = document.getElementById('subcategory-dropdown');
+
+        categoryDropdown.addEventListener('change', function() {
+            updateURL();
+        });
+
+        subcategoryDropdown.addEventListener('change', function() {
+            updateURL();
+        });
+
+        function updateURL() {
+            var url = 'http://103.160.144.37:8080/dashboard/add-product?';
+
+            if (categoryDropdown.value != "") {
+                url += 'category_id=' + categoryDropdown.value;
+            }
+
+
+            // Validate subcategory input before adding to the URL
+            if (subcategoryDropdown && subcategoryDropdown.value != "") {
+                url += '&subcategory_id=' + subcategoryDropdown.value;
+            }
+            
+            location.href = url;
+
+           
+        }
+
+       
+    });
+</script>
+
+            
+            <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                    var submitFormBtn = document.getElementById("submitFormBtn");
+                    submitFormBtn.addEventListener("click", function () {
+                        var xhr = new XMLHttpRequest();
+                        var form = document.getElementById("sqpForm");
+
+                        xhr.open("POST", form.action, true);
+                        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState === 4) {
+                                if (xhr.status === 200) {
+                                    // Handle success response if needed
+                                    console.log("Form submitted successfully");
+                                    var responseData = JSON.parse(xhr.responseText);
+                                    console.log("sqp.id:", responseData.sqp_id);
+                                    // Optionally, close the modal
+                                    document.getElementById("sqpadd").classList.remove("show");
+                                    document.getElementById("sqpadd").style.display = "none";
+                                    document.querySelector(".modal-backdrop").remove();
+                                    document.body.classList.remove("modal-open");
+                                                            location.reload();
+
+                                } else {
+                                    // Handle error response if needed
+                                    console.error("Error submitting form:", xhr.status, xhr.statusText);
+                                }
+                            }
+                        };
+
+                        xhr.send(new URLSearchParams(new FormData(form)));
+                    });
+                 });
+
+                    
             </script>
             <script>
-                function showCheckboxes() {
-                    // Toggle the visibility of checkboxes
-                    var checkboxes = document.getElementById("checkboxes");
-                    checkboxes.style.display = checkboxes.style.display === "block" ? "none" : "block";
-                  }
-                  
-                  function updateSelectedProducts() {
-                    var checkboxes = document.querySelectorAll("#checkboxes input[type='checkbox']:checked");
-                    var selectedProductIds = Array.from(checkboxes).map(function(checkbox) {
-                      return checkbox.value;
+                document.addEventListener("DOMContentLoaded", function () {
+                    var submitBrandFormBtn = document.getElementById("submitCategoryFormBtn");
+                    submitBrandFormBtn.addEventListener("click", function () {
+                        var xhr = new XMLHttpRequest();
+                        var brandForm = document.getElementById("categoryForm");
+
+                        xhr.open("POST", brandForm.action, true);
+                        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState === 4) {
+                                if (xhr.status === 200) {
+                                    // Handle success response if needed
+                                    console.log("Brand form submitted successfully");
+                                    // Optionally, close the modal
+                                    document.getElementById("categoryadd").classList.remove("show");
+                                    document.getElementById("categoryadd").style.display = "none";
+                                    document.querySelector(".modal-backdrop").remove();
+                                    document.body.classList.remove("modal-open");
+                                    // Reload the page if needed
+
+                                    location.reload();
+                                } else {
+                                    // Handle error response if needed
+                                    console.error("Error submitting Category form:", xhr.status, xhr.statusText);
+                                }
+                            }
+                        };
+
+                        xhr.send(new URLSearchParams(new FormData(brandForm)));
                     });
-                    var selectedProductsInput = document.getElementById("selectedsqp");
-                    selectedProductsInput.value = selectedProductIds.join(",");
-                    console.log(selectedProductsInput.value)
-                  }          
+                });
             </script>
-           
-         
+
             
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    var submitSubCategoryFormBtn = document.getElementById("submitSubCategoryFormBtn");
+                    submitSubCategoryFormBtn.addEventListener("click", function () {
+                        var xhr = new XMLHttpRequest();
+                        var subCategoryForm = document.getElementById("subcategoryForm");
+
+                        xhr.open("POST", subCategoryForm.action, true);
+                        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState === 4) {
+                                if (xhr.status === 200) {
+                                    // Handle success response if needed
+                                    console.log("Sub Category form submitted successfully");
+                                    // Optionally, close the modal
+                                    document.getElementById("subcategoryadd").classList.remove("show");
+                                    document.getElementById("subcategoryadd").style.display = "none";
+                                    document.querySelector(".modal-backdrop").remove();
+                                    document.body.classList.remove("modal-open");
+                                    // Reload the page if needed
+                                    location.reload();
+                                } else {
+                                    // Handle error response if needed
+                                    console.error("Error submitting Sub Category form:", xhr.status, xhr.statusText);
+                                }
+                            }
+                        };
+
+                        xhr.send(new URLSearchParams(new FormData(subCategoryForm)));
+                    });
+                });
+            </script>
+
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    var submitSubCategoryFormBtn = document.getElementById("submitDetailCategoryFormBtn");
+                    submitSubCategoryFormBtn.addEventListener("click", function () {
+                        var xhr = new XMLHttpRequest();
+                        var subCategoryForm = document.getElementById("detailcategoryForm");
+
+                        xhr.open("POST", subCategoryForm.action, true);
+                        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState === 4) {
+                                if (xhr.status === 200) {
+                                    // Handle success response if needed
+                                    console.log("Detail Category form submitted successfully");
+                                    // Optionally, close the modal
+                                    document.getElementById("detailcategoryadd").classList.remove("show");
+                                    document.getElementById("detailcategoryadd").style.display = "none";
+                                    document.querySelector(".modal-backdrop").remove();
+                                    document.body.classList.remove("modal-open");
+                                    // Reload the page if needed
+                                    location.reload();
+                                } else {
+                                    // Handle error response if needed
+                                    console.error("Error submitting Sub Category form:", xhr.status, xhr.statusText);
+                                }
+                            }
+                        };
+
+                        xhr.send(new URLSearchParams(new FormData(detailcategoryForm)));
+                    });
+                });
+            </script>
             {% endblock content %}

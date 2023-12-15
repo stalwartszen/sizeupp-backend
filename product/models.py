@@ -24,53 +24,9 @@ class ColourFamily(models.Model):
     name = models.CharField(max_length=100)
     def __str__(self):
         return self.name
-class SizeQuantityPrice(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name=models.CharField(max_length=100,null=True, blank=True)
-    img = models.FileField(upload_to=sqp_image_path, null=True, blank=True)
-
-    color_type = models.JSONField(default=list,null=True,blank=True)
-    color = models.CharField(max_length=400, null=True, blank=True)
-    size = models.CharField(max_length=400, null=True, blank=True)
-    color_family = models.ForeignKey(ColourFamily,on_delete=models.CASCADE,null=True, blank=True)
-
+    
     
 
-    quantity = models.CharField(max_length=400)
-    price = models.CharField(max_length=400)
-    discount = models.BooleanField(default=False,null=True,blank=True)
-    discount_percentage = models.FloatField(null=True, blank=True,)
-    discounted_price = models.FloatField(null=True, blank=True,)
-
-
-
-    # dimension_type_choices = (
-    #     ("Inch", "Inch"),
-    #     ("Millimeter", "Millimeter"),
-    #     ("Centimeter", "Centimeter"),
-    # )
-    # dimension_type = models.CharField(max_length=400,choices=dimension_type_choices, null=True, blank=True)
-    # length = models.CharField(max_length=400, null=True, blank=True)
-    # width = models.CharField(max_length=400, null=True, blank=True)
-    # height = models.CharField(max_length=400, null=True, blank=True)
-
-    # weight_type_choices = (
-    #     ("Gram", "Gram"),
-    #     ("Kilogram", "Kilogram"),
-    #     ("Pound", "Pound"),
-    #     ("Ounce", "Ounce"),
-    # )
-    # weight_type = models.CharField(max_length=400, choices=weight_type_choices, null=True, blank=True)
-    # weight = models.CharField(max_length=400, null=True, blank=True)
-    is_enabled = models.BooleanField(default=True)
-    # sort_order = models.PositiveIntegerField(null=True,blank=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
-    
 
 class Brand(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -91,9 +47,7 @@ class Brand(models.Model):
     
 class ProductCategory(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=400)
-    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
-    
+    name = models.CharField(max_length=400)    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):
@@ -122,6 +76,33 @@ class ProductDetailCategory(models.Model):
         return self.name
     
 
+class SizeQuantityPrice(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    
+    size = models.CharField(max_length=400, null=True, blank=True)
+    
+    quantity = models.CharField(max_length=400)
+    inches = models.CharField(max_length=400, null=True, blank=True)
+    meter = models.CharField(max_length=400, null=True, blank=True)
+   
+    length = models.CharField(max_length=400, null=True, blank=True)
+    width = models.CharField(max_length=400, null=True, blank=True)
+    height = models.CharField(max_length=400, null=True, blank=True)
+
+   
+    weight = models.CharField(max_length=400, null=True, blank=True)
+    is_enabled = models.BooleanField(default=True)
+    # sort_order = models.PositiveIntegerField(null=True,blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.id)
+    
+
+
+
 
 def product_image_path(instance, filename):
     return os.path.join('Products', str(instance.name), filename)
@@ -137,9 +118,17 @@ class Product(models.Model):
     description = RichTextField(null=True, blank=True)
     additional_info = RichTextField(null=True, blank=True)
     care_instructions = RichTextField(null=True, blank=True)
-
-    size_quantity_price = models.ManyToManyField(SizeQuantityPrice)
-    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
+    sqp =  models.ManyToManyField(SizeQuantityPrice)
+    
+    # brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
+    color = models.CharField(max_length=400, null=True, blank=True)
+    color_family = models.ForeignKey(ColourFamily,on_delete=models.CASCADE,null=True, blank=True)
+    
+    price = models.CharField(max_length=400,null=True,blank=True)
+    discount = models.BooleanField(default=False,null=True,blank=True)
+    discount_percentage = models.FloatField(null=True, blank=True,)
+    discounted_price = models.FloatField(null=True, blank=True,)
+    
     category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE, null=True, blank=True, related_name='products')
     subcategory = models.ForeignKey(ProductSubCategory, on_delete=models.CASCADE, null=True, blank=True, related_name='products')
     detail_category = models.ForeignKey(ProductDetailCategory, on_delete=models.CASCADE, null=True, blank=True, related_name='products')
@@ -151,15 +140,22 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return self.name
+    # def __str__(self):
+    #     return self.id
     
+
 class ProductImages(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     products = models.ForeignKey(Product,on_delete=models.CASCADE)
     img = models.ImageField(upload_to=image_path)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+
+
+
+
 
 class DiscountCoupon(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

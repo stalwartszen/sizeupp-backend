@@ -51,20 +51,21 @@
 
     <!-- Slick Slider Css -->
     <link rel="stylesheet" href="{% static 'css/vendors/slick.css'%}">
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <!-- App css -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css'%}">
     <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-<style>
-    .logo-wrapper{
-        width: 75% !important;
-    }
-    
-</style>
-{% block style %}
 
-{% endblock style %}
+    <style>
+        .logo-wrapper{
+            width: 75% !important;
+        }
+        
+    </style>
+    {% block style %}
+
+        {% endblock style %}
 </head>
 
 <body>
@@ -208,9 +209,9 @@
                                         <li>
                                             <a href="{% url 'scrolling_banner_images' %}">Scrolling Banner</a>
                                         </li>
-                                        <li>
+                                        {% comment %} <li>
                                             <a href="{% url  'banner_images' %}">Other Banners </a>
-                                        </li>
+                                        </li> {% endcomment %}
                                         {% comment %} <li>
                                             <a href="{% url  'banner_images' %}">Best seller banner 1600X978</a>
                                         </li>
@@ -221,13 +222,37 @@
                                     </ul>
                                 </li>
                                 
-                               
+                                {% comment %}                                
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-list-check-2"></i>
                                         <span>Category</span>
                                     </a>
                                     <ul class="sidebar-submenu">
+
+                                        
+                                      
+                                    </ul>
+                                </li> {% endcomment %}
+
+
+                                <li class="sidebar-list">
+                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
+                                        <i class="ri-store-3-line"></i>
+                                        <span>Product Details</span>
+                                    </a>
+                                    <ul class="sidebar-submenu">
+                                        <li>
+                                            <a href="{% url 'products_dashboard' %}">All Prodcts</a>
+                                        </li>
+                                        <li>
+                                            <a  href="{% url 'media_dashboard' %}">
+                                                <span>Product Photos</span>
+                                            </a>
+                                        </li>
+                                        {% comment %} <li>
+                                            <a href="{% url  'sqp_list' %}">Size Quantity Price </a>
+                                        </li> {% endcomment %}
 
                                         <li>
                                             <a href="{% url 'brand_dashboard' %}">Brands List</a>
@@ -240,54 +265,14 @@
                                             <a href="{% url 'sub_category_dashboard' %}"> Sub Category List</a>
                                         </li>
                                         <li>
-                                            <a href="{% url 'detail_category_dashboard' %}">Detail Category List</a>
-                                        </li>
-                                    </ul>
-                                </li>
-
-
-                                <li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-store-3-line"></i>
-                                        <span>Product Details</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="{% url 'products_dashboard' %}">Prodcts</a>
-                                        </li>
-
-                                        <li>
-                                            <a href="{% url  'sqp_list' %}">Size Quantity Price </a>
-                                        </li>
-                                        <li>
-                                            <a href="{% url  'colour_family_dashboard' %}">Colour </a>
+                                            <a href="{% url  'colour_family_dashboard' %}">Colour Family</a>
                                         </li>
                                         
                                        
                                     </ul>
                                 </li>   
 
-                                {% comment %} <li>
-                                    <a class="sidebar-link sidebar-title link-nav" href="{% url 'media_dashboard">
-                                        <i class="ri-price-tag-3-line"></i>
-                                        <span>Product Photos</span>
-                                    </a>
-                                </li> {% endcomment %}
-                                {% comment %} <li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-list-settings-line"></i>
-                                        <span>Attributes</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="attributes.html">Attributes</a>
-                                        </li>
-
-                                        <li>
-                                            <a href="add-new-attributes.html">Add Attributes</a>
-                                        </li>
-                                    </ul>
-                                </li> {% endcomment %}
+                                   
 
                              
 
@@ -297,21 +282,6 @@
                                         <span>All users</span>
                                     </a>
                                 </li>
-
-                                {% comment %} <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-user-3-line"></i>
-                                        <span>Roles</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="role.html">All roles</a>
-                                        </li>
-                                        <li>
-                                            <a href="create-role.html">Create Role</a>
-                                        </li>
-                                    </ul>
-                                </li> {% endcomment %}
 
                                 
 
@@ -330,12 +300,12 @@
                                     </a>
                                 </li>
 
-                                <li>
+                                {% comment %} <li>
                                     <a class="sidebar-link sidebar-title link-nav" href="{% url 'pos' %}">
                                         <i class="fa fa-light fa-file-invoice-dollar" style="color: #f7f7f7;"></i>
                                         <span>Billing System</span>
                                     </a>
-                                </li>
+                                </li> {% endcomment %}
 
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link link-nav" href="{% url 'coupons_list' %}">
@@ -349,21 +319,21 @@
 
 
 
-                                <li class="sidebar-list">
+                                {% comment %} <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link link-nav" href="{% url 'taxes_dashboard' %}">
                                         <i class="fas fa-file-invoice" style="color: #f7f7f7;"></i>
                                         <span>Delivery Charges</span>
                                     </a>
                              
-                                </li>
+                                </li> {% endcomment %}
 
 
-                                <li class="sidebar-list">
+                                {% comment %} <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title link-nav" href="{% url 'all_articles' %}">
                                         <i class="fas fa-blog" style="color: #f7f7f7;"></i>
                                         <span>All Articles</span>
                                     </a>
-                                </li>
+                                </li> {% endcomment %}
 
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title link-nav text-white" href="{% url 'product_reviews' %}">
@@ -488,6 +458,58 @@ aria-labelledby="staticBackdropLabel" aria-hidden="true">
 <script src="{% static 'js/script.js'%}"></script>
 <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/solid.js" integrity="sha384-/BxOvRagtVDn9dJ+JGCtcofNXgQO/CCCVKdMfL115s3gOgQxWaX/tSq5V8dRgsbc" crossorigin="anonymous"></script>
 <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/fontawesome.js" integrity="sha384-dPBGbj4Uoy1OOpM4+aRGfAOc0W37JkROT+3uynUgTHZCHZNMHfGXsmmvYTffZjYO" crossorigin="anonymous"></script>
+
+    {% comment %} <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> {% endcomment %}
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<!--- custom js  -->
+ <script>
+                function updateDiscount() {
+                    var discount = document.getElementById('discount');
+                    var discountPercentage = document.getElementById('discount_percentage');
+                    var discountedPriceElements = document.getElementsByClassName('discounted_price');
+            
+                    if (discount.value === 'True') {
+                        discountPercentage.disabled = false;
+                        updateDiscountedPrice();
+                    } else {
+                        discountPercentage.value = 0;
+                        var price = document.getElementById('price').value;
+                        for (var i = 0; i < discountedPriceElements.length; i++) {
+                            discountedPriceElements[i].value = 0;
+                        }
+                        discountPercentage.disabled = true;
+                    }
+                }
+            
+                function updateDiscountedPrice() {
+                    var discountPercentage = document.getElementById('discount_percentage');
+                    var discountedPriceElements = document.getElementsByClassName('discounted_price');
+                    var originalPrice = document.getElementById('price').value;
+            
+                    var percentage = parseInt(discountPercentage.value);
+                    var discountAmount = (percentage / 100) * originalPrice;
+                    var discountedPriceValue = originalPrice - discountAmount;
+            
+                    for (var i = 0; i < discountedPriceElements.length; i++) {
+                        discountedPriceElements[i].value = discountedPriceValue.toFixed(2);
+                    }
+
+                    document.getElementById('update_discounted_price').value = discountedPriceValue.toFixed(2)
+                    document.getElementById('update_discounted_prcentage').value = percentage
+                }
+                document.getElementById('update_discounted_price').value = discountedPriceValue.toFixed(2)
+            </script>
+            <script>
+                window.onload = function() {
+                    var discountedPriceValue = document.getElementById('discounted_price').value;// Replace this with your actual discounted price value
+                    document.getElementById('update_discounted_price').value = discountedPriceValue;
+
+                    document.getElementById('update_discounted_prcentage').value =  document.getElementById('discount_percentage').value 
+                    console.log(document.getElementById('update_discounted_price').value)
+                };
+            </script>
 </body>
 
 </html>

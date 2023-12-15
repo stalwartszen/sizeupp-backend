@@ -30,7 +30,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
-
+from .serializer import *
 @api_view(['GET','POST'])
 def home(request):
     if request.method == 'POST':
@@ -152,10 +152,15 @@ def signup(request):
         else:
             return Response( status=status.HTTP_400_BAD_REQUEST)
         
-@require_GET
+        
+
+        
 @api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def logout_view(request):
     if request.user.is_authenticated:
+        Token.objects.get(user=request.user).delete()
         logout(request)
         return Response({'message': 'Logout successful.'}, status=status.HTTP_200_OK)
     else:
@@ -164,7 +169,6 @@ def logout_view(request):
 
 @csrf_protect
 @api_view(['POST'])
-@permission_classes([AllowAny])
 def signin(request):
         if request.user.is_authenticated:
             return redirect('home')     
@@ -198,21 +202,15 @@ def forgot_password(request):
 
     if request.method == 'POST':
         email = request.data.get('email')
-        pass1 = request.data.get('pass1')
-        pass2 = request.data.get('pass2')
+        pass1 = request.data.get('password')
 
 
         # Check if the user exists
-        try:
-            user = User.objects.get(email=email)
-            if pass1 != pass2:
-                 messages.error(request,'Password is  not matching !')
-                 
-            request.session['new_pass']={'email':email,'password':pass1}
+        if  User.objects.filter(email=email).exists():
             return Response({'message': 'Email Exist'}, status=status.HTTP_200_OK)
         
 
-        except User.DoesNotExist:
+        else:
             # Handle the case where the user does not exist
             message='Email Not Exist!!'
             return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
@@ -226,7 +224,7 @@ def forgot_password(request):
 def otp(request):
     if request.user.is_authenticated:
         if request.user.is_verified :   
-            return Response({'message': 'Verified','user_verified':user.is_verified}, status=status.HTTP_200_OK)
+            return Response({'message': 'Verified','user_verified':request.user.is_verified}, status=status.HTTP_200_OK)
 
             
     if not request.user.is_verified:
@@ -236,6 +234,9 @@ def otp(request):
         
         if request.method == 'POST':
             otp = request.data.get('otp')
+         
+            otp = str(otp['1']) + str(otp['2'])+ str(otp['3']) + str(otp    ['4'])
+            print("^^^^^^^^^^^^^^",otp)
             if int(user.otp) == int(otp):
                 
                 user.is_verified = True
@@ -250,33 +251,40 @@ def otp(request):
                 return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
             
         if request.method == 'GET':  
-            otp = random.randint(100000, 999999)
-            user.otp = otp
-            user.save()
-            # send opt to email
-            send_email_otp(user=user,otp=otp)
-            return Response({'message': 'OTP sent on Email','user_email':user.email}, status=status.HTTP_200_OK)
+            if user.otp == '':
+                otp = random.randint(1000, 9999)
+                user.otp = otp
+                user.save()
+                # send opt to email
+                send_email_otp(user=user,otp=otp)
+                return Response({'message': 'OTP sent on Email','user_email':user.email}, status=status.HTTP_200_OK)
+            return Response({'message': 'OTP Already sent on Email','user_email':user.email}, status=status.HTTP_200_OK)
 
 
      
-@api_view(['POST'])
+@api_view(['POST','GET'])
 def otp_forgot_pass(request):
-        email = request.session['new_pass']['email']
-        new_password = request.session['new_pass']['password']
-        del request.session['new_pass']
         
+        email = request.data.get('email')
+        pass1 = request.data.get('password')
         user = User.objects.get(email=email)
 
         
         
         if request.method == 'POST':
-            otp = request.data.get('otp')
+            otp_ = request.data.get('otp')
+            print("*************",otp_)
+            otp1 = request.data.get('otp1')
+            otp2 = request.data.get('otp2')
+            otp3 = request.data.get('otp3')
+            otp4 = request.data.get('otp4')
+            otp = str(otp1) + str(otp2)+ str(otp3) + str(otp4)
 
 
             if user.otp == otp:
                 user.is_verified = True
                 user.otp = ''
-                user.set_password(new_password)
+                user.set_password(pass1)
                 user.save()
 
                 return Response({'message': 'Verification Done','user_verified':user.is_verified}, status=status.HTTP_200_OK)
@@ -285,7 +293,7 @@ def otp_forgot_pass(request):
                 message="OTP Invalid"
                 return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
             
-        otp = random.randint(100000, 999999)
+        otp = random.randint(1000, 9999)
         user.otp = otp
         user.save()
         # send opt to email
@@ -295,6 +303,8 @@ def otp_forgot_pass(request):
 
 
 @api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def userprofile(request):
     if not request.user.is_authenticated:
         return Response({'message':'Login Required'}, status=status.HTTP_400_BAD_REQUEST)
@@ -302,20 +312,30 @@ def userprofile(request):
     elif not request.user.is_verified :
             return Response({'message':'Email Not Verified','user_verified':request.user.is_verified}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
     
-    address = Address.objects.filter(user=request.user.id)
-    orders = Order.objects.filter(customer_email = request.user.email)[::-1]
-    return Response({'title':'Profile','addresses':address,'orders':orders}, status=status.HTTP_200_OK)
+    
+    
+    print(Address.objects.filter(user=request.user))
+    address = AddressSerializer(Address.objects.filter(user=request.user),many=True)
+    orders = OrderserSerializer(Order.objects.filter(customer_email = request.user.email)[::-1],many =True)
+    
+    
+    
+    return Response({'title':'Profile','addresses':address.data,'orders':orders.data}, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def address(request):
+    user = User.objects.get(email=request.user.email)
     if not request.user.is_authenticated:
         return Response({'message':'Login Required'}, status=status.HTTP_400_BAD_REQUEST)
     
-    elif not request.user.is_verified :
-            return Response({'message':'Email Not Verified','user_verified':request.user.verified}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+    elif not user.is_verified :
+            return Response({'message':'Email Not Verified','user_verified':user.is_verified}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
     
     if request.method == 'POST':
+            print(request.user.email)
             user = User.objects.get(id=request.user.id)
             address_line_1 = request.data.get('address_line_1')
             address_line_2 = request.data.get('address_line_2')
@@ -353,7 +373,10 @@ def address(request):
     
 
 
-      
+
+@api_view(['POST','GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])      
 def address_by_id(request, id,slug):
 
     if not request.user.is_authenticated:
@@ -368,10 +391,10 @@ def address_by_id(request, id,slug):
         if request.method =="POST":    
                 address_line_1 = request.data.get('address_line_1')
                 address_line_2 = request.data.get('address_line_2')
-                city = request.data.get('city')
-                postal_code = request.data.get('postal_code')
-                country = request.data.get('country')
                 state = request.data.get('state')
+                city = request.data.get('city')
+                country = request.data.get('country')
+                postal_code = request.data.get('postal_code')
                 is_default = request.data.get('is_default')
                 if is_default == "on":
                     is_default = True
@@ -393,18 +416,18 @@ def address_by_id(request, id,slug):
                 address.state = state
                 address.is_default = is_default
                 address.save()
-                messages.success(request,"Address Updated Successfully")
-                return redirect('userprofile')
+                message= "Address Updated Successfully"
+                return Response({'message': message}, status=status.HTTP_200_OK)
         
-        else:
-            address = Address.objects.get(id=address_id)
-            return render(request,'update_forms/address_crud.html',{'title':'Update Address','address':address})
+        if request.method =="GET":
+            address = AddressSerializer(Address.objects.get(id=address_id))
+            return Response({'address': address}, status=status.HTTP_200_OK)
         
     elif slug == 'delete':
         address_id =id
         address = Address.objects.get(id=address_id)
         address.delete()
-        return redirect('userprofile')
+        return Response({'message': "Deleted Successfully"}, status=status.HTTP_200_OK)
     
 
 def updateCart(request):
@@ -429,10 +452,10 @@ def Add_Cart(request,uuid,sqp_id):
 
         user = get_object_or_404(User,id=request.user.id)
         pro = get_object_or_404(Product,id=uuid)
-        size_quantity_price = get_object_or_404(SizeQuantityPrice,id=sqp_id)
+        size_quantity_price = get_object_or_404(SizeQuantityPrice,id=pro.size_quantity_price.id)
         
 
-        total_price = (float(qty)*float(size_quantity_price.price))
+        total_price = (float(qty)*float(pro.price))
                     
         if size_quantity_price.discount:
             total_price =(float(qty)*float(size_quantity_price.discounted_price))

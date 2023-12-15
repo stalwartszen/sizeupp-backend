@@ -131,6 +131,7 @@ text-align: center; margin: 0 auto; width: 650px; font-family: 'Public Sans', sa
     )
     email.content_subtype = "html"
     email.send()
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!","OTP Send")
 
 
 

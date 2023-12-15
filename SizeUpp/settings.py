@@ -36,9 +36,23 @@ INSTALLED_APPS = [
     'taggit',
     'rest_framework.authtoken',
     "corsheaders",
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 
 
 ]
+SITE_ID = 1
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': 'your-client-id',
+            'secret': 'your-client-secret',
+            'key': '',
+        }
+    }
+}
 CORS_ALLOW_METHODS = (
     "DELETE",
     "GET",
@@ -70,6 +84,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
      'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
+        'allauth.account.middleware.AccountMiddleware',
+
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 

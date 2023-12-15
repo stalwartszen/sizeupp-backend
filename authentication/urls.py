@@ -9,21 +9,13 @@ urlpatterns = [
     
     path('auth/signup', views.signup,name="signup"),
     path('auth/signin', views.signin,name="signin"),
-    path('auth/logout', views.logout,name="logout"),
+    path('auth/logout', views.logout_view,name="logout"),
     
 
-    path('auth/forgot_password/',views.forgot_password,name="forgot_password"),
+    path('auth/forgot_password',views.forgot_password,name="forgot_password"),
     path('auth/otp',views.otp,name="otp"),
     path ('auth/forgot-otp',views.otp_forgot_pass,name="otp_forgot_pass"),
     path('userprofile',views.userprofile,name='userprofile'),
-
-
-
-
-
-
-
-
 
     # Update Details Url's
     path('address',views.address,name='address_add'),

@@ -41,19 +41,6 @@ class Newsletter(models.Model):
     email = models.EmailField()
     created_at = models.DateTimeField(auto_now_add=True)
 
-class Card(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=400)
-    last_name = models.CharField(max_length=400)
-    number = models.CharField(max_length=400)
-    month = models.CharField(max_length=400)
-    year = models.CharField(max_length=400)
-    card_type = models.CharField(max_length=400, choices=card_weight_type_choices, null=True, blank=True)
-    is_default = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
 
 
 

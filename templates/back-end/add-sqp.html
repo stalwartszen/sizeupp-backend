@@ -364,52 +364,7 @@
                  
                 <!-- footer En -->
             </div>
-            <script>
-                function updateDiscount() {
-                    var discount = document.getElementById('discount');
-                    var discountPercentage = document.getElementById('discount_percentage');
-                    var discountedPriceElements = document.getElementsByClassName('discounted_price');
-            
-                    if (discount.value === 'True') {
-                        discountPercentage.disabled = false;
-                        updateDiscountedPrice();
-                    } else {
-                        discountPercentage.value = 0;
-                        var price = document.getElementById('price').value;
-                        for (var i = 0; i < discountedPriceElements.length; i++) {
-                            discountedPriceElements[i].value = 0;
-                        }
-                        discountPercentage.disabled = true;
-                    }
-                }
-            
-                function updateDiscountedPrice() {
-                    var discountPercentage = document.getElementById('discount_percentage');
-                    var discountedPriceElements = document.getElementsByClassName('discounted_price');
-                    var originalPrice = document.getElementById('price').value;
-            
-                    var percentage = parseInt(discountPercentage.value);
-                    var discountAmount = (percentage / 100) * originalPrice;
-                    var discountedPriceValue = originalPrice - discountAmount;
-            
-                    for (var i = 0; i < discountedPriceElements.length; i++) {
-                        discountedPriceElements[i].value = discountedPriceValue.toFixed(2);
-                    }
-
-                    document.getElementById('update_discounted_price').value = discountedPriceValue.toFixed(2)
-                    document.getElementById('update_discounted_prcentage').value = percentage
-                }
-                document.getElementById('update_discounted_price').value = discountedPriceValue.toFixed(2)
-            </script>
-            <script>
-                window.onload = function() {
-                    var discountedPriceValue = document.getElementById('discounted_price').value;// Replace this with your actual discounted price value
-                    document.getElementById('update_discounted_price').value = discountedPriceValue;
-
-                    document.getElementById('update_discounted_prcentage').value =  document.getElementById('discount_percentage').value 
-                    console.log(document.getElementById('update_discounted_price').value)
-                };
-            </script>
+           
             
 
             {% endblock content %}
