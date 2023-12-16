@@ -17,7 +17,7 @@ schema_view = get_schema_view(
         default_version='v1',
         description="SizeUpp API description",
         terms_of_service="https://www.yourapp.com/terms/",
-        contact=openapi.Contact(email="contact@yourapp.com"),
+        contact=openapi.Contact(email="contact.hrithikhadawale@gmail.com"),
         license=openapi.License(name="Your License"),
     ),
     public=True,

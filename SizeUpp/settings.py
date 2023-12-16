@@ -45,12 +45,19 @@ INSTALLED_APPS = [
 
 ]
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
-        # ... other authentication classes
     ],
-    # ... other settings
+}
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'api_key': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization',
+        },
+    },
 }
 SITE_ID = 1
 SOCIALACCOUNT_PROVIDERS = {
@@ -161,10 +168,10 @@ MEDIA_URL = '/media/'
 
 #static files
 STATIC_URL = '/static/'
-# STATICFILES_DIRS = [BASE_DIR / "static",]
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [BASE_DIR / "static",]
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'staticfiles')]
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'staticfiles')]
 
 
 
