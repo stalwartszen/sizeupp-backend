@@ -623,7 +623,7 @@
 
                     function updateURL() {
                         var product_id = {{product.id}}
-                        var url = `http://103.160.144.37:8080/dashboard/add-product_crud/${product_id}?`;
+                        var url = `https://traxzen.pythonanywhere.com/dashboard/add-product_crud/${product_id}?`;
 
                         if (categoryDropdown.value != "") {
                             url += 'category_id=' + categoryDropdown.value;
