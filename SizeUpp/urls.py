@@ -18,7 +18,7 @@ schema_view = get_schema_view(
         title="SizeUpp API",
         default_version='v1',
         description="SizeUpp API description",
-        terms_of_service="https://www.yourapp.com/terms/",
+        terms_of_service="https://traxzen.pythonanywhere.com/terms/",
         contact=openapi.Contact(email="contact@yourapp.com"),
         license=openapi.License(name="Your License"),
     ),
