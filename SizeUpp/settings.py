@@ -45,8 +45,12 @@ INSTALLED_APPS = [
 
 ]
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': [  'rest_framework.authentication.TokenAuthentication',
-                             'rest_framework.schemas.coreapi.AutoSchema'],
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        # ... other authentication classes
+    ],
+    # ... other settings
 }
 SITE_ID = 1
 SOCIALACCOUNT_PROVIDERS = {
