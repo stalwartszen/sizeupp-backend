@@ -40,9 +40,12 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-
+    'drf_yasg',
 
 ]
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+}
 SITE_ID = 1
 SOCIALACCOUNT_PROVIDERS = {
     'google': {

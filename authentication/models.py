@@ -49,11 +49,11 @@ class Cart(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     product = models.ForeignKey(Product,on_delete=models.CASCADE)
     size_quantity_price = models.ForeignKey(SizeQuantityPrice,on_delete=models.CASCADE,null=True, blank=True)
-    dropdown_size= models.CharField(max_length=100,null=True,blank=True)
     quantity = models.IntegerField(validators=[MinValueValidator(0)])
     color = models.CharField(max_length=20,null=True,blank=True)
     total_price =models.CharField(max_length=400,null=True,blank=True)
-
+    price = models.CharField(max_length=10,null=True,blank=True)
+    discount_price = models.CharField(max_length=10,null=True,blank=True)
 
     created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now_add=True)

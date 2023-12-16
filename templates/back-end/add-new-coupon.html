@@ -94,28 +94,16 @@
                                                                     <input class="form-control" name="percentage" type="number">
                                                                 </div>
                                                             </div>                                                           
-
-                                                            <label
-                                                            class="col-sm-2 col-form-label  form-label-title">Products</label>
-                                                            <div class="multiselect mb-4 multiselect row align-items-center">
-                                                                
-                                                                <div class="selectBox col-md-9 col-lg-10" onclick="showCheckboxes()">
-                                                                  <select name="products" class="js-example-basic-single form-control">
-                                                                    <option>Select an option</option>
-                                                                  </select>
-                                                                  <div class="overSelect"></div>
+                                                            <div class="mb-4 row align-items-center">
+                                                                <label
+                                                                    class="col-lg-2 col-md-3 col-form-label form-label-title">End
+                                                                    Date</label>
+                                                                <div class="col-md-9 col-lg-10">
+                                                                    <input class="form-control" name="end_date" type="datetime-local">
                                                                 </div>
+                                                            </div>                                                           
 
-
-                                                                <div id="checkboxes" class="col-md-9 col-lg-10 form-control">
-                                                                    {% for pro in products %}
-                                                                  <label for="{{forloop.counter}}">
-                                                                    <input type="checkbox" id="{{ forloop.counter }}" value="{{ pro.id }}" onclick="updateSelectedProducts()" />{{pro.name}}</label>
-                                                                    {% endfor %}
-                                                                </div>
-                                                            </div>
-                                                            <input type="hidden" name="selected_products" id="selectedProducts">
-
+                            
 
                                                             <div class="row align-items-center">
                                                                 <label

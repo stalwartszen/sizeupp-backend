@@ -27,7 +27,7 @@ urlpatterns = [
     path('add-product',views.addproduct,name='addproduct'),
     path('add-product_crud/<uuid:id>',views.addproduct_crud,name='addproduct_crud'),
     # path('sqp_list/',views.sqp_list,name="sqp_list"),
-    path('sqp_crud/',views.sqp_crud,name="sqp_crud"),
+    path('sqp_crud',views.sqp_crud,name="sqp_crud"),
     # path('product/<uuid:id>/<str:slug>',views.product_by_id,name='product_crud'),
 
 

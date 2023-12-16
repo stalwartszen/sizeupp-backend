@@ -8,7 +8,7 @@ from django.views.decorators.http import require_GET
 from functions import send_email_otp,send_email_reset_link
 from django.contrib import messages
 from django.db.models import Q
-from django.core.mail import send_mail
+# from django.utils.timezone import datetime
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.decorators.csrf import csrf_protect
 from rest_framework.decorators import api_view, permission_classes,authentication_classes
@@ -27,10 +27,16 @@ from django.contrib.auth.hashers import check_password
 from django.shortcuts import render, redirect
 from taggit.models import Tag
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import AllowAny
+import requests
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from .serializer import *
+
+from datetime import datetime
+
+
+
+
 @api_view(['GET','POST'])
 def home(request):
     if request.method == 'POST':
@@ -436,62 +442,95 @@ def updateCart(request):
 
 
 
-def Add_Cart(request,uuid,sqp_id):
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])    
+def Add_Cart(request,uuid):
 
     if request.user.is_authenticated:
         
-        qty= request.GET.get('qty',1)
 
         if request.method == 'POST':
             qty= request.data.get('qty',1)
             selected_color = request.data.get('selected_color')
-
-            
-        status = request.GET.get('status',None)
-
-
+            sqp_id = request.data.get('sqp_id')
         user = get_object_or_404(User,id=request.user.id)
         pro = get_object_or_404(Product,id=uuid)
-        size_quantity_price = get_object_or_404(SizeQuantityPrice,id=pro.size_quantity_price.id)
+        size_quantity_price = get_object_or_404(SizeQuantityPrice,id=sqp_id)
         
 
         total_price = (float(qty)*float(pro.price))
-                    
-        if size_quantity_price.discount:
-            total_price =(float(qty)*float(size_quantity_price.discounted_price))
+        if pro.discount == True:
+            total_price =(float(qty)*float(pro.discounted_price))
  
-
-        if status == 'UPDATE':
-            cart_item=Cart.objects.get(user=user,product=pro)
-
-            cart_item.total_price = total_price
-            cart_item.quantity = qty
-            cart_item.save()
-            messages.success(request,'Cart is Updated Successfully!!')
-            return redirect('updateCart')
-
-        if Cart.objects.filter(user=user,product=pro):
-
-
-            messages.error(request,"Already In cart")
-            return redirect('product_inside',pro.id)
         
 
         
 
-        cart_item = Cart.objects.create(user=user,product=pro,quantity=qty,size_quantity_price=size_quantity_price,total_price=total_price)
+        cart_item = Cart.objects.create(user=user,product=pro,quantity=qty,size_quantity_price=size_quantity_price,price=pro.price ,total_price=total_price,discount_percentage=pro.discount_percentage,discount_price = pro.discounted_price)
         if selected_color :
                 cart_item.color=selected_color
-        else:
-             selected_color = size_quantity_price.color
+        
         cart_item.save()
     
-        messages.success(request,"Added to cart")
-        return redirect('updateCart')
+        message="Added to cart"
+        return Response({'message':message,'cart_id':cart_item.id},status=status.HTTP_201_CREATED)
+   
+
+        # if status == 'UPDATE':
+        #     cart_item=Cart.objects.get(user=user,product=pro)
+
+        #     cart_item.total_price = total_price
+        #     cart_item.quantity = qty
+        #     cart_item.save()
+        #     messages.success(request,'Cart is Updated Successfully!!')
+        #     return redirect('updateCart')
+
+        # if Cart.objects.filter(user=user,product=pro):
+
+
+        #     messages.error(request,"Already In cart")
+        #     return redirect('product_inside',pro.id)
+
+
+
+
+def checkDelivery(pincode):
+    url = 'https://api.instashipin.com/api/v1/tenancy/authToken'
+    payload ={
+    "api_key": "6092655223372029e7404dc4"
+    }
+    headers = {
+        'Content-Type': 'application/json',
+    }
+    response = requests.post(url, json=payload, headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        token = data['data']['response']['token_id']    
+        
+    url = 'https://api.instashipin.com/api/v1/courier-vendor/freight-calculator'
+    payload = {
+        "token_id": token,
+        "fm_pincode": "400075",
+        "lm_pincode": pincode,
+        "weight": "0.5",
+        "payType": "PPD",
+        "collectable": ""
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+
+    if response.status_code == 200:
+        # Request was successful
+        data = response.json()
+        deliveryCharges = data['data']['response']['total_freight']
+        return deliveryCharges
     else:
-        return redirect('signin')
+        return None
 
-
+@api_view(['POST','GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])    
 def show_Cart(request):
     if request.user.is_authenticated:
     
@@ -499,60 +538,61 @@ def show_Cart(request):
         code=None
         if request.method == 'POST':
             code = request.data.get('code')
-            status= request.data.get('status')
-            if code:
-                if status =='apply':
-                    discountcoupon=DiscountCoupon.objects.get(code=code)
-                    dis_pro = discountcoupon.products.all()
-                    coupon = 'activate'
+            pincode = request.data.get('pincode')
+            
+            if pincode:
 
+                deliveryCharges = checkDelivery(pincode)
+            else:
+                deliveryCharges =None
+            if code and DiscountCoupon.objects.filter(code=code).exists():
+                    
+                        discountcoupon=DiscountCoupon.objects.get(code=code)
+                        if discountcoupon.end_date > timezone.now():
+                            coupon = 'active'
+                        else: 
+                            coupon = 'deactive'
+
+            else:
+                        coupon = 'deactive'
         else:
                 coupon = 'deactivate'
-                dis_pro = []
-
-
+                deliveryCharges =None
         products_list =[ ]
         total_price = 0
         sub_total=0
-        coupon_dis = 0
         if cart_items:
             for item in cart_items:
-                product =get_object_or_404(Product,id=item.product.id)
-                if product in dis_pro:
-                     total_price = round((float(item.total_price)-(float(item.total_price) * (float(discountcoupon.percentage)/100))) + total_price, 2)
-                     request.session[product.name] = {'price':round( float(item.total_price)-(float(item.total_price) * (float(discountcoupon.percentage)/100)) ,2)}
-                     coupon_dis =  coupon_dis +(float(item.total_price) * (float(discountcoupon.percentage)/100))
-
-
-                
-                else:
-                    total_price = round(float(item.total_price)+ total_price, 2)
-
                 sub_total = round(float(item.total_price)+ sub_total, 2)
-
-                products_list.append({'product':product,'qty':item.quantity,'sqp':item.size_quantity_price,'cart':item})
-
-        
+                products_list.append({'qty':item.quantity,'cart':CartSerializer(item).data})
+                
+        if coupon == 'active':
+            coupon_discount_percentage =  round(float(discountcoupon.percentage),2)*0.01
+            sub_sub_total = round(sub_total - round(coupon_discount_percentage *sub_total,2))
+        else:
+            sub_sub_total = None
+        if deliveryCharges:
+            total_price = round(sub_total + float(deliveryCharges),2)
+        else:
+            total_price = sub_total
+            
+            
             cntx={
                 'products':products_list,
                 'title':'My Cart',
                 'total_price':total_price,
                 'sub_total':sub_total,
-                'coupon_dis':coupon_dis,
+                'delivery_charges':deliveryCharges,
                 'coupon':coupon,
+                'sub_sub_total':sub_sub_total
 
             }
 
-        else:
-            cntx={
-                'title':'My Cart',
-            }
-        return render(request,'user_profile/cart.html',cntx)
-    else:
-         return redirect('signin')
+            return Response(cntx,status =status.HTTP_200_OK)
             
-
-
+@api_view(['DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])    
 def del_cart(request, uuid):
     if request.user.is_authenticated:
         try:
@@ -562,11 +602,9 @@ def del_cart(request, uuid):
              product = Product.objects.get(id=uuid)
              cart = Cart.objects.get(product=product)
              cart.delete()
-        messages.success(request,'')
-        return redirect('show_cart')
-    else:
-         return redirect('signin')
-
+        message="Deleted"
+        return Response({'message':message},status=status.HTTP_200_OK)
+   
 
 
 
@@ -794,6 +832,9 @@ def payment_cancel(request):
     return render(request, 'payment_cancel.html')
 
 # Navigations pages
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])    
 def contactus(request):
     if request.method == 'POST':
         first_name = request.data.get('first_name')
@@ -801,85 +842,67 @@ def contactus(request):
         email = request.data.get('email')
         phone_number =request.data.get('phone_number')
         issue = request.data.get('issue')
-        product = request.data.get('product',None)
         message = request.data.get('message')
 
         enquiry = SupportTickets.objects.create(name=first_name, email=email,number=phone_number,issue=issue,
-                                         product=product,message=message)
+                                        message=message)
         enquiry.save()
-        messages.success(request,'Support Tickets Generated Successfully')
-        return redirect('contactus')
+        message='Support Tickets Generated Successfully'
+        return Response({'message':message},status=status.HTTP_200_OK)
         
-    if  request.GET.get('id'):
-        id=request.GET.get('id')
-        order =Order.objects.get(serial_id=id)
-    else:
-         order =None
-    return render(request,'navigation_pages/contact-us.html',{'title':'Help Desk','order':order})
+    
 
 
-def aboutus(request):
-    reviews = Reviews.objects.all()[::-1]
-
-    page = request.GET.get('page', 1)  # Get the current page number from the request
-
-    paginator = Paginator(reviews, 4)  # Paginate the serialized data with 10 items per page
-    try:
-        reviews = paginator.page(page)
-    except PageNotAnInteger:
-        reviews = paginator.page(1)
-    except EmptyPage:
-        reviews = paginator.page(paginator.num_pages)   
-
-    return render(request,'navigation_pages/about-us.html',{'title':'About Us','reviews':reviews})
-
-def faq(request):
-    return render(request,'navigation_pages/faq.html',{'title':'F&Q'})
-
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])    
 def wishlist(request):
     if request.user.is_authenticated:
         wishlist = WishList.objects.filter(user=request.user)
         cart_items_lis = Cart.objects.filter(user=request.user)
 
-        product_list = []
         cart_items=[]
         if wishlist:
             for item in wishlist:
                 for citem in cart_items_lis:
+                    pro = get_object_or_404(Product,id=item.product.id)
+                    product =product_serializer(pro).data
                     if citem.product.id == item.product.id:
-                        cart_items.append(item.product.id)
-
-                pro = get_object_or_404(Product,id=item.product.id)
-                product_list.append({'pro':pro})
+                        product['cart'] = True
+                    else:
+                        product['cart'] = True
+                    cart_items.append(product)
             cntx={
-                'product_list':product_list,
-                'cart_items':cart_items,
+                'wishlist':cart_items,
                 'title':"Wishlist"
             }
-            return render(request,'user_profile/wishlist.html',cntx)
-        else:
-
-            return render(request,'user_profile/wishlist.html',{'title':'WishList'})
+            return Response(cntx,status=status.HTTP_200_OK)
 
     else:
         return redirect('signin')
 
 
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])    
 def add_wishlist(request,uuid):
     if request.user.is_authenticated:
         try:
             pro = get_object_or_404(Product,id=uuid)
             WishList.objects.create(user=request.user,product=pro).save()
 
-            return redirect('wishlist')
+            return Response({'message':"Added to wishlist"},status=status.HTTP_200_OK)
         except:
-             messages.error(request, 'Already in wishlist')
-             return redirect('wishlist')
+             message='Already in wishlist'
+             return Response({'message':message},status=status.HTTP_208_ALREADY_REPORTED)
 
     else:
         return redirect('signin')
 
 
+@api_view(['DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])  
 def remove_wishlist(request,uuid):
      if request.user.is_authenticated:
         try:
@@ -887,9 +910,7 @@ def remove_wishlist(request,uuid):
             WishList.objects.get(product=product).delete()
         except Exception as e:
              print(e)
-        return redirect('wishlist')
-     else:
-            return redirect('signin')
+        return Response(status=status.HTTP_200_OK)
 
 
 
@@ -908,56 +929,6 @@ def Track_order(request):
              order =None
 
      return render(request,"user_profile/order-tracking.html",{'title':'Order Tracking','order':order})
-
-
-def terms_condition(request):
-     return render(request,"navigation_pages/Terms&condition.html",{'title':'Terms & Conditions'})
-
-def articles(request):
-     tag = request.GET.get('tag')
-     query = request.GET.get('query')
-     print(tag,query)
-     
-     if query:
-        # If a query parameter is present, filter articles based on the query
-        articles = Articles.objects.filter(
-            Q(name__icontains=query) |
-            Q(description__icontains=query) |
-            Q(content__icontains=query)
-        )
-     elif tag:
-        # If a tag parameter is present, retrieve the tag and filter articles based on the tag
-        articles = Articles.objects.filter(tags__name__in=[tag])
-
-        print(articles)
-     else:
-        # If neither query nor tag parameter is present, retrieve all articles
-        articles = Articles.objects.all()
-
-     tags =Tag.objects.all()
-     top_selling_products = Product.objects.filter(
-        orderitem__isnull=False  # Only consider products that have associated order items
-    ).annotate(
-        total_quantity=Sum('orderitem__quantity')  # Calculate the total quantity sold
-    ).order_by(
-        '-total_quantity'  # Order by total quantity in descending order
-    )[:4]
-     return render(request,"navigation_pages/blogs.html",{'articles':articles,'tags':tags,'top_selling_products':top_selling_products})
-
-
-def article_details(request,id):
-     article = Articles.objects.get(id=id)
-     top_selling_products = Product.objects.filter(
-        orderitem__isnull=False  # Only consider products that have associated order items
-    ).annotate(
-        total_quantity=Sum('orderitem__quantity')  # Calculate the total quantity sold
-    ).order_by(
-        '-total_quantity'  # Order by total quantity in descending order
-    )[:4]
-     articles = Articles.objects.all()
-     tags =Tag.objects.all()
-
-     return render(request,"navigation_pages/blog-details.html",{'title':article.name,'article':article,'top_selling_products':top_selling_products,'articles':articles,'tags':tags})
 
 
 

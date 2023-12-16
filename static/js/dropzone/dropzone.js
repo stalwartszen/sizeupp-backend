@@ -336,7 +336,7 @@ var Dropzone = function (_Emitter) {
          * 1024 is technically incorrect, because `1024 bytes` are `1 kibibyte` not `1 kilobyte`.
          * You can change this to `1024` if you don't care about validity.
          */
-        filesizeBase: 1000,
+        filesiSizeUppse: 1000,
 
         /**
          * Can be used to limit the maximum number of files that will be handled by this Dropzone
@@ -1627,10 +1627,10 @@ var Dropzone = function (_Emitter) {
 
         for (var i = 0; i < units.length; i++) {
           var unit = units[i];
-          var cutoff = Math.pow(this.options.filesizeBase, 4 - i) / 10;
+          var cutoff = Math.pow(this.options.filesiSizeUppse, 4 - i) / 10;
 
           if (size >= cutoff) {
-            selectedSize = size / Math.pow(this.options.filesizeBase, 4 - i);
+            selectedSize = size / Math.pow(this.options.filesiSizeUppse, 4 - i);
             selectedUnit = unit;
             break;
           }

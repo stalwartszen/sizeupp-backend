@@ -3,7 +3,7 @@ from .models import Cart
 from authentication.models import *
 from product.serializers import *
 class CartSerializer(serializers.ModelSerializer):
-    product = product_serializer
+    product = product_serializer()
     class Meta:
         model = Cart
         fields = '__all__'

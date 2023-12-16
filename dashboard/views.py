@@ -394,32 +394,37 @@ def detail_category_crud(request,):
 
 
 def Products_dashboard(request):
-     if not request.user.is_authenticated:
+      try :
+            del request.session['sqp_list']
+      except:
+            pass
+      
+      if not request.user.is_authenticated:
             return redirect('dashboard')
     
-     if not request.user.is_superuser:
+      if not request.user.is_superuser:
          messages.error(request,"Not Allowed")
          return redirect('dashboard')
      
-     products = Product.objects.all() .order_by('created_at')
-     serializer =product_serializer(products,many=True)
-     action = request.GET.get('action')
+      products = Product.objects.all() .order_by('created_at')
+      serializer =product_serializer(products,many=True)
+      action = request.GET.get('action')
 
 
-     if action== 'export':
-          return export_products_to_excel(request,products)
-     products = serializer.data
+      if action== 'export':
+            return export_products_to_excel(request,products)
+      products = serializer.data
 
-     cntx={
-        'title':'All Products',
-        'products':products[::-1]
-     }
+      cntx={
+            'title':'All Products',
+            'products':products[::-1]
+      }
 
-     return render(request,'back-end/products.html',cntx) 
+      return render(request,'back-end/products.html',cntx) 
 
 
 def addproduct(request):
-     
+      
       if request.method == 'POST':
           
             product_name = request.POST.get('product_name')
@@ -499,10 +504,7 @@ def addproduct(request):
             selected_sub_category=None
             detailcategories= None
             
-  
 
-     
-      
       sqpies = SizeQuantityPrice.objects.all()[::-1]
 
       cntx ={
@@ -529,84 +531,120 @@ def addproduct_crud(request,id):
                   product_description = request.POST.get('product_description')
                   category_id = request.POST.get('category_id')
                   subcategory_id = request.POST.get('subcategory_id')
-                  sqp = request.POST.get('sqp_id')
+                  detailcategory_id = request.POST.get('detailcategory_id')
+                  colour_family = request.POST.get('color_family',None)
+                  colour =  request.POST.get('colours',None)
+                  
+                  price = request.POST.get('price')
+                  discount =  request.POST.get('discount',None)
+                  discount_percentage =  request.POST.get('discount_percentage',None)
+                  add_discounted_price =  request.POST.get('discounted_price',None)
 
-
-
-                  additional_info = request.POST.get('additional_info')
-                  care_instructions = request.POST.get('care_instructions')
+                  additional_info = request.POST.get('additional_info',None)
+                  care_instructions = request.POST.get('care_instructions',None)
                   thumbnail_img = request.FILES.get('thumbnail_img')
-                  if not thumbnail_img:
-                        thumbnail_img = product.img
-                  meta_tags = request.POST.get('meta_tags')
-                  meta_description = request.POST.get('meta_description')
-                  
 
+                  meta_tags = request.POST.get('meta_tags',None)
+                  meta_description = request.POST.get('meta_description',None)
                   
-                  product.name = product_name
-                  product.img = thumbnail_img
-                  product.description = product_description
-                  product.additional_info = additional_info
-                  product.care_instructions = care_instructions
+                  if thumbnail_img:
+                        product.img=thumbnail_img
+                  else:
+                        product.img = product.img
+                  product.name=product_name
+                  product.description=product_description
+                  product.additional_info=additional_info
+                  product.care_instructions=care_instructions
                   product.category = ProductCategory.objects.get(id=category_id)
-                  product.subcategory = ProductSubCategory.objects.get(id=subcategory_id) 
-                  
-                  
-
+                  product.subcategory =ProductSubCategory.objects.get(id=subcategory_id)
+                  product.detail_category= ProductDetailCategory.objects.get(id=detailcategory_id) 
+                  product.color_family = ColourFamily.objects.get(name=colour_family)
+                  product.price = price
+                  product.discount=discount
+                  product.discount_percentage=discount_percentage
+                  product.discounted_price=add_discounted_price
                   product.meta_tags = meta_tags
-                  product.meta_description = meta_description
-
-
+                  product.meta_description=meta_description
+                        
                   
-                  product.size_quantity_price = SizeQuantityPrice.objects.get(id=sqp)
-            
-                  product.save()
-
+                  # product.save()
+      
+                  for i in product.sqp.all():
+                       i.delete()
+                        
+                        
+                  sqp_list =request.session['sqp_list']
+                  for i  in sqp_list:
+                        sqp =SizeQuantityPrice.objects.create(size=i['size'])
+                        sqp.quantity = i['quantity']
+                        sqp.inches=i['inches']
+                        sqp.meter = i['meter']
+                        sqp.length = i['length']
+                        sqp.width = i['width']
+                        sqp.height = i['height']
+                        sqp.weight = i['weight']
+                        sqp.save()
+                        product.sqp.add(sqp)
+                        product.save()
+                        
+                        
+                  try :
+                        del request.session['sqp_list']
+                  except:
+                        pass
                   return redirect('products_dashboard')
 
 
+
             categories = ProductCategory.objects.all()[::-1]
-          
-            subcategories = ProductSubCategory.objects.all()[::-1]
+            sqp_list=[]
             
-
-
+            for  sqp in product.sqp.all():
+                  sqp = SizeQuantityPrice.objects.get(id=sqp.id)
+                  sqp_ = {'size':sqp.size,'meter':sqp.meter,'quantity':sqp.quantity,'inches':sqp.inches,'length':sqp.length,'width':sqp.width,'height':sqp.height,'weight':sqp.weight}
+                  sqp_list.append(sqp_)
+            try:
+                  sqp_list = request.session['sqp_list']  
+            except:
+                  request.session['sqp_list'] = sqp_list
+            
+            
+            if request.GET.get('category_id'):
+                  selected_category = request.GET.get('category_id')
+                  selected_category = ProductCategory.objects.get(id=selected_category)
+            else:
+                  selected_category =product.category
+                  
+            if request.GET.get('category_id') and request.GET.get('subcategory_id'):
+                  selected_sub_category = request.GET.get('subcategory_id')
+                  selected_sub_category = ProductSubCategory.objects.get(id=selected_sub_category)
+                  selected_detail_category = None
+            else:
+                  selected_sub_category=product.subcategory
+                  selected_detail_category = product.detail_category
+                                    
+            if selected_category:
+                  subcategories = ProductSubCategory.objects.filter(category=selected_category)[::-1]
+           
+            if selected_sub_category:
+                  detailcategories = ProductDetailCategory.objects.filter(subcategory=selected_sub_category)[::-1]
 
             sqpies = SizeQuantityPrice.objects.all()[::-1] 
-
-
-            
          
             cntx ={
-                        'title':'Update Product',
-                        'categories':categories,
-                        'subcategories':subcategories,
-                        'sqpies':sqpies,
-                        'pro_id':id,
-                        'product':product,
-
-
-
-                  } 
+                  'product':product,
+                  'title':'Add Product',
+                  'sqpies':sqpies,
+                  'categories':categories,
+                  'subcategories':subcategories,
+                  'detailcategories':detailcategories,
+                  'selected_category':selected_category,
+                  'selected_sub_category':selected_sub_category,
+                  'color_family':ColourFamily.objects.all(),
+                  'selected_detail_category':selected_detail_category
+                  
+            } 
             return render(request,'back-end/edit-product.html',cntx)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -617,96 +655,19 @@ def addproduct_crud(request,id):
       
 
 
-# def sqp_list(request):
-#       if not request.user.is_authenticated:
-#             return redirect('dashboard')
-    
-#       if not request.user.is_superuser:
-#          messages.error(request,"Not Allowed")
-#          return redirect('dashboard')
-#       sqp_list = SizeQuantityPrice.objects.all()[::-1] 
-#       return render(request,'back-end/sqp_list.html',{'title':'SQP','sqp_list':sqp_list})
-
-
-# def sqp_crud(request):
-#       slug = request.GET.get('slug')
-#       if slug == 'Update':
-#             id = request.GET.get('id')
-
-#             if request.method == 'POST':
-               
-#                 product_id = request.POST.get('product_id')
-#                 size=request.POST.get('size')
-#                 quantity=request.POST.get('quantity')
-#                 inches=request.POST.get('inches')
-#                 length=request.POST.get('length')
-#                 width=request.POST.get('width')
-#                 height=request.POST.get('height')
-#                 weight=request.POST.get('weight')
-
-#                 sqp = SizeQuantityPrice.objects.get(id=id)
-
-                
-#                 sqp.product =Product.objects.get(id=product_id)
-#                 sqp.inches = inches
-#                 sqp.size = size
-#                 sqp.length = length
-#                 sqp.quantity = quantity
-#                 sqp.width = width
-#                 sqp.height = height
-#                 sqp.weight = weight
-               
-#                 sqp.save()
-
-#                 messages.success(request,'Updated')
-
-#                 return redirect('sqp_list')
-#             else:
-#                 sqp =SizeQuantityPrice.objects.get(id=id)   
-#                 return render(request,'back-end/add-sqp.html',{'title':'Add SQP','sqp':sqp,'slug':'Update','color_family':ColourFamily.objects.all()})
-      
-      
-#       if slug == 'Add':
-#         if request.method == 'POST':
-#                 redirect_url = request.POST.get('redirect')
-#                 product_id = request.POST.get('product_id')
-#                 size=request.POST.get('size')
-#                 quantity=request.POST.get('quantity')
-#                 inches=request.POST.get('inches')
-#                 length=request.POST.get('length')
-#                 width=request.POST.get('width')
-#                 height=request.POST.get('height')
-#                 weight=request.POST.get('weight')
-          
-
-      
-#                 sqp =SizeQuantityPrice.objects.create(product=Product.objects.get(id=product_id))
-#                 sqp.inches = inches
-#                 sqp.size = size
-#                 sqp.length = length
-#                 sqp.quantity = quantity
-#                 sqp.width = width
-#                 sqp.height = height
-#                 sqp.weight = weight
-               
-#                 sqp.save()           
-
-#                 messages.success(request,'SQP Added')
-#                 if redirect_url == 'productadd':
-#                       return JsonResponse({'sqp_id':sqp.id},safe=True)
-                
-#                 return redirect('sqp_list')
-      
-#         return render(request,'back-end/add-sqp.html',{'title':'Add SQP','slug':'Add','color_family':ColourFamily.objects.all()})
-      
-#       if slug =='Delete':
-#             id = request.GET.get('id') 
-#             sqp = SizeQuantityPrice.objects.get(id=id)
-#             sqp.delete()
-#             return redirect('sqp_list') 
-      
-
 def sqp_crud(request):
+      
+      if request.GET.get('slug')=='Delete':
+            size = request.GET.get('size')
+            id = request.GET.get('id')
+            sqp_list= request.session['sqp_list']
+            print(sqp_list,"@@@@@@@@@@$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+            sqp_list = [item for item in sqp_list if item['size'] != size]
+            request.session['sqp_list'] = sqp_list
+
+            return redirect(f'add-product_crud/{id}?slug=update')
+            
+            
       if request.method == 'POST':
             # product_id = request.POST.get('product_id')
             size=request.POST.get('size',None)
@@ -719,6 +680,7 @@ def sqp_crud(request):
             weight=request.POST.get('weight',None)
       
             sqp = {'size':size,'meter':meter,'quantity':quantity,'inches':inches,'length':length,'width':width,'height':height,'weight':weight}
+            print("1111111111111")
             try :
                   sqp_list= request.session['sqp_list']
                   sqp_list.append(sqp)
@@ -730,14 +692,7 @@ def sqp_crud(request):
                   request.session['sqp_list'] = [sqp]
                   return JsonResponse({'message':'added'},safe=True)
       
-      if request.GET.get('slug')=='Delete':
-            size = request.GET.get('size')
-            sqp_list= request.session['sqp_list']
-            print(sqp_list)
-            sqp_list = [item for item in sqp_list if item['size'] != size]
-            request.session['sqp_list'] = sqp_list
-
-            return redirect('addproduct')
+      
 
 def users_list(request):
       if not request.user.is_authenticated:
@@ -814,14 +769,12 @@ def coupons_list(request):
       slug= request.GET.get('slug')
       if slug == 'Add':
             if request.method == 'POST':
-                  selected_products = request.POST.get('selected_products').split(',')
                   code=request.POST.get('code')
                   active = request.POST.get('active')
                   percentage = request.POST.get('percentage')
-                  coupon = DiscountCoupon.objects.create(code=code,percentage=percentage)
-                  for pro_id in selected_products:
-                    product = Product.objects.get(id=pro_id)
-                    coupon.products.add(product)
+                  end_date = request.POST.get('end_date')
+                  coupon = DiscountCoupon.objects.create(code=code,percentage=percentage,end_date=end_date)
+                  
                   if active == 'True':
                         coupon.active = True
                   coupon.save()
@@ -1365,7 +1318,7 @@ def pos(request):
       #       return redirect('pos')
       delivery_charges=DeliveryCharges.objects.all()
       
-      return render(request,"back-end/pos.html",{'title':'Zeba | Billing System','product_list':product_list,'order_deatils':order_deatils,
+      return render(request,"back-end/pos.html",{'title':'SizeUpp | Billing System','product_list':product_list,'order_deatils':order_deatils,
                                           'delivery_charges':delivery_charges,'dcharg':dcharg})
       
 

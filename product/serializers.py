@@ -1,22 +1,12 @@
 from rest_framework import serializers
-from product.models import Product, Brand,ProductCategory, ProductSubCategory, SizeQuantityPrice,ProductDetailCategory
-import json
-from django.core.serializers import serialize
-
-class SizeQuantityPriceSerializer(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, SizeQuantityPrice):
-            serialized_obj = serialize('json', [obj])
-            deserialized_obj = json.loads(serialized_obj)[0]['fields']
-            deserialized_obj['id'] = str(obj.id)
-            return deserialized_obj
-        return super().default(obj)
-
-
-class brand_serializer(serializers.ModelSerializer):
+from product.models import Product, Brand,ProductCategory, ProductSubCategory, SizeQuantityPrice,ProductDetailCategory,ProductImages
+from dashboard.models import Reviews
+class SizeQuantityPriceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Brand
+        model = SizeQuantityPrice
         fields = "__all__"
+
+
 
 
 
@@ -28,29 +18,42 @@ class category_serializer(serializers.ModelSerializer):
 
 
 class subcategory_serializer(serializers.ModelSerializer):
+    category = category_serializer()
     class Meta:
         model = ProductSubCategory
         fields = "__all__"
 
 
 class detail_category_serializer(serializers.ModelSerializer):
+    subcategory = subcategory_serializer()
     class Meta:
         model = ProductDetailCategory
         fields = "__all__"
 
 
-class size_quantity_price_serializer(serializers.ModelSerializer):
+class ProductImagesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SizeQuantityPrice
-        fields = "__all__"
-        
-
+        model = ProductImages
+        fields = ('img',)
 
 class product_serializer(serializers.ModelSerializer):
     category = category_serializer()
     subcategory = subcategory_serializer()
     detail_category = detail_category_serializer()
-    # size_quantity_price = size_quantity_price_serializer(many=True,read_only=True)
+    sqp = SizeQuantityPriceSerializer(many=True, read_only=True)
+    images = ProductImagesSerializer(many=True, read_only=True, source='productimages_set')  # Assuming 'productimages_set' is the related name
     class Meta:
         model = Product
         fields = "__all__"
+        
+        
+class size_quantity_price_serializer(serializers.ModelSerializer):
+    class Meta:
+        model = SizeQuantityPrice
+        fields = "__all__"
+    
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reviews
+        fields = "__all__"
+        
