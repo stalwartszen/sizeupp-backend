@@ -41,10 +41,12 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'drf_yasg',
+    
 
 ]
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_SCHEMA_CLASS': [  'rest_framework.authentication.TokenAuthentication',
+                             'rest_framework.schemas.coreapi.AutoSchema'],
 }
 SITE_ID = 1
 SOCIALACCOUNT_PROVIDERS = {
@@ -155,7 +157,7 @@ MEDIA_URL = '/media/'
 
 #static files
 STATIC_URL = '/static/'
-# STATICFILES_DIRS = [BASE_DIR ,"staticfiles",]
+# STATICFILES_DIRS = [BASE_DIR / "static",]
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'staticfiles')]
