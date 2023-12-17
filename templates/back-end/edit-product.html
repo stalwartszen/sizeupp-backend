@@ -227,7 +227,7 @@
                                                 <div class="mb-4 row align-items-center">
                                                     <label class="form-label-title col-sm-3 mb-0">Colour Family :</label>
                                                     <div class="col-sm-9">
-                                                        <select name="color_family" class="form-control"  required>
+                                                        <select name="color_family" class="form-control"  >
 
                                                             <option  value="">--select--</option>
 
@@ -265,16 +265,22 @@
                                                 <div class="mb-4 row align-items-center">
                                                     
                                                     <label class="form-label-title col-sm-3 mb-0">Colours :</label>
-                                                    <div class="col-sm-2">
-                                                        <input class="form-control" type="color" name="colours" placeholder="Color" multiple value="{{product.color}}">
-                                                            
-                                                    </div>                                        
+                                                    <div class="col-sm-2" id="colorContainer">
+                                                        <button type="button" onclick="addMoreColors()">+ add more</button>
+                                                        <button type="button" onclick="deleteColors()">- Delete</button>
+                                                        {% for i in product_colors %}
+                                                        
+                                                        <input class="form-control" type="color" id="color{{forloop.counter}}" value="{{i}}" placeholder="Color">
+                                                        {% endfor %}
+                                                        <input type="hidden" name="colors" id="colorsInput" value="{{product.color}}">
+
+                                                    </div>                                           
                                                 </div>
 
                                                 <div class="mb-4 row align-items-center">
                                                     <label class="form-label-title col-sm-3 mb-0">Price (₹):</label>
                                                     <div class="col-sm-9">
-                                                        <input class="form-control" type="number" step="0.01" id="price" name="price" placeholder="Price"  value="{{product.price}}" required>
+                                                        <input class="form-control" type="number" step="0.01" id="price" name="price" placeholder="Price"  value="{{product.price}}" >
                                                     </div>
                                                 </div>
 
@@ -418,7 +424,7 @@
                                                 <div class="mb-4 row align-items-center">
                                                     <label class="form-label-title col-sm-3 mb-0">Quantity :</label>
                                                     <div class="col-sm-9">
-                                                        <input class="form-control" type="number"  name="quantity" placeholder="Quantity " required>
+                                                        <input class="form-control" type="number"  name="quantity" placeholder="Quantity " >
                                                     </div>
                                                 </div>
 
@@ -643,8 +649,54 @@
                 
                 });
             </script>
+    
+<script>
+    function addMoreColors() {
+        // Create a new color input
+        var newColorInput = document.createElement("input");
+        newColorInput.className = "form-control";
+        newColorInput.type = "color";
+        newColorInput.placeholder = "Color";
 
-            
+        // Increment the id for each new input
+        var currentColorCount = document.querySelectorAll("input[type=color]").length + 1;
+        newColorInput.id = "color" + currentColorCount;
+
+        // Attach the event listener to the new input
+        newColorInput.addEventListener("input", updateHiddenInput);
+
+        // Append the new input to the container
+        document.getElementById("colorContainer").appendChild(newColorInput);
+
+        // Update the hidden input with all color values
+        updateHiddenInput();
+    }
+
+    function deleteColors() {
+        var colorInputs = document.querySelectorAll("input[type=color]");
+        if (colorInputs.length > 1) {
+            var lastColorInput = colorInputs[colorInputs.length - 1];
+            lastColorInput.remove();
+
+            // Update the hidden input with remaining color values
+            updateHiddenInput();
+        }
+    }
+
+    function updateHiddenInput() {
+        // Get all color values
+        var colorInputs = document.querySelectorAll("input[type=color]");
+        var colorValues = Array.from(colorInputs).map(input => input.value);
+
+        // Update the hidden input value
+        document.getElementById("colorsInput").value = colorValues.join(',');
+    }
+
+    // Attach an event listener to the initial color input
+    document.getElementById("color1").addEventListener("input", updateHiddenInput);
+</script>
+
+        
             <script>
                     document.addEventListener("DOMContentLoaded", function () {
                     var submitFormBtn = document.getElementById("submitFormBtn");

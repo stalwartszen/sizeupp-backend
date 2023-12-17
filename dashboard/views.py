@@ -427,57 +427,57 @@ def addproduct(request):
       
       if request.method == 'POST':
           
-            product_name = request.POST.get('product_name')
-            product_description = request.POST.get('product_description')
-            category_id = request.POST.get('category_id')
-            subcategory_id = request.POST.get('subcategory_id')
-            detailcategory_id = request.POST.get('detailcategory_id')
-            colour_family = request.POST.get('color_family',None)
-            colour =  request.POST.get('colours',None)
-            
-            price = request.POST.get('price')
-            discount =  request.POST.get('discount',None)
-            discount_percentage =  request.POST.get('discount_percentage',None)
-            add_discounted_price =  request.POST.get('update_discounted_price',None)
+            # product_name = request.POST.get('product_name')
+            # product_description = request.POST.get('product_description')
+            # category_id = request.POST.get('category_id')
+            # subcategory_id = request.POST.get('subcategory_id')
+            # detailcategory_id = request.POST.get('detailcategory_id')
+            # colour_family = request.POST.get('color_family',None)
+            colour =  request.POST.get('colors',None)
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",colour)
+            # price = request.POST.get('price')
+            # discount =  request.POST.get('discount',None)
+            # discount_percentage =  request.POST.get('discount_percentage',None)
+            # add_discounted_price =  request.POST.get('update_discounted_price',None)
 
-            additional_info = request.POST.get('additional_info',None)
-            care_instructions = request.POST.get('care_instructions',None)
-            thumbnail_img = request.FILES.get('thumbnail_img')
+            # additional_info = request.POST.get('additional_info',None)
+            # care_instructions = request.POST.get('care_instructions',None)
+            # thumbnail_img = request.FILES.get('thumbnail_img')
 
-            meta_tags = request.POST.get('meta_tags',None)
-            meta_description = request.POST.get('meta_description',None)
+            # meta_tags = request.POST.get('meta_tags',None)
+            # meta_description = request.POST.get('meta_description',None)
 
-            product = Product.objects.create(
-                  name=product_name,img=thumbnail_img,
-                  description=product_description,
-                  additional_info=additional_info,
-                  care_instructions=care_instructions,
-                  category = ProductCategory.objects.get(id=category_id),
-                  subcategory =ProductSubCategory.objects.get(id=subcategory_id),
-                  detail_category= ProductDetailCategory.objects.get(id=detailcategory_id) ,
-                  color_family = ColourFamily.objects.get(name=colour_family),
-                  price = price,
-                  discount=discount,
-                  discount_percentage=discount_percentage,
-                  discounted_price=add_discounted_price,
-                  meta_tags = meta_tags,
-                  meta_description=meta_description
+            # product = Product.objects.create(
+            #       name=product_name,img=thumbnail_img,
+            #       description=product_description,
+            #       additional_info=additional_info,
+            #       care_instructions=care_instructions,
+            #       category = ProductCategory.objects.get(id=category_id),
+            #       subcategory =ProductSubCategory.objects.get(id=subcategory_id),
+            #       detail_category= ProductDetailCategory.objects.get(id=detailcategory_id) ,
+            #       color_family = ColourFamily.objects.get(name=colour_family),
+            #       price = price,
+            #       discount=discount,
+            #       discount_percentage=discount_percentage,
+            #       discounted_price=add_discounted_price,
+            #       meta_tags = meta_tags,
+            #       meta_description=meta_description
                   
-            )
-            product.save()
-            sqp_list =request.session['sqp_list']
-            for i  in sqp_list:
-                  sqp =SizeQuantityPrice.objects.create(size=i['size'])
-                  sqp.quantity = i['quantity']
-                  sqp.inches=i['inches']
-                  # sqp.meter = i['meter']
-                  sqp.length = i['length']
-                  sqp.width = i['width']
-                  sqp.height = i['height']
-                  sqp.weight = i['weight']
-                  sqp.save()
-                  product.sqp.add(sqp)
-                  product.save()
+            # )
+            # product.save()
+            # sqp_list =request.session['sqp_list']
+            # for i  in sqp_list:
+            #       sqp =SizeQuantityPrice.objects.create(size=i['size'])
+            #       sqp.quantity = i['quantity']
+            #       sqp.inches=i['inches']
+            #       # sqp.meter = i['meter']
+            #       sqp.length = i['length']
+            #       sqp.width = i['width']
+            #       sqp.height = i['height']
+            #       sqp.weight = i['weight']
+            #       sqp.save()
+            #       product.sqp.add(sqp)
+            #       product.save()
                   
                   
             try :
@@ -533,7 +533,7 @@ def addproduct_crud(request,id):
                   subcategory_id = request.POST.get('subcategory_id')
                   detailcategory_id = request.POST.get('detailcategory_id')
                   colour_family = request.POST.get('color_family',None)
-                  colour =  request.POST.get('colours',None)
+                  colour =  request.POST.get('colors',None)
                   
                   price = request.POST.get('price')
                   discount =  request.POST.get('discount',None)
@@ -561,13 +561,15 @@ def addproduct_crud(request,id):
                   product.color_family = ColourFamily.objects.get(name=colour_family)
                   product.price = price
                   product.discount=discount
-                  product.discount_percentage=discount_percentage
-                  product.discounted_price=add_discounted_price
+                  if discount_percentage != None:
+                        product.discount_percentage=discount_percentage
+                  if add_discounted_price !=None:
+                        product.discounted_price=add_discounted_price
                   product.meta_tags = meta_tags
                   product.meta_description=meta_description
-                        
+                  product.color =colour
                   
-                  # product.save()
+                  product.save()
       
                   for i in product.sqp.all():
                        i.delete()
@@ -630,7 +632,10 @@ def addproduct_crud(request,id):
                   detailcategories = ProductDetailCategory.objects.filter(subcategory=selected_sub_category)[::-1]
 
             sqpies = SizeQuantityPrice.objects.all()[::-1] 
-         
+            try:
+                  product_colors = product.color.split(',')
+            except:
+                  product_colors=''
             cntx ={
                   'product':product,
                   'title':'Add Product',
@@ -641,6 +646,7 @@ def addproduct_crud(request,id):
                   'selected_category':selected_category,
                   'selected_sub_category':selected_sub_category,
                   'color_family':ColourFamily.objects.all(),
+                  'product_colors':product_colors,
                   'selected_detail_category':selected_detail_category
                   
             } 
