@@ -31,7 +31,7 @@ urlpatterns = [
     path('my-cart',views.show_Cart,name="show_cart"), 
     path('delete_cart/<uuid:uuid>',views.del_cart,name="del_item"),
 
-    path('wishlist',views.wishlist,name="wishlist"),
+    path('wishlist/',views.wishlist,name="wishlist"),
     path('add_wishlist/<uuid:uuid>',views.add_wishlist,name="add_wishlist"),
     path('remove_wishlist/<uuid:uuid>',views.remove_wishlist,name="remove_wishlist"),
         #   path('cart/<uuid:id>/<str:slug>',views.cart_by_id,name='cart_crud'),
@@ -49,8 +49,8 @@ urlpatterns = [
 
  
     #Update User Profile
-    path('Update-Profile',views.Update_Profile,name="Update_Profile"),
-    path('updateCart',views.updateCart,name="updateCart"),
+    path('update-profile',views.Update_Profile,name="Update_Profile"),
+    path('update-cart/<uuid:uuid>',views.updateCart,name="updateCart"),
 
     path('return-product',views.return_product,name='return_product')
 

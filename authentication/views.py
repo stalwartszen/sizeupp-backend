@@ -436,10 +436,33 @@ def address_by_id(request, id,slug):
         return Response({'message': "Deleted Successfully"}, status=status.HTTP_200_OK)
     
 
-def updateCart(request):
-   
-    return redirect('show_cart')
-
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated]) 
+def updateCart(request,uuid):
+    product = get_object_or_404(Product,id=uuid)
+    cart = Cart.objects.get(user=request.user,product=product)
+    if request.method == 'POST':
+        qty= request.data.get('qty',None)
+        selected_color = request.data.get('selected_color',None)
+        sqp_id = request.data.get('sqp_id',None)
+        if qty:
+            cart.quantity = int(qty) + int(cart.quantity)
+            cart.price = product.price
+            cart.total_price = round((float(qty)*float(cart.price)),2)
+            if product.discount == True:
+                cart.discount_price = product.discounted_price
+                cart.discount_percentage = product.discount_percentage
+                cart.total_price =round((float(qty)*float(cart.discount_price)),2)   
+        
+        if sqp_id:
+            sqp = SizeQuantityPrice.objects.get(id=sqp_id)
+            cart.size_quantity_price = sqp
+        if selected_color:
+            cart.color = selected_color
+            
+        cart.save()
+        return Response({'message':'Cart is Updated'},status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -466,7 +489,8 @@ def Add_Cart(request,uuid):
         
 
         
-
+        if Cart.objects.filter(user=request.user,product=pro).exists():
+            return Response({'Message':'Already In Cart'},status=status.HTTP_208_ALREADY_REPORTED)
         cart_item = Cart.objects.create(user=user,product=pro,quantity=qty,size_quantity_price=size_quantity_price,price=pro.price ,total_price=total_price,discount_percentage=pro.discount_percentage,discount_price = pro.discounted_price)
         if selected_color :
                 cart_item.color=selected_color
@@ -577,7 +601,7 @@ def show_Cart(request):
             total_price = sub_total
             
             
-            cntx={
+        cntx={
                 'products':products_list,
                 'title':'My Cart',
                 'total_price':total_price,
@@ -588,22 +612,23 @@ def show_Cart(request):
 
             }
 
-            return Response(cntx,status =status.HTTP_200_OK)
+        return Response(cntx,status =status.HTTP_200_OK)
             
 @api_view(['DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])    
 def del_cart(request, uuid):
     if request.user.is_authenticated:
-        try:
-            cart = Cart.objects.get(id=uuid)
+        
+        product = Product.objects.get(id=uuid)
+        if Cart.objects.filter(product=product,user= request.user).exists():
+            cart = Cart.objects.get(product=product,user= request.user)
             cart.delete()
-        except:
-             product = Product.objects.get(id=uuid)
-             cart = Cart.objects.get(product=product)
-             cart.delete()
-        message="Deleted"
-        return Response({'message':message},status=status.HTTP_200_OK)
+            message="Deleted"
+        else:
+            message = "Not Found"
+        cart= CartSerializer(Cart.objects.filter(user=request.user),many=True).data
+        return Response({'message':message,'cart':cart},status=status.HTTP_200_OK)
    
 
 
@@ -831,6 +856,13 @@ def payment_cancel(request):
 
     return render(request, 'payment_cancel.html')
 
+
+
+
+
+
+
+
 # Navigations pages
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
@@ -859,6 +891,7 @@ def contactus(request):
 def wishlist(request):
     if request.user.is_authenticated:
         wishlist = WishList.objects.filter(user=request.user)
+        print("wishlist",wishlist)
         cart_items_lis = Cart.objects.filter(user=request.user)
 
         cart_items=[]
@@ -872,14 +905,12 @@ def wishlist(request):
                     else:
                         product['cart'] = True
                     cart_items.append(product)
-            cntx={
+        cntx={
                 'wishlist':cart_items,
-                'title':"Wishlist"
             }
-            return Response(cntx,status=status.HTTP_200_OK)
+        return Response(cntx,status=status.HTTP_200_OK)
 
-    else:
-        return redirect('signin')
+    
 
 
 @api_view(['POST'])
@@ -905,12 +936,13 @@ def add_wishlist(request,uuid):
 @permission_classes([IsAuthenticated])  
 def remove_wishlist(request,uuid):
      if request.user.is_authenticated:
-        try:
-            product = get_object_or_404(Product,id=uuid)
+        product = get_object_or_404(Product,id=uuid)
+        if WishList.objects.filter(product=product).exists():
             WishList.objects.get(product=product).delete()
-        except Exception as e:
-             print(e)
-        return Response(status=status.HTTP_200_OK)
+
+        wishlist = WishListSerializer(WishList.objects.filter(user=request.user),many=True).data
+        return Response({'wishlist':wishlist},status=status.HTTP_200_OK)
+        
 
 
 
@@ -932,7 +964,9 @@ def Track_order(request):
 
 
 
-
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])  
 def Update_Profile(request):
     if  request.method == 'POST':
          first_name = request.data.get('first_name')
@@ -945,8 +979,8 @@ def Update_Profile(request):
          
          
          if User.objects.filter(phone=contact).exists():
-                messages.error(request,'Phone numeber is already registered !!')
-                return redirect('Update_Profile')
+                message = 'Phone numeber is already registered !!'
+                return Response({"message":"Mobile Number Already Register"},status=status.HTTP_400_BAD_REQUEST)
 
 
          user.first_name = first_name
@@ -957,23 +991,22 @@ def Update_Profile(request):
 
          if new_email:
                 if User.objects.filter(email=new_email).exists():
-                    messages.error(request,'Email Alrady Registered !!')
-                    return redirect('Update_Profile')
+                    message='Email Alrady Registered !!'
+                    return Response({'message':message},status=status.HTTP_400_BAD_REQUEST)
                 
                 user.email = new_email
                 user.is_verified = False
 
                 user.save()
                 
-                return redirect('otp')
+                return Response({'message':"Profile Updated",'user_verified':request.user.is_verified},status=status.HTTP_200_OK)
 
-         return redirect('userprofile')
-        
+         return Response({'message':"Profile Updated"},status=status.HTTP_200_OK)
+
+    
+          
          
-    cntx={
-         'title':"Update Profile"
-    }
-    return render(request,'update_forms/update_profile.html',cntx)
+
 
 
 def return_product(request):

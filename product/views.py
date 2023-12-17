@@ -120,12 +120,15 @@ def product_inside(request,uuid):
         wishlist = WishList.objects.filter(user=request.user)
         wishlist_products = []
 
-        for product in wishlist:
-            wishlist_products.append(product.product.id)
+        for i in wishlist:
+            wishlist_products.append(i.product.id)
 
-        for product in cart:
-            cart_products.append(product.product.id)
+        for i in cart:
+            cart_products.append(i.product.id)
 
+        print(cart_products,"***********************************")
+        print(wishlist_products,"!!!!!!!!!!!!!!!!!!!!!")
+        
         if product.id in cart_products:
             cart =True
         else:
@@ -203,7 +206,7 @@ def cat_list(request):
     serializer = detail_category_serializer(cats,many=True)
 
 
-    return Response( {'category':serializer.data},status=status.HTTP_200_OK)
+    return Response( {'detail_category':serializer.data},status=status.HTTP_200_OK)
 
 
 
