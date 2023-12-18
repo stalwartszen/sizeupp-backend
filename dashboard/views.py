@@ -427,57 +427,56 @@ def addproduct(request):
       
       if request.method == 'POST':
           
-            # product_name = request.POST.get('product_name')
-            # product_description = request.POST.get('product_description')
-            # category_id = request.POST.get('category_id')
-            # subcategory_id = request.POST.get('subcategory_id')
-            # detailcategory_id = request.POST.get('detailcategory_id')
-            # colour_family = request.POST.get('color_family',None)
+            product_name = request.POST.get('product_name')
+            product_description = request.POST.get('product_description')
+            category_id = request.POST.get('category_id')
+            subcategory_id = request.POST.get('subcategory_id')
+            detailcategory_id = request.POST.get('detailcategory_id')
+            colour_family = request.POST.get('color_family',None)
             colour =  request.POST.get('colors',None)
-            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",colour)
-            # price = request.POST.get('price')
-            # discount =  request.POST.get('discount',None)
-            # discount_percentage =  request.POST.get('discount_percentage',None)
-            # add_discounted_price =  request.POST.get('update_discounted_price',None)
+            price = request.POST.get('price')
+            discount =  request.POST.get('discount',None)
+            discount_percentage =  request.POST.get('discount_percentage',None)
+            add_discounted_price =  request.POST.get('update_discounted_price',None)
 
-            # additional_info = request.POST.get('additional_info',None)
-            # care_instructions = request.POST.get('care_instructions',None)
-            # thumbnail_img = request.FILES.get('thumbnail_img')
+            additional_info = request.POST.get('additional_info',None)
+            care_instructions = request.POST.get('care_instructions',None)
+            thumbnail_img = request.FILES.get('thumbnail_img')
 
-            # meta_tags = request.POST.get('meta_tags',None)
-            # meta_description = request.POST.get('meta_description',None)
+            meta_tags = request.POST.get('meta_tags',None)
+            meta_description = request.POST.get('meta_description',None)
 
-            # product = Product.objects.create(
-            #       name=product_name,img=thumbnail_img,
-            #       description=product_description,
-            #       additional_info=additional_info,
-            #       care_instructions=care_instructions,
-            #       category = ProductCategory.objects.get(id=category_id),
-            #       subcategory =ProductSubCategory.objects.get(id=subcategory_id),
-            #       detail_category= ProductDetailCategory.objects.get(id=detailcategory_id) ,
-            #       color_family = ColourFamily.objects.get(name=colour_family),
-            #       price = price,
-            #       discount=discount,
-            #       discount_percentage=discount_percentage,
-            #       discounted_price=add_discounted_price,
-            #       meta_tags = meta_tags,
-            #       meta_description=meta_description
+            product = Product.objects.create(
+                  name=product_name,img=thumbnail_img,
+                  description=product_description,
+                  additional_info=additional_info,
+                  care_instructions=care_instructions,
+                  category = ProductCategory.objects.get(id=category_id),
+                  subcategory =ProductSubCategory.objects.get(id=subcategory_id),
+                  detail_category= ProductDetailCategory.objects.get(id=detailcategory_id) ,
+                  color_family = ColourFamily.objects.get(name=colour_family),
+                  price = price,
+                  discount=discount,
+                  discount_percentage=discount_percentage,
+                  discounted_price=add_discounted_price,
+                  meta_tags = meta_tags,
+                  meta_description=meta_description
                   
-            # )
-            # product.save()
-            # sqp_list =request.session['sqp_list']
-            # for i  in sqp_list:
-            #       sqp =SizeQuantityPrice.objects.create(size=i['size'])
-            #       sqp.quantity = i['quantity']
-            #       sqp.inches=i['inches']
-            #       # sqp.meter = i['meter']
-            #       sqp.length = i['length']
-            #       sqp.width = i['width']
-            #       sqp.height = i['height']
-            #       sqp.weight = i['weight']
-            #       sqp.save()
-            #       product.sqp.add(sqp)
-            #       product.save()
+            )
+            product.save()
+            sqp_list =request.session['sqp_list']
+            for i  in sqp_list:
+                  sqp =SizeQuantityPrice.objects.create(size=i['size'])
+                  sqp.quantity = i['quantity']
+                  sqp.inches=i['inches']
+                  # sqp.meter = i['meter']
+                  sqp.length = i['length']
+                  sqp.width = i['width']
+                  sqp.height = i['height']
+                  sqp.weight = i['weight']
+                  sqp.save()
+                  product.sqp.add(sqp)
+                  product.save()
                   
                   
             try :
