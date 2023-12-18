@@ -227,8 +227,10 @@ def cat_list(request):
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-def review_post(request,id):
+def review_post(request):
     if request.method == 'POST':
+        id = request.data.get('id')
+
         comment = request.data.get('comment')
         rating = float(request.data.get('rating'))
         review = Reviews.objects.create(user=request.user,product = Product.objects.get(id=id),comment=comment,rating=rating)
