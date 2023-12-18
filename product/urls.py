@@ -14,7 +14,7 @@ urlpatterns = [
 
 
 
-    path('review_post/<uuid:id>',review_post,name="review_post")
+    path('review_post',review_post,name="review_post")
     #All Product Page Filters 
     # path('price-filter/',Price_Filter,name="Price_Filter"),
     # path('category-filter/<uuid:slug>/',cat_filter,name="cat_filter"),

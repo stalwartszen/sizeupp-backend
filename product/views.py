@@ -225,10 +225,12 @@ def cat_list(request):
 #     return render(request,'user_profile/order-success.html')
 
 @api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def review_post(request,id):
     if request.method == 'POST':
         comment = request.POST.get('comment')
-        rating = request.POST.get('rating')
+        rating = float(request.POST.get('rating'))
         review = Reviews.objects.create(user=request.user,product = Product.objects.get(id=id),comment=comment,rating=rating)
         review.save()
         message="Thank You For Feedback!"

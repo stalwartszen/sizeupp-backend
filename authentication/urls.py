@@ -36,7 +36,7 @@ urlpatterns = [
     path('remove_wishlist/<uuid:uuid>',views.remove_wishlist,name="remove_wishlist"),
         #   path('cart/<uuid:id>/<str:slug>',views.cart_by_id,name='cart_crud'),
 
-    # path('order',views.order,name='crate_order'),
+    # path('create-order',views.order,name='crate_order'),
     
     #Main Pages Url's
     path('contactus',views.contactus,name="contactus"),

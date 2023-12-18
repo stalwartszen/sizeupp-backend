@@ -112,9 +112,9 @@ class Order(models.Model):
     payment_status_choices = (
         ('Pending', 'Pending'),
         ('Completed', 'Completed'),
-        ('Failed', 'Failed'),
-        ('Cash On Delivery', 'Cash On Delivery'),
+        ('Failed', 'Failed')
     )
+    payment_type= models.CharField(max_length=20,null=True,blank=True)
     payment_status = models.CharField(max_length=20, choices=payment_status_choices, default='Pending')
     payment_id = models.CharField(max_length=50, null=True, blank=True)
     payment_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)

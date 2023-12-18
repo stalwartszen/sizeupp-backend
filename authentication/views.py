@@ -444,12 +444,20 @@ def updateCart(request,uuid):
     cart = Cart.objects.get(user=request.user,product=product)
     if request.method == 'POST':
         qty= request.data.get('qty',None)
+        status = request.data.get('status','add')
+
         selected_color = request.data.get('selected_color',None)
         sqp_id = request.data.get('sqp_id',None)
+        
         if qty:
-            cart.quantity = int(qty) + int(cart.quantity)
+            if status == 'add':
+                cart.quantity = int(qty) + int(cart.quantity)
+            if status == 'subtract':
+                cart.quantity = int(cart.quantity) - int(qty)
+            
             cart.price = product.price
             cart.total_price = round((float(qty)*float(cart.price)),2)
+            
             if product.discount == True:
                 cart.discount_price = product.discounted_price
                 cart.discount_percentage = product.discount_percentage
@@ -523,6 +531,7 @@ def checkDelivery(pincode):
     url = 'https://api.instashipin.com/api/v1/tenancy/authToken'
     payload ={
     "api_key": "6092655223372029e7404dc4"
+        # "6092655223372029e7404dc4"
     }
     headers = {
         'Content-Type': 'application/json',
@@ -698,12 +707,18 @@ def generate_serial_id(cls):
         new_serial_id = f"{month}{year}-{str(new_count).zfill(3)}"
 
         return new_serial_id
+
+
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])    
 def payment(request):
-    address_id = request.GET.get('address')
+    address_id = request.POST.get('address',None)
+    
     if not address_id:
-        messages.error(request,'Please Add/select Address')
-        messages.error(request,'To Add Addres: view Profile >> Address >> Add New Address')
-        return redirect('checkout')
+        message='Please Add/select Address'
+        return Response({'message':message},status=status.HTTP_400_BAD_REQUEST)
 
     address = Address.objects.get(id=address_id)
 
@@ -718,6 +733,7 @@ def payment(request):
         country = address.country,
         state = address.state,
         
+        payment_type = request.POST.get('payment_type',None),
         payment_status = "Pending",
         payment_id = None,
         payment_amount = None, 
@@ -726,21 +742,22 @@ def payment(request):
 
     order.serial_id = generate_serial_id(Order)
     order.save()
-    total = float(request.GET.get('total_amount'))
-    charge = float(request.GET.get('charge'))
     
-    deliverycountry =request.GET.get('deliverycountry') 
+    total = float(request.POST.get('total_amount'))
+    charge = float(request.POST.get('charge'))
+    
+    deliverycharges =request.POST.get('deliverycharges') 
 
 
     for item in Cart.objects.filter(user=request.user):
 
         color = item.color
         size = item.size_quantity_price.size
-        price = item.size_quantity_price.price
-        sqp_code = item.size_quantity_price.name
+        price = item.price
+        sqp_code = item.size_quantity_price.id
         quantity = item.quantity
-        dropdown_size = item.dropdown_size
-
+        discount_percentage = item.discount_percentage
+        discount_price = item.discount_price
         total_price =  (float(quantity)*float(price)) 
 
 
@@ -753,14 +770,12 @@ def payment(request):
                 price = price,
                 total=total_price,
                 sqp_code=sqp_code,
-                dropdown_size=dropdown_size
             )
         order_item.save()
         order.order_items.add(order_item)
 
 
         order.payment_amount = total
-        order.deliveryCountry = deliverycountry
         order.deliveryCharges = charge
         order.sub_total = round(float(total-charge),2)
         order.save()
@@ -794,6 +809,14 @@ def payment(request):
     else:
         messages.error(request,"Payment Canceled")
         return render(request, 'payment_error.html')
+
+
+
+
+
+
+
+
 
 
 def payment_execute(request):
