@@ -380,7 +380,7 @@ def address(request):
 
 
 
-@api_view(['POST','GET'])
+@api_view(['PUT','DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])      
 def address_by_id(request, id,slug):
@@ -392,9 +392,8 @@ def address_by_id(request, id,slug):
             request.session['signup_email'] = request.user.email
             return redirect('otp')
     
-    if slug == 'UPDATE':
-        address_id = id
-        if request.method =="POST":    
+    if request.method == 'PUT':
+                address_id = id
                 address_line_1 = request.data.get('address_line_1')
                 address_line_2 = request.data.get('address_line_2')
                 state = request.data.get('state')
@@ -425,11 +424,9 @@ def address_by_id(request, id,slug):
                 message= "Address Updated Successfully"
                 return Response({'message': message}, status=status.HTTP_200_OK)
         
-        if request.method =="GET":
-            address = AddressSerializer(Address.objects.get(id=address_id))
-            return Response({'address': address}, status=status.HTTP_200_OK)
+    
         
-    elif slug == 'delete':
+    if request.method == 'DELETE':
         address_id =id
         address = Address.objects.get(id=address_id)
         address.delete()
@@ -569,28 +566,29 @@ def show_Cart(request):
     
         cart_items = Cart.objects.filter(user=request.user)
         code=None
-        if request.method == 'POST':
-            code = request.data.get('code')
-            pincode = request.data.get('pincode')
-            
-            if pincode:
+        
+        pincode = Address.objects.get(user=request.user,is_default=True).postal_code
+        if pincode:
 
                 deliveryCharges = checkDelivery(pincode)
-            else:
+        else:
                 deliveryCharges =None
+                
+                
+        if request.method == 'POST':
+            code = request.data.get('code')
+                
             if code and DiscountCoupon.objects.filter(code=code).exists():
                     
-                        discountcoupon=DiscountCoupon.objects.get(code=code)
-                        if discountcoupon.end_date > timezone.now():
-                            coupon = 'active'
-                        else: 
-                            coupon = 'deactive'
+                discountcoupon=DiscountCoupon.objects.get(code=code)
+                if discountcoupon.end_date > timezone.now():
+                    coupon = 'active'
+                else: 
+                    coupon = 'deactive'
 
             else:
-                        coupon = 'deactive'
-        else:
-                coupon = 'deactivate'
-                deliveryCharges =None
+                coupon = 'deactive'
+        
         products_list =[ ]
         total_price = 0
         sub_total=0
@@ -600,8 +598,12 @@ def show_Cart(request):
                 products_list.append({'qty':item.quantity,'cart':CartSerializer(item).data})
                 
         if coupon == 'active':
-            coupon_discount_percentage =  round(float(discountcoupon.percentage),2)*0.01
-            sub_sub_total = round(sub_total - round(coupon_discount_percentage *sub_total,2))
+            if discountcoupon.percentage:
+                coupon_discount =  round(float(discountcoupon.percentage),2)*0.01
+            if discountcoupon.price:
+                coupon_discount =  float(discountcoupon.price)
+
+            sub_sub_total = round(sub_total - round(coupon_discount *sub_total,2))
         else:
             sub_sub_total = None
         if deliveryCharges:

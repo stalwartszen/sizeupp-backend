@@ -160,7 +160,9 @@ class ProductImages(models.Model):
 class DiscountCoupon(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=400)
-    percentage = models.FloatField()
+    percentage = models.FloatField(null=True,blank=True)
+    price = models.FloatField(null=True,blank=True)
+    
     active= models.BooleanField(default=False)
     end_date = models.DateTimeField(null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
