@@ -24,75 +24,44 @@ from rest_framework import status
 
 
 
+@api_view(['GET'])
+def productfilter(request):
+    category_id = request.data.get('category_id', None)
+    sub_category_id = request.data.get('sub_category_id', None)
+    colorfamily_id = request.data.get('colorfamily_id', None)
+    price = request.data.get('price', None)
+    search = request.data.get('search', None)
+    discounted_products = request.data.get('discounted_products', None)
+    
+    products = Product.objects.all()
 
-def Checkout(request):
-    carts =Cart.objects.filter(user=request.user)
-   
-    addresses = Address.objects.filter(user=request.user)
-    cart_list =[]
-    sub_total = 0
-    for item in carts:
-            sub_total = round(float(sub_total) + float(item.total_price),2)
-            serializer = product_serializer(item.product)
-            product = serializer.data
-            product['cart'] = item
-            cart_list.append(product)
+    if search:
+        products = Product.objects.filter(
+            Q(name__icontains=search) | 
+            Q(description__icontains=search) | 
+            Q(additional_info__icontains=search) |
+            Q(category__name__icontains=search) | 
+            Q(subcategory__name__icontains=search)
+        )
+        return Response({'products': product_serializer(products, many=True).data}, status=status.HTTP_200_OK)
+    
+    if category_id:
+        products = products.filter(category__id=category_id)
+    
+    if sub_category_id:
+        products = products.filter(subcategory__id=sub_category_id)
+    
+    if colorfamily_id:
+        products = products.filter(color_family__id=colorfamily_id)
+        
+    if price:
+        products = products.filter(price__lt=float(price))
+        
+    if discounted_products:
+        products = products.filter(discount=True)
+        
+    return Response({'products': product_serializer(products, many=True).data}, status=status.HTTP_200_OK)
 
-
-            
-    delivery_charges = DeliveryCharges.objects.all()
-
-    deliveryCharges = None
-    if request.GET.get('Dcountry') != 'None' and request.GET.get('Dcountry'):
-            did = request.GET.get('Dcountry')
-            deliveryCharges = DeliveryCharges.objects.get(id=did)
-
-            charge = deliveryCharges.charges
-            total_amount = sub_total + charge
-
-    else:
-        total_amount = None
-        charge = None
-
-
-    # if sub_total > 100:
-    #     charge =0
-    #     total_amount = sub_total
-
-        try:
-            request.session.pop('Dcountry')
-        except:
-            pass
-
-    cntx={
-        'title':'checkout',
-        'cart_list':cart_list,
-        'addresses':addresses,
-        'delivery_charges':delivery_charges,
-        'total_amount':total_amount,
-        'deliveryCharges':deliveryCharges,
-        'charge':charge,
-        'sub_total':sub_total
-
-    }
-    return render(request,'user_profile/checkout.html',cntx)
-
-
-
-
-
-
-def Brands(request):
-    brands = Brand.objects.all()
-    brands_list =[]
-    for br in brands:
-        pro = Product.objects.filter(brand=br).count()
-        brands_list.append({'brand':br,'pro':pro}) 
-    cntx={
-        'brands':brands_list,
-        'title':'Brands'
-    }
-    return render(request,'navigation_pages/Brands-grid.html',cntx)
 
 @api_view(['GET'])
 def product_inside(request,uuid):
@@ -214,15 +183,6 @@ def cat_list(request):
 
 
 
-
-### ---- Payment Gateway ------------
-# def paymentGateway(request):
-#     address = request.GET.get('address')
-#     total = float(request.GET.get('total'))
-#     return redirect('success_page')
-
-# def success_page(request):
-#     return render(request,'user_profile/order-success.html')
 
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])

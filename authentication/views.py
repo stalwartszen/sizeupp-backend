@@ -713,15 +713,26 @@ def generate_serial_id(cls):
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])    
-def payment(request):
-    address_id = request.POST.get('address',None)
+def create_order(request):
+    address_id = request.data.get('address',None)
+    grand_total = float(request.data.get('grand_total'))
+    sub_total = float(request.data.get('sub_total'))
+    sub_sub_total = float(request.data.get('sub_sub_total'))
+    coupon = float(request.data.get('coupon'))
+    discount_percentage = float(request.data.get('discount_percentage'))
+    discount_amount = float(request.data.get('discount_amount'))
+    
+    tax = float(request.data.get('tax'))
+    payment_type = request.data.get('payment_type',None)
+    deliverycharges =request.data.get('deliverycharges') 
+    
+    
     
     if not address_id:
         message='Please Add/select Address'
         return Response({'message':message},status=status.HTTP_400_BAD_REQUEST)
 
     address = Address.objects.get(id=address_id)
-
     order = Order.objects.create(
         customer_name = str(request.user.first_name +' ' +request.user.last_name),
         customer_email = request.user.email,
@@ -733,7 +744,7 @@ def payment(request):
         country = address.country,
         state = address.state,
         
-        payment_type = request.POST.get('payment_type',None),
+        payment_type = payment_type,
         payment_status = "Pending",
         payment_id = None,
         payment_amount = None, 
@@ -741,45 +752,46 @@ def payment(request):
 
 
     order.serial_id = generate_serial_id(Order)
+    
+    
+
+
+    order.payment_amount = grand_total
+    order.deliveryCharges = deliverycharges
+    order.sub_total = round(sub_total,2)
+    if sub_sub_total:
+        order.sub_sub_total = round(sub_sub_total,2)
+        order.discount_percentage = discount_percentage
+        order.discount_amount = discount_amount
+    order.coupon = coupon
+    order.tax = tax
     order.save()
     
-    total = float(request.POST.get('total_amount'))
-    charge = float(request.POST.get('charge'))
-    
-    deliverycharges =request.POST.get('deliverycharges') 
-
-
-    for item in Cart.objects.filter(user=request.user):
-
-        color = item.color
-        size = item.size_quantity_price.size
-        price = item.price
-        sqp_code = item.size_quantity_price.id
-        quantity = item.quantity
-        discount_percentage = item.discount_percentage
-        discount_price = item.discount_price
-        total_price =  (float(quantity)*float(price)) 
-
+    for cart in Cart.objects.filter(user=request.user):
 
 
         order_item = OrderItem.objects.create(
-                product = item.product,
-                quantity = quantity,
-                color = color,
-                size = size,
-                price = price,
-                total=total_price,
-                sqp_code=sqp_code,
+                product = cart.product,
+                quantity = cart.quantity,
+                color = cart.color,
+                size = cart.size_quantity_price.size,
+                price = cart.price,
+                total=cart.total_price,
+                sqp_code=cart.size_quantity_price.id,
+                discount_price = cart.discount_price,
+                discount_percentage=cart.discount_percentage
             )
         order_item.save()
         order.order_items.add(order_item)
-
-
-        order.payment_amount = total
-        order.deliveryCharges = charge
-        order.sub_total = round(float(total-charge),2)
         order.save()
-
+        sqp = SizeQuantityPrice.objects.get(id=cart.size_quantity_price.id)
+        sqp.quantity = int(sqp.quantity) - int(cart.quantity)
+        sqp.save()
+        
+    if payment_type == 'COD':
+        return Response({'message':'Order Created'},status=status.HTTP_200_OK)
+    
+    
     payment = paypalrestsdk.Payment({
         "intent": "sale",
         "payer": {
@@ -791,7 +803,7 @@ def payment(request):
         },
         "transactions": [{
             "amount": {
-                "total": total,
+                "total": grand_total,
                 "currency": "USD"
             },
             "description": "Payment description"

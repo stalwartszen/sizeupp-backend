@@ -124,7 +124,7 @@ class Product(models.Model):
     color = models.CharField(max_length=400, null=True, blank=True)
     color_family = models.ForeignKey(ColourFamily,on_delete=models.CASCADE,null=True, blank=True)
     
-    price = models.CharField(max_length=400,null=True,blank=True)
+    price = models.FloatField(max_length=400,null=True,blank=True)
     discount = models.BooleanField(default=False,null=True,blank=True)
     discount_percentage = models.FloatField(null=True, blank=True,)
     discounted_price = models.FloatField(null=True, blank=True,)

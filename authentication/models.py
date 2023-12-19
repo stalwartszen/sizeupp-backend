@@ -82,13 +82,12 @@ class OrderItem(models.Model):
     quantity = models.PositiveIntegerField()
     sqp_code = models.CharField(max_length=400, null=True, blank=True)
     color = models.CharField(max_length=400, null=True, blank=True)
-    dropdown_size= models.CharField(max_length=100,null=True,blank=True)
 
     size = models.CharField(max_length=400,null=True,blank=True)
     price = models.CharField(max_length=400,null=True,blank=True)
-    discount_price = models.FloatField(null=True,blank=True,default=0)
-    
     total = models.FloatField(default=0)
+    discount_price = models.FloatField(null=True,blank=True,default=0)
+    discount_percentage = models.FloatField(null=True, blank=True,)
     created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
@@ -130,7 +129,11 @@ class Order(models.Model):
         ('Cancel','Cancel')
         
     )
+    coupon = models.CharField(max_length=15,null=True,blank=True)
+
     sub_total = models.FloatField(default=0)
+    sub_sub_total = models.FloatField(default=0)
+    tax = models.FloatField(default=0)
     tax_percentage = models.FloatField(default=0)
     discount_percentage = models.DecimalField(max_digits=1000000,decimal_places=2,null=True, blank=True)  
     discount_amount = models.DecimalField(max_digits=1000000,decimal_places=2,null=True, blank=True)  
