@@ -488,15 +488,21 @@ def Add_Cart(request,uuid):
         
 
         total_price = (float(qty)*float(pro.price))
+        
+        
+        
         if pro.discount == True:
-            total_price =(float(qty)*float(pro.discounted_price))
- 
+            discount_on_price = round(float(pro.price) - float(pro.discounted_price),2)
+            total_price =round((float(qty)*float(pro.discounted_price)),2)
+            
+        else: 
+            discount_on_price = 0
         
 
         
         if Cart.objects.filter(user=request.user,product=pro).exists():
             return Response({'Message':'Already In Cart'},status=status.HTTP_208_ALREADY_REPORTED)
-        cart_item = Cart.objects.create(user=user,product=pro,quantity=qty,size_quantity_price=size_quantity_price,price=pro.price ,total_price=total_price,discount_percentage=pro.discount_percentage,discount_price = pro.discounted_price)
+        cart_item = Cart.objects.create(discount_on_price=discount_on_price,user=user,product=pro,quantity=qty,size_quantity_price=size_quantity_price,price=pro.price ,total_price=total_price,discount_percentage=pro.discount_percentage,sub_total = pro.discounted_price)
         if selected_color :
                 cart_item.color=selected_color
         
@@ -588,15 +594,26 @@ def show_Cart(request):
 
             else:
                 coupon = 'deactive'
+        else:
+            coupon = 'deactive'
         
         products_list =[ ]
         total_price = 0
+        mrp_price = 0
         sub_total=0
-        if cart_items:
+        discount_on_price = 0
+        
+        if cart_items.count() != 0:
             for item in cart_items:
-                sub_total = round(float(item.total_price)+ sub_total, 2)
-                products_list.append({'qty':item.quantity,'cart':CartSerializer(item).data})
+                mrp_price = round((mrp_price + (float(item.product.price)*int(item.quantity))),2)
+                 
                 
+                sub_total = round(float(item.total_price)+ sub_total, 2)
+                if item.discount_on_price:
+                    discount_on_price = discount_on_price + round((float(item.discount_on_price)*int(item.quantity)),2)
+                products_list.append({'qty':item.quantity,'cart':CartSerializer(item).data})
+        else:
+            return Response({'message':'Cart is Empty'},status=status.HTTP_400_BAD_REQUEST)  
         if coupon == 'active':
             if discountcoupon.percentage:
                 coupon_discount =  round(float(discountcoupon.percentage),2)*0.01
@@ -606,11 +623,12 @@ def show_Cart(request):
             sub_sub_total = round(sub_total - round(coupon_discount *sub_total,2))
         else:
             sub_sub_total = None
-        if deliveryCharges:
-            total_price = round(sub_total + float(deliveryCharges),2)
-        else:
-            total_price = sub_total
-            
+        
+        total_price = round(sub_total + float(deliveryCharges),2)
+        if sub_sub_total:
+            total_price = round(sub_sub_total + float(deliveryCharges),2)
+
+       
             
         cntx={
                 'products':products_list,
@@ -619,7 +637,9 @@ def show_Cart(request):
                 'sub_total':sub_total,
                 'delivery_charges':deliveryCharges,
                 'coupon':coupon,
-                'sub_sub_total':sub_sub_total
+                'sub_sub_total':sub_sub_total,
+                'mrp_price':mrp_price,
+                'discount_on_price':discount_on_price
 
             }
 
