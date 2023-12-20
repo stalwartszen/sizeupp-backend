@@ -83,7 +83,7 @@ def signin(request):
             password = request.POST.get('password')
 
             user = authenticate(request, username=username, password=password)
-            if user is not None and user.is_superuser:
+            if user.is_superuser:
                 login(request, user)
                 messages.success(request,'Loged In')
                 return redirect('dashboard')
