@@ -167,14 +167,30 @@ def allproducts(request):
 
 
 #Category API
+
 @api_view(['GET'])
 def cat_list(request):
-    serializer = detail_category_serializer(ProductDetailCategory.objects.order_by('-id').all(),many=True)
-    category = [i.name for i in ProductCategory.objects.order_by('-id').all()]
+    # Get all subcategories
+    subcategories = ProductSubCategory.objects.order_by('-id').all()
+    sub_category = []
+    for subcat in subcategories:
+        subcat_={
+            'id':subcat.id,
+            'name':subcat.name
+        }
+        detail_category=[]
+        for detail_cat in ProductDetailCategory.objects.filter(subcategory=subcat):
+            detail_category.append({'id':detail_cat.id,'name':detail_cat.name})    
+        subcat_['detail_category']=detail_category
+        sub_category.append(subcat_)
+        
 
-    return Response( {'detail_category':serializer.data,'category':category},status=status.HTTP_200_OK)
+    # Get a list of category names
+    categories = [{'name':category.name,'id':category.id} for category in ProductCategory.objects.order_by('-id').all()]
 
-
+    # Combine data and return the response
+    response_data = {'subcategories': sub_category,  'categories': categories}
+    return Response(response_data, status=status.HTTP_200_OK)
 
 
 

@@ -18,7 +18,7 @@ class category_serializer(serializers.ModelSerializer):
 
 
 class subcategory_serializer(serializers.ModelSerializer):
-    category = category_serializer()
+    category = category_serializer
     class Meta:
         model = ProductSubCategory
         fields = "__all__"
@@ -57,3 +57,5 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Reviews
         fields = "__all__"
         
+
+
