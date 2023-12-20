@@ -11,45 +11,42 @@ from drf_yasg import openapi
 
 from rest_framework.authtoken import views
 
-schema_view = get_schema_view(
-    openapi.Info(
-        title="SizeUpp API",
-        default_version='v1',
-        description="SizeUpp API description",
-        terms_of_service="https://www.yourapp.com/terms/",
-        contact=openapi.Contact(email="contact.hrithikhadawale@gmail.com"),
-        license=openapi.License(name="Your License"),
-    ),
-    public=True,
-)
+# schema_view = get_schema_view(
+#     openapi.Info(
+#         title="SizeUpp API",
+#         default_version='v1',
+#         description="SizeUpp API description",
+#         terms_of_service="https://www.yourapp.com/terms/",
+#         contact=openapi.Contact(email="contact.hrithikhadawale@gmail.com"),
+#         license=openapi.License(name="Your License"),
+#     ),
+#     public=True,
+# )
 
-urlpatterns = [
+# urlpatterns = [
     
-]
+# ]
 
 
     
 urlpatterns = [
     path('admin/', admin.site.urls),
-    re_path(r'^api/token/', views.obtain_auth_token, name='obtain-token'),
+    # re_path(r'^api/token/', views.obtain_auth_token, name='obtain-token'),
 
     path('api/', include('authentication.urls')),
     path('api/product/', include('product.urls')),
     path('dashboard/', include('dashboard.urls')),
     path("", include("django.contrib.auth.urls")), 
     path('invoice/<slug:slug>',invoice,name='invoice'),
-    # ... other app URLs ...
-    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+
 
      # new
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-if settings.DEBUG:
-    import debug_toolbar
-    urlpatterns = [
-        re_path(r'^__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns
+# if settings.DEBUG:
+#     import debug_toolbar
+#     urlpatterns = [
+#         re_path(r'^__debug__/', include(debug_toolbar.urls)),
+#     ] + urlpatterns
     

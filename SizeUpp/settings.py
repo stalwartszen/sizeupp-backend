@@ -22,6 +22,8 @@ ALLOWED_HOSTS = ['*','https://traxzen.pythonanywhere.com']
 INSTALLED_APPS = [
     # 'material',
     #  'material.admin',
+    # 'jet.dashboard',
+    # 'jet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

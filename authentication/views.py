@@ -441,16 +441,17 @@ def updateCart(request,uuid):
     cart = Cart.objects.get(user=request.user,product=product)
     if request.method == 'POST':
         qty= request.data.get('qty',None)
-        status = request.data.get('status','add')
+        status_ = request.data.get('status','add')
 
         selected_color = request.data.get('selected_color',None)
         sqp_id = request.data.get('sqp_id',None)
         
         if qty:
-            if status == 'add':
-                cart.quantity = int(qty) + int(cart.quantity)
-            if status == 'subtract':
-                cart.quantity = int(cart.quantity) - int(qty)
+            if status_ == 'add':
+                cart.quantity = int(cart.quantity) + int(qty)
+            else:
+                cart.quantity = int(qty) 
+            # if status_ == 'subtract':
             
             cart.price = product.price
             cart.total_price = round((float(qty)*float(cart.price)),2)
@@ -736,83 +737,88 @@ def generate_serial_id(cls):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])    
 def create_order(request):
-    address_id = request.data.get('address',None)
-    grand_total = float(request.data.get('grand_total'))
-    sub_total = float(request.data.get('sub_total'))
-    sub_sub_total = float(request.data.get('sub_sub_total'))
-    coupon = float(request.data.get('coupon'))
-    discount_percentage = float(request.data.get('discount_percentage'))
-    discount_amount = float(request.data.get('discount_amount'))
-    
-    tax = float(request.data.get('tax'))
-    payment_type = request.data.get('payment_type',None)
-    deliverycharges =request.data.get('deliverycharges') 
-    
-    
-    
-    if not address_id:
-        message='Please Add/select Address'
-        return Response({'message':message},status=status.HTTP_400_BAD_REQUEST)
-
-    address = Address.objects.get(id=address_id)
-    order = Order.objects.create(
-        customer_name = str(request.user.first_name +' ' +request.user.last_name),
-        customer_email = request.user.email,
-        customer_contact = request.user.phone,
-        address_line_1 = address.address_line_1,
-        address_line_2 = address.address_line_2,
-        city = address.city,
-        postal_code = address.postal_code,
-        country = address.country,
-        state = address.state,
+    if request.method == 'POST':
+        address_id = request.data.get('address',None)
+        sub_total = float(request.data.get('sub_total'))
+        coupon = request.data.get('coupon')
+        sub_sub_total = float(request.data.get('sub_sub_total', 0))
+        delivery_charges =request.data.get('deliverycharges') 
+        total_price = float(request.data.get('total_price'))
+        discount_percentage = float(request.data.get('discount_percentage',0))
+        discount_amount = float(request.data.get('discount_amount',0))
+        mrp_price =float(request.data.get('mrp_price',0))
+        discount_on_price=float(request.data.get('discount_on_price',0))
+        tax = float(request.data.get('tax',0))
+        payment_type = request.data.get('payment_type',None)
         
-        payment_type = payment_type,
-        payment_status = "Pending",
-        payment_id = None,
-        payment_amount = None, 
-    )
+        
+        
+        if not address_id:
+            message='Please Add/select Address'
+            return Response({'message':message},status=status.HTTP_400_BAD_REQUEST)
+
+        address = Address.objects.get(id=address_id)
+        order = Order.objects.create(
+            customer_name = str(request.user.first_name +' ' +request.user.last_name),
+            customer_email = request.user.email,
+            customer_contact = request.user.phone,
+            address_line_1 = address.address_line_1,
+            address_line_2 = address.address_line_2,
+            city = address.city,
+            postal_code = address.postal_code,
+            country = address.country,
+            state = address.state,
+            
+            payment_type = payment_type,
+            payment_status = "Pending",
+            payment_id = None,
+            payment_amount = None, 
+        )
 
 
-    order.serial_id = generate_serial_id(Order)
-    
-    
+        order.serial_id = generate_serial_id(Order)
+        
+        
 
 
-    order.payment_amount = grand_total
-    order.deliveryCharges = deliverycharges
-    order.sub_total = round(sub_total,2)
-    if sub_sub_total:
-        order.sub_sub_total = round(sub_sub_total,2)
-        order.discount_percentage = discount_percentage
-        order.discount_amount = discount_amount
-    order.coupon = coupon
-    order.tax = tax
-    order.save()
-    
-    for cart in Cart.objects.filter(user=request.user):
-
-
-        order_item = OrderItem.objects.create(
-                product = cart.product,
-                quantity = cart.quantity,
-                color = cart.color,
-                size = cart.size_quantity_price.size,
-                price = cart.price,
-                total=cart.total_price,
-                sqp_code=cart.size_quantity_price.id,
-                discount_price = cart.discount_price,
-                discount_percentage=cart.discount_percentage
-            )
-        order_item.save()
-        order.order_items.add(order_item)
+        order.payment_amount = total_price
+        order.deliveryCharges = delivery_charges
+        order.mrp_price = mrp_price
+        order.discount_on_price=discount_on_price
+        order.sub_total = round(sub_total,2)
+        if sub_sub_total:
+            order.sub_sub_total = round(sub_sub_total,2)
+            order.discount_percentage = discount_percentage
+            order.discount_amount = discount_amount
+            
+        order.coupon = coupon
+        order.tax = tax
         order.save()
-        sqp = SizeQuantityPrice.objects.get(id=cart.size_quantity_price.id)
-        sqp.quantity = int(sqp.quantity) - int(cart.quantity)
-        sqp.save()
         
-    if payment_type == 'COD':
-        return Response({'message':'Order Created'},status=status.HTTP_200_OK)
-    
+        for cart in Cart.objects.filter(user=request.user):
+
+
+            order_item = OrderItem.objects.create(
+                    product = cart.product,
+                    quantity = cart.quantity,
+                    color = cart.color,
+                    size = cart.size_quantity_price.size,
+                    price = cart.price,
+                    total=cart.total_price,
+                    sqp_code=cart.size_quantity_price.id,
+                    discount_price = cart.discount_price,
+                    discount_percentage=cart.discount_percentage
+                )
+            order_item.save()
+            order.order_items.add(order_item)
+            order.save()
+            sqp = SizeQuantityPrice.objects.get(id=cart.size_quantity_price.id)
+            sqp.quantity = int(sqp.quantity) - int(cart.quantity)
+            sqp.save()
+            
+        if payment_type == 'COD':
+            return Response({'message':'Order Created'},status=status.HTTP_200_OK)
+        
     
     payment = paypalrestsdk.Payment({
         "intent": "sale",
@@ -825,7 +831,7 @@ def create_order(request):
         },
         "transactions": [{
             "amount": {
-                "total": grand_total,
+                "total": total_price,
                 "currency": "USD"
             },
             "description": "Payment description"

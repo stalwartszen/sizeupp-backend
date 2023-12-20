@@ -138,6 +138,8 @@ class Order(models.Model):
     )
     coupon = models.CharField(max_length=15,null=True,blank=True)
 
+    mrp_price = models.FloatField(default=0)
+    discount_on_price = models.FloatField(default=0)
     sub_total = models.FloatField(default=0)
     sub_sub_total = models.FloatField(default=0)
     tax = models.FloatField(default=0)

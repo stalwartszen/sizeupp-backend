@@ -43,7 +43,7 @@ urlpatterns = [
     
     # path('aboutus-us/',views.contactus,name="contactus"),
 
-    path('create-order', views.create_order, name='create_order'),
+    path('order', views.create_order, name='create_order'),
     path('payment/execute', views.payment_execute, name='payment_execute'),
     path('payment/cancel', views.payment_cancel, name='payment_cancel'),
 
