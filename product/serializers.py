@@ -25,7 +25,7 @@ class subcategory_serializer(serializers.ModelSerializer):
 
 
 class detail_category_serializer(serializers.ModelSerializer):
-    subcategory = subcategory_serializer()
+    subcategory = subcategory_serializer
     class Meta:
         model = ProductDetailCategory
         fields = "__all__"

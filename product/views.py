@@ -169,13 +169,10 @@ def allproducts(request):
 #Category API
 @api_view(['GET'])
 def cat_list(request):
-    cats= ProductDetailCategory.objects.all()
-    
+    serializer = detail_category_serializer(ProductDetailCategory.objects.order_by('-id').all(),many=True)
+    category = [i.name for i in ProductCategory.objects.order_by('-id').all()]
 
-    serializer = detail_category_serializer(cats,many=True)
-
-
-    return Response( {'detail_category':serializer.data},status=status.HTTP_200_OK)
+    return Response( {'detail_category':serializer.data,'category':category},status=status.HTTP_200_OK)
 
 
 

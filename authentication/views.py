@@ -710,27 +710,6 @@ paypalrestsdk.configure({
     "client_id": "AW51S_03IaBs6Kc-6UqkuAqLq9VzcjASJtDuTtwJlHkZAOsjBuZI0qXiobIHptNyDkUFEFEY9mcE0APm",
     "client_secret": "EAq19jPmNnIL07UjfpfXow80Y_luf3Zubd6Z2U74duLn2zuqwS4FR0K-JDK9azi2d2dFy1Ht1SP3IkQ6"
 })
-def generate_serial_id(cls):
-        # Get the current month and year as two-digit strings
-        month = str(datetime.date.today().month).zfill(2)
-        year = str(datetime.date.today().year)[-2:]
-
-        # Calculate the next counting number
-        last_serial_id = cls.objects.filter(
-            serial_id__startswith=month + year
-        ).order_by('-serial_id').first()
-
-        if last_serial_id:
-            last_count = int(last_serial_id.serial_id[-3:])
-            new_count = last_count + 1
-        else:
-            new_count = 1
-
-        # Create the new serial_id
-        new_serial_id = f"{month}{year}-{str(new_count).zfill(3)}"
-
-        return new_serial_id
-
 
 
 @api_view(['POST'])
@@ -773,11 +752,7 @@ def create_order(request):
             payment_status = "Pending",
             payment_id = None,
             payment_amount = None, 
-        )
-
-
-        order.serial_id = generate_serial_id(Order)
-        
+        )        
         
 
 
@@ -806,9 +781,12 @@ def create_order(request):
                     price = cart.price,
                     total=cart.total_price,
                     sqp_code=cart.size_quantity_price.id,
-                    discount_price = cart.discount_price,
-                    discount_percentage=cart.discount_percentage
                 )
+            # if cart.discount_price:
+            #         discount_price = cart.discount_price
+            # if cart.discount_percentage:
+            #         discount_percentage=cart.discount_percentage
+                    
             order_item.save()
             order.order_items.add(order_item)
             order.save()
