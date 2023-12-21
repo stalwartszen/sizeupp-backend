@@ -211,3 +211,50 @@ def review_post(request):
         message="Thank You For Feedback!"
         return Response({'message':message},status=status.HTTP_200_OK)
     
+    
+    
+
+from product.serializers import size_quantity_price_serializer
+from django.views.generic import View
+import pandas as pd
+from product.models import Product, ProductImages
+from django.http import HttpResponse
+
+class ExportExcelView(View):
+    def get(self, request):
+        # Generate Excel file
+        file_path = 'products.xlsx'
+        export_products_to_excel(file_path)
+
+        # Prepare response with Excel file
+        with open(file_path, 'rb') as excel_file:
+            response = HttpResponse(excel_file.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename=products.xlsx'
+
+        return response
+
+def export_products_to_excel(file_path='products.xlsx'):
+    # Retrieve all products and related images
+    products = Product.objects.all()
+    images_data = []
+    for product in products:
+        for img in product.productimages_set.all():
+            images_data.append({'product_id': product.id, 'image_url': img.img.url})
+
+    # Create DataFrame
+    product_df = pd.DataFrame(list(products.values()))
+    images_df = pd.DataFrame(images_data)
+
+    # Merge DataFrames on product_id
+    merged_df = pd.merge(product_df, images_df, left_on='id', right_on='product_id', how='left')
+
+    # Drop redundant columns
+    merged_df = merged_df.drop(['id_y', 'product_id'], axis=1)
+
+    # Save to Excel file
+    merged_df.to_excel(file_path, index=False)
+
+
+
+def upload(request):
+    return redirect('products_dashboard')

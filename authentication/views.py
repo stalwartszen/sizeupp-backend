@@ -569,82 +569,85 @@ def checkDelivery(pincode):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])    
 def show_Cart(request):
-    if request.user.is_authenticated:
-    
-        cart_items = Cart.objects.filter(user=request.user)
-        code=None
+    try:
+        if request.user.is_authenticated:
         
-        pincode = Address.objects.get(user=request.user,is_default=True).postal_code
-        if pincode:
+            cart_items = Cart.objects.filter(user=request.user)
+            code=None
+            
+            pincode = Address.objects.get(user=request.user,is_default=True).postal_code
+            if pincode:
 
-                deliveryCharges = checkDelivery(pincode)
-        else:
-                deliveryCharges =None
-                
-                
-        if request.method == 'POST':
-            code = request.data.get('code')
-                
-            if code and DiscountCoupon.objects.filter(code=code).exists():
+                    deliveryCharges = checkDelivery(pincode)
+            else:
+                    deliveryCharges =None
                     
-                discountcoupon=DiscountCoupon.objects.get(code=code)
-                if discountcoupon.end_date > timezone.now():
-                    coupon = 'active'
-                else: 
-                    coupon = 'deactive'
+                    
+            if request.method == 'POST':
+                code = request.data.get('code')
+                    
+                if code and DiscountCoupon.objects.filter(code=code).exists():
+                        
+                    discountcoupon=DiscountCoupon.objects.get(code=code)
+                    if discountcoupon.end_date > timezone.now():
+                        coupon = 'active'
+                    else: 
+                        coupon = 'deactive'
 
+                else:
+                    coupon = 'deactive'
             else:
                 coupon = 'deactive'
-        else:
-            coupon = 'deactive'
-        
-        products_list =[ ]
-        total_price = 0
-        mrp_price = 0
-        sub_total=0
-        discount_on_price = 0
-        
-        if cart_items.count() != 0:
-            for item in cart_items:
-                mrp_price = round((mrp_price + (float(item.product.price)*int(item.quantity))),2)
-                 
-                
-                sub_total = round(float(item.total_price)+ sub_total, 2)
-                if item.discount_on_price:
-                    discount_on_price = discount_on_price + round((float(item.discount_on_price)*int(item.quantity)),2)
-                products_list.append({'qty':item.quantity,'cart':CartSerializer(item).data})
-        else:
-            return Response({'message':'Cart is Empty'},status=status.HTTP_400_BAD_REQUEST)  
-        if coupon == 'active':
-            if discountcoupon.percentage:
-                coupon_discount =  round(float(discountcoupon.percentage),2)*0.01
-            if discountcoupon.price:
-                coupon_discount =  float(discountcoupon.price)
-
-            sub_sub_total = round(sub_total - round(coupon_discount *sub_total,2))
-        else:
-            sub_sub_total = None
-        
-        total_price = round(sub_total + float(deliveryCharges),2)
-        if sub_sub_total:
-            total_price = round(sub_sub_total + float(deliveryCharges),2)
-
-       
             
-        cntx={
-                'products':products_list,
-                'title':'My Cart',
-                'total_price':total_price,
-                'sub_total':sub_total,
-                'delivery_charges':deliveryCharges,
-                'coupon':coupon,
-                'sub_sub_total':sub_sub_total,
-                'mrp_price':mrp_price,
-                'discount_on_price':discount_on_price
+            products_list =[ ]
+            total_price = 0
+            mrp_price = 0
+            sub_total=0
+            discount_on_price = 0
+            
+            if cart_items.count() != 0:
+                for item in cart_items:
+                    mrp_price = round((mrp_price + (float(item.product.price)*int(item.quantity))),2)
+                    
+                    
+                    sub_total = round(float(item.total_price)+ sub_total, 2)
+                    if item.discount_on_price:
+                        discount_on_price = discount_on_price + round((float(item.discount_on_price)*int(item.quantity)),2)
+                    products_list.append({'qty':item.quantity,'cart':CartSerializer(item).data})
+            else:
+                return Response({'message':'Cart is Empty'},status=status.HTTP_400_BAD_REQUEST)  
+            if coupon == 'active':
+                if discountcoupon.percentage:
+                    coupon_discount =  round(float(discountcoupon.percentage),2)*0.01
+                if discountcoupon.price:
+                    coupon_discount =  float(discountcoupon.price)
 
-            }
+                sub_sub_total = round(sub_total - round(coupon_discount *sub_total,2))
+            else:
+                sub_sub_total = None
+            
+            total_price = round(sub_total + float(deliveryCharges),2)
+            if sub_sub_total:
+                total_price = round(sub_sub_total + float(deliveryCharges),2)
 
-        return Response(cntx,status =status.HTTP_200_OK)
+        
+                
+            cntx={
+                    'products':products_list,
+                    'title':'My Cart',
+                    'total_price':total_price,
+                    'sub_total':sub_total,
+                    'delivery_charges':deliveryCharges,
+                    'coupon':coupon,
+                    'sub_sub_total':sub_sub_total,
+                    'mrp_price':mrp_price,
+                    'discount_on_price':discount_on_price
+
+                }
+
+            return Response(cntx,status =status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"e":e}, status=status.HTTP_400_BAD_REQUEST)
             
 @api_view(['DELETE'])
 @authentication_classes([TokenAuthentication])
