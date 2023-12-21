@@ -27,23 +27,6 @@ class ColourFamily(models.Model):
     
     
 
-
-class Brand(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    img = models.ImageField(upload_to='brands/',null=True, blank=True)
-    details = models.CharField(max_length=400,null=True, blank=True)
-    address = models.CharField(max_length=400, null=True,blank=True)
-    contact = models.CharField(max_length=400, null=True,blank=True)
-
-    name = models.CharField(max_length=400)
-
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    def __str__(self):
-        return self.name
-
-
     
 class ProductCategory(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -66,39 +49,28 @@ class ProductSubCategory(models.Model):
 
 
 
-class ProductDetailCategory(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=400)
-    subcategory = models.ForeignKey(ProductSubCategory, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    def __str__(self):
-        return self.name
-    
-
 class SizeQuantityPrice(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.CharField(max_length=15,primary_key=True,  editable=False)
+    ean_code = models.CharField(max_length=15,editable=False)
+    
     
     size = models.CharField(max_length=400, null=True, blank=True)
     
-    quantity = models.CharField(max_length=400)
     inches = models.CharField(max_length=400, null=True, blank=True)
-    meter = models.CharField(max_length=400, null=True, blank=True)
+    centimeter = models.CharField(max_length=400, null=True, blank=True)
    
     length = models.CharField(max_length=400, null=True, blank=True)
     width = models.CharField(max_length=400, null=True, blank=True)
-    height = models.CharField(max_length=400, null=True, blank=True)
-
-   
     weight = models.CharField(max_length=400, null=True, blank=True)
-    is_enabled = models.BooleanField(default=True)
-    # sort_order = models.PositiveIntegerField(null=True,blank=True)
+    height = models.CharField(max_length=400, null=True, blank=True)
+    
+    quantity = models.CharField(max_length=400)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.id)
+        return str(self.ean_code)
     
 
 
@@ -110,32 +82,46 @@ def product_image_path(instance, filename):
 def image_path(instance, filename):
     return os.path.join('Products', str(instance.products.name), filename)
 
-class Product(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    name = models.CharField(max_length=400)
-    img = models.ImageField(upload_to=product_image_path, null=True, blank=True)
-    description = RichTextField(null=True, blank=True)
-    additional_info = RichTextField(null=True, blank=True)
-    care_instructions = RichTextField(null=True, blank=True)
+
+
+class Product(models.Model):
+    id = models.CharField(max_length=15,primary_key=True,  editable=False)
+    name = models.CharField(max_length=40)
+    season = models.CharField(max_length=40)
+    season_code = models.CharField(max_length=40)
+    
+
+    sleeve = models.CharField(max_length =100,null=True, blank=True)
+    design_surface = models.CharField(max_length =100,null=True, blank=True)
+    fit = models.CharField(max_length =100,null=True, blank=True)
+    neck_type = models.CharField(max_length =100,null=True, blank=True)
+
+    occasion = models.CharField(max_length =100,null=True, blank=True)
+    fabric_detail = models.TextField(null=True, blank=True)
+    Washcare = models.TextField(null=True, blank=True)
+    
     sqp =  models.ManyToManyField(SizeQuantityPrice)
     
-    # brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
-    color = models.CharField(max_length=400, null=True, blank=True)
     color_family = models.ForeignKey(ColourFamily,on_delete=models.CASCADE,null=True, blank=True)
+    color = models.CharField(max_length=400, null=True, blank=True)
     
-    price = models.FloatField(max_length=400,null=True,blank=True)
+    mrp = models.FloatField(max_length=400,null=True,blank=True)
+    
+    gender_choice = (
+    ('Men','Men'),('Women','Women')
+    )
+    gender = models.CharField(max_length=10,choices=gender_choice,default='Men')
+    
     discount = models.BooleanField(default=False,null=True,blank=True)
     discount_percentage = models.FloatField(null=True, blank=True,)
     discounted_price = models.FloatField(null=True, blank=True,)
     
     category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE, null=True, blank=True, related_name='products')
     subcategory = models.ForeignKey(ProductSubCategory, on_delete=models.CASCADE, null=True, blank=True, related_name='products')
-    detail_category = models.ForeignKey(ProductDetailCategory, on_delete=models.CASCADE, null=True, blank=True, related_name='products')
 
     meta_tags = models.CharField(max_length=400, null=True, blank=True)
     meta_description = models.CharField(max_length=400, null=True, blank=True)
-    is_enabled = models.BooleanField(default=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

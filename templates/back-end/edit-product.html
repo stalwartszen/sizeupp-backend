@@ -70,7 +70,7 @@
                                                         <input class="form-control" type="text" disabled value="{{i.quantity}}">
                                                     </div>
                                                     <div class="col-sm-2">
-                                                        <a class="btn btn-danger" href='{% url 'sqp_crud' %}?slug=Delete&size={{i.size}}&id={{product.id}}'>Delete</a>
+                                                        <a class="btn btn-danger" href="{% url 'sqp_crud' %}?slug=Delete&size={{i.size}}&id={{product.id}}">Delete</a>
                                                     </div>
                         
                                                 </div>
@@ -129,28 +129,7 @@
                                                         </div>
                                                     {% endif %}
 
-                                                    {% if selected_sub_category %}
-                                                    
-                                                        <label class="form-label-title col-sm-3 mb-0">Detail category Name</label>
-                                                        <div class="col-sm-8 d-flex">
-                                                            <select name="detailcategory_id"  class="form-control" id="detail_subcategory-dropdown">
-                                                                
-                                                                <option  value="">--- Select -- </option>
-                                                                {% for detailcategory in detailcategories %}
-                                                                        {% if detailcategory.id == selected_detail_category.id %}
-                                                                        
-                                                                        <option value="{{detailcategory.id}}" selected>{{detailcategory.name}}</option>
-                                                                        {% else %}
-                                                                        <option value="{{detailcategory.id}}">{{detailcategory.name}}</option>
-
-                                                                        {% endif %}
-                                                                {% endfor %}
-                                                            </select>
-                                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#detailcategoryadd" >Add New Detail Category</button>
-
-                                                        </div>
-                                                    {% endif %}
-
+                                             
                                         
                                             </div>
                                             
@@ -166,64 +145,140 @@
                                                 <h5>Product Details</h5>
                                             </div>
 
-                                                <div class="row">
-                                                    <div class="col-12">
-                                                        <div class="mb-4 row align-items-center">
-                                                            <label class="form-label-title col-sm-3 mb-0">Product
-                                                                Name</label>
-                                                                <div class="col-sm-9">
-                                                                    <input class="form-control" type="text" name="product_name"
-                                                                        placeholder="Product Name" value="{{product.name}}">
-                                                                </div>
+                                            <div class="row">
+                                                <div class="col-12">
+
+                                                    <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-3 mb-0">Product
+                                                            Generic Id</label>
+                                                            <div class="col-sm-9">
+                                                                <input class="form-control" type="text" name="id" value="{{product.id}}" readonly
+                                                                    placeholder="Product Generic Id">
+                                                            </div>
+                                                    </div>
+
+
+
+                                                    <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-3 mb-0">Product
+                                                            Name</label>
+                                                            <div class="col-sm-9">
+                                                                <input class="form-control" type="text" name="product_name" value="{{product.name}}"
+                                                                    placeholder="Product Name">
+                                                            </div>
+                                                    </div>
+                                                    <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-3 mb-0">Gender :</label>
+                                                        <div class="col-sm-9">
+                                                            <select name="gender" class="form-control"  >
+    
+                                                                <option disabled>--select--</option>
+    
+                                                                {% if product.gender == 'Men' %}
+                                                                <option value="Men" selected>Men</option>
+                                                                <option value="Women" >Women</option>
+                                                                
+                                                                {% elif product.gender == 'Women' %}
+                                                                <option value="Men" >Men</option>
+                                                                <option value="Women" selected>Women</option>
+                                                                {% else %}
+                                                                <option value="Men" >Men</option>
+                                                                <option value="Women" >Women</option>
+                                                                {% endif %}
+    
+                                                                    
+                                                                        
+                                                                 
+                                                            </select>
                                                         </div>
+    
+                                                    </div>
+                                                    <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-3 mb-0">Season
+                                                        </label>
+                                                            <div class="col-sm-9">
+                                                                <input class="form-control" type="text" name="season" value="{{product.season}}"
+                                                                    placeholder="Season">
+                                                            </div>
+                                                    </div>
 
-                                                        <div class="mb-4 row align-items-center">
-                                                            <label class="form-label-title col-sm-3 mb-0">Product
-                                                                description</label>
-                                                                <div class="col-sm-9">
-                                                                    <textarea class="form-control" id="product_description" name="product_description" rows="3">{{product.description}}</textarea>
+                                                    <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-3 mb-0">Season Code
+                                                        </label>
+                                                            <div class="col-sm-9">
+                                                                <input class="form-control" type="text" name="season_code" value="{{product.season_code}}"
+                                                                    placeholder="Season Code">
+                                                            </div>
+                                                    </div>
 
-                                                                </div>
-                                                        </div>
 
-                                                        <div class="mb-4 row align-items-center">
-                                                            <label class="form-label-title col-sm-3 mb-0">Additional info:
-                                                            </label>
-                                                                <div class="col-sm-9">
-                                                                    <textarea class="form-control" id="additional_info" name="additional_info" rows="3">{{product.additional_info}}</textarea>
-                                                                </div>
-                                                        </div>
+                                                    <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-3 mb-0">
+                                                            Occasion</label>
+                                                            <div class="col-sm-9">
+                                                                <input type="text" name="occasion" placeholder="Occasion" class="form-control" value="{{product.occasion}}">
+                                                            </div>
+                                                    </div>
+                                                    <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-3 mb-0">
+                                                            Sleeve</label>
+                                                            <div class="col-sm-9">
+                                                                <input type="text" name="sleeve" placeholder="Sleeve" class="form-control" value="{{product.sleeve}}">
+                                                            </div>
+                                                    </div>
 
-                                                        <div class="mb-4 row align-items-center">
-                                                            <label class="form-label-title col-sm-3 mb-0">Care
-                                                                Instructions</label>
-                                                                <div class="col-sm-9">
-                                                                    <textarea class="form-control" id="care_instructions" name="care_instructions" rows="3">{{product.care_instructions}}</textarea>
+                                                    <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-3 mb-0">
+                                                            Design Surface</label>
+                                                            <div class="col-sm-9">
+                                                                <input type="text" name="design_surface" placeholder="Design Surface" class="form-control" value="{{product.design_surface}}">
+                                                            </div>
+                                                    </div>
 
-                                                                </div>
-                                                        </div>
+                                                    <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-3 mb-0">
+                                                            Fit</label>
+                                                            <div class="col-sm-9">
+                                                                <input type="text" name="fit" placeholder="Fit" class="form-control" value="{{product.fit}}">
+                                                            </div>
+                                                    </div>
+
+                                                    <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-3 mb-0">
+                                                            Neck Type</label>
+                                                            <div class="col-sm-9">
+                                                                <input type="text" name="neck_type" placeholder="Neck Type" class="form-control" value="{{product.neck_type}}">
+                                                            </div>
+                                                    </div>
+
+                                                    <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-3 mb-0">Fabric Detail:
+                                                        </label>
+                                                            <div class="col-sm-9">
+                                                                <textarea class="form-control" id="fabric_detail" name="fabric_detail" rows="3">{{product.fabric_detail}}</textarea>
+                                                            </div>
+                                                    </div>
+
+                                                    <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-3 mb-0">
+                                                            Wash-Care</label>
+                                                            <div class="col-sm-9">
+                                                                <textarea class="form-control" id="Washcare" name="Washcare" rows="3">{{product.Washcare}}</textarea>
+
+                                                            </div>
                                                     </div>
                                                 </div>
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="card-header-2">
-                                                <h5>Product Images</h5>
+                                                <h5>Information</h5>
                                             </div>
 
                                             
-
-                                                <div class="row mb-4 align-items-center">
-                                                    <label class="col-sm-3 col-form-label form-label-title">Thumbnail
-                                                        Image</label>
-                                                    <div class="col-sm-9 d-flex">
-                                                        <img src="../../media/{{product.img}}"style="width:10rem" alt="">
-                                                        <input class="form-control form-choose" type="file" name="thumbnail_img"
-                                                            id="formFileMultiple1"  >
-                                                    </div>
-                                                </div>
                                                 <div class="mb-4 row align-items-center">
                                                     <label class="form-label-title col-sm-3 mb-0">Colour Family :</label>
                                                     <div class="col-sm-9">
@@ -248,39 +303,21 @@
                                                     </div>
 
                                                 </div>
-                                                {% comment %} <div class="mb-4 row align-items-center">
-                                                    
-                                                    <label class="form-label-title col-sm-3 mb-0">Color Type :</label>
-                                                    <div class="col-sm-9">
-                                                        <select class="form-control" type="text"  name="color_type" placeholder="Color ">
-                                                            <option value="single_color" {% if  %}
-                                                                product.
-                                                            {% endif %}>Single Color</option>
-                                                            <option value="multi_color">Multi Color</option>
-
-                                                        </select>
-
-                                                    </div>                                        
-                                                </div> {% endcomment %}
+                                          
                                                 <div class="mb-4 row align-items-center">
                                                     
-                                                    <label class="form-label-title col-sm-3 mb-0">Colours :</label>
-                                                    <div class="col-sm-2" id="colorContainer">
-                                                        <button type="button" onclick="addMoreColors()">+ add more</button>
-                                                        <button type="button" onclick="deleteColors()">- Delete</button>
-                                                        {% for i in product_colors %}
+                                                    <label class="form-label-title col-sm-3 mb-0">Color :</label>
+                                                    <div class="col-sm-3" id="colorContainer">
                                                         
-                                                        <input class="form-control" type="color" id="color{{forloop.counter}}" value="{{i}}" placeholder="Color">
-                                                        {% endfor %}
-                                                        <input type="hidden" name="colors" id="colorsInput" value="{{product.color}}">
+                                                        <input class="form-control" type="color"  value="{{product.color}}" name="color" placeholder="Color">
 
                                                     </div>                                           
                                                 </div>
 
                                                 <div class="mb-4 row align-items-center">
-                                                    <label class="form-label-title col-sm-3 mb-0">Price (₹):</label>
+                                                    <label class="form-label-title col-sm-3 mb-0">MRP (₹):</label>
                                                     <div class="col-sm-9">
-                                                        <input class="form-control" type="number" step="0.01" id="price" name="price" placeholder="Price"  value="{{product.price}}" >
+                                                        <input class="form-control" type="number" step="0.1" id="price" name="price" placeholder="MRP"  value="{{product.price}}" >
                                                     </div>
                                                 </div>
 
@@ -315,8 +352,8 @@
                                                     </div>
                                                 </div>
 
+                                            </div>
                                         </div>
-                                    </div>
                                     </div>
 
                                 
@@ -561,47 +598,7 @@
                     </div>
                 </div>
 
-                <div class="modal fade" id="detailcategoryadd" tabindex="-1" role="dialog" aria-labelledby="categoryaddLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Add new Detail Category</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="detailcategoryForm" class="theme-form theme-form-2 mega-form" method="POST" action="{% url 'detail_category_crud' %}?slug=Add">
-                                    {% csrf_token %}
-                                    <div class="mb-4 row align-items-center">
-                                        <label class="form-label-title col-sm-3 mb-0">Sub Category Name</label>
-                                        <div class="col-sm-9">
-                                           <select name="sub_category_name" id="sub_category_name">
-                                           {% for cat in subcategories %}
-                                           
-                                            <option value="{{cat.name}},{{cat.category.name}}">{{cat.name}}</option>
-                                           {% endfor %}
-                                           </select>
-                                        </div>
-                                    </div>
-                                    <div class="mb-4 row align-items-center">
-                                        <label class="form-label-title col-sm-3 mb-0">Detail Category Name</label>
-                                        <div class="col-sm-9">
-                                            <input class="form-control" type="text" id="detail_category_name" name="detail_category_name" placeholder="Detail Category Name">
-                                            <input class="form-control" type="hidden" name="redirect" value="productadd">
-                                        </div>
-                                    </div>
-                                    <button type="button" id="submitDetailCategoryFormBtn" class="btn btn-theme">Submit</button>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
+                
 
             
             <script>

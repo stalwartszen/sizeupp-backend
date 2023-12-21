@@ -94,69 +94,6 @@ def signin(request):
       return render(request, 'back-end/login.html', {"title":"Dashboard- Signin","active":"dashboard_signin"})
         
 
-def brand(request):
-        if not request.user.is_authenticated:
-            return redirect('dashboard')
-        
-        if not request.user.is_superuser:
-            messages.error(request,"Not Allowed")
-            return redirect('dashboard')
-        slug = request.GET.get('slug')
-        
-        if slug == 'Add':
-              if  request.method == 'POST':
-                name= request.POST.get('brand_name')
-                details= request.POST.get('details',None)
-                address= request.POST.get('address',None)
-                contact= request.POST.get('contact',None)
-                
-
-                if Brand.objects.filter(name=name).exists():
-                        messages.error(request,"Brand Already Exist.")
-                        return redirect('brand_dashboard')
-                else:
-                        Brand.objects.create(name=name,details=details,address=address,contact=contact).save()
-                        messages.success(request,"Brand Added Sucessfully")
-                       
-                        return redirect('brand_dashboard')
-              else:
-                    return render(request,"back-end/add-new-brand.html",{"slug":'Add'})
-     
-        if slug == "Update":
-                id = request.GET.get('id')
-                if request.method=='POST':
-                    name= request.POST.get('brand_name')
-                    details= request.POST.get('details',None)
-                    address= request.POST.get('address',None)
-                    contact= request.POST.get('contact',None)
-                    brand = Brand.objects.get(id=id)
-                
-                    
-            
-                    brand.name = name
-                    brand.details = details
-                    brand.address = address
-                    brand.contact = contact
-                    
-                    brand.save()
-                    messages.success(request,"Brand Updated Successfully")
-                    return redirect('brand_dashboard')
-                else:
-                      brand = Brand.objects.get(id=id) 
-                      return render(request,'back-end/add-new-brand.html',{'brand':brand})
-                    
-    
-        if slug == 'Delete':
-                id = request.GET.get('id')
-                
-                Brand.objects.get(id=id).delete()
-                return redirect('brand_dashboard')
-
-        
-        brands = Brand.objects.all()[::-1]
-        return render(request,'back-end/brands.html',{'title':'Brands','brands':brands})
-    
-
 
 def category(request):
         if not request.user.is_authenticated:
@@ -310,7 +247,6 @@ def subcategory_by_id(request):
         category.delete()
         return redirect('sub_category_dashboard')
     else:
-         brands = Brand.objects.all() 
          categories = ProductCategory.objects.all()[::-1]
          subcategories = ProductSubCategory.objects.all()[::-1]
          return render(request,'back-end/add-new-category.html',{'title':'Update Category','brands':brands,'slug':'Add','categories':categories,'subcategories':subcategories})
@@ -319,77 +255,6 @@ def subcategory_by_id(request):
 
 
 
-
-def detail_category(request):
-    if not request.user.is_authenticated:
-        return redirect('dashboard')
-    
-    if not request.user.is_superuser :
-            return redirect('dashboard')
-    
-    
-    detailcategories = ProductDetailCategory.objects.all()[::-1] 
-    return render(request,'back-end/Detailcategory.html',{'title':'Add Detail Category','detailcategories':detailcategories})
-
-
-      
-def detail_category_crud(request,):
-
-    if not request.user.is_authenticated:
-        return redirect('dashboard')
-    
-    if not request.user.is_superuser :
-            return redirect('dashboard')
-    
-    slug = request.GET.get('slug')
-
-    if slug == 'Add':
-         sub_category,category_name= request.POST.get('sub_category_name').split(',')
-         print(sub_category,category_name,"!@#")
-         detail_category_name= request.POST.get('detail_category_name')
-         sub_category = ProductSubCategory.objects.get(name=sub_category,category__name=category_name)
-         if detail_category_name:
-            if ProductDetailCategory.objects.filter(name=detail_category_name,subcategory=sub_category).exists():
-                        pass
-            else:
-                        ProductDetailCategory.objects.create(name=detail_category_name,subcategory=sub_category).save()
-         return redirect('detail_category_dashboard')
-
-
-    if slug == 'Update':
-        detail_category_id = request.GET.get('id')
-        if request.method =="POST":    
-                name = request.POST.get('detail_category_name')
-                sub_category,category_name= request.POST.get('sub_category_name').split(',')
-                sub_category = ProductSubCategory.objects.get(name=sub_category,category__name=category_name)
-
-                detailcategory = ProductDetailCategory.objects.get(id=detail_category_id)
-               
-                
-                detailcategory.subcategory = sub_category  
-                detailcategory.name = name
-                detailcategory.save()
-                messages.success(request,"Detail Category Updated Successfully")
-                return redirect('detail_category_dashboard')
-        
-        else:
-            detailcategory = ProductDetailCategory.objects.get(id=detail_category_id)
-            subcategory = ProductSubCategory.objects.all()[::-1] 
-            return render(request,'back-end/add-new-detail-category.html',{'title':'Update Category','subcategory':subcategory,'detailcategory':detailcategory})
-    
-
-
-
-    elif slug == 'Delete':
-        category_id = request.GET.get('id')
-
-        category = ProductDetailCategory.objects.get(id=category_id)
-        category.delete()
-        return redirect('detail_category_dashboard')
-    else:
-         subcategories = ProductSubCategory.objects.all() 
-         return render(request,'back-end/add-new-detail-category.html',{'title':'Update Category','slug':'Add','subcategories':subcategories})
-    
 
 
 def Products_dashboard(request):
@@ -425,39 +290,50 @@ def Products_dashboard(request):
 def addproduct(request):
       
       if request.method == 'POST':
-          
-            product_name = request.POST.get('product_name')
-            product_description = request.POST.get('product_description')
             category_id = request.POST.get('category_id')
             subcategory_id = request.POST.get('subcategory_id')
-            detailcategory_id = request.POST.get('detailcategory_id')
+            id = request.POST.get('id')
+            season = request.POST.get('season')
+            season_code = request.POST.get('season_code')
+            sleeve = request.POST.get('sleeve')
+            design_surface = request.POST.get('design_surface')
+            fit = request.POST.get('fit')
+            neck_type = request.POST.get('neck_type')
+            fabric_detail = request.POST.get('fabric_detail')
+            Washcare = request.POST.get('Washcare')
+            product_name = request.POST.get('product_name')
             colour_family = request.POST.get('color_family',None)
-            colour =  request.POST.get('colors',None)
+            color =  request.POST.get('color',None)
+            gender =  request.POST.get('gender',None)
+            occasion = request.POST.get('occasion')
             price = request.POST.get('price')
             discount =  request.POST.get('discount',None)
             discount_percentage =  request.POST.get('discount_percentage',None)
-            add_discounted_price =  request.POST.get('update_discounted_price',None)
+            discounted_price =  request.POST.get('update_discounted_price',None)
 
-            additional_info = request.POST.get('additional_info',None)
-            care_instructions = request.POST.get('care_instructions',None)
-            thumbnail_img = request.FILES.get('thumbnail_img')
 
             meta_tags = request.POST.get('meta_tags',None)
             meta_description = request.POST.get('meta_description',None)
 
             product = Product.objects.create(
-                  name=product_name,img=thumbnail_img,
-                  description=product_description,
-                  additional_info=additional_info,
-                  care_instructions=care_instructions,
+                  id=id,
+                  season=season,
+                  season_code=season_code,
+                  sleeve=sleeve,design_surface=design_surface,
+                  fit=fit,neck_type=neck_type,
+                  occasion=occasion,
+                  fabric_detail=fabric_detail,
+                  Washcare=Washcare,
+                  name = product_name,
+                  gender=gender,
                   category = ProductCategory.objects.get(id=category_id),
                   subcategory =ProductSubCategory.objects.get(id=subcategory_id),
-                  detail_category= ProductDetailCategory.objects.get(id=detailcategory_id) ,
                   color_family = ColourFamily.objects.get(name=colour_family),
-                  price = price,
+                  mrp = price,
+                  color=color,
                   discount=discount,
                   discount_percentage=discount_percentage,
-                  discounted_price=add_discounted_price,
+                  discounted_price=discounted_price,
                   meta_tags = meta_tags,
                   meta_description=meta_description
                   
@@ -466,9 +342,11 @@ def addproduct(request):
             sqp_list =request.session['sqp_list']
             for i  in sqp_list:
                   sqp =SizeQuantityPrice.objects.create(size=i['size'])
+                  sqp.id = i['id']
+                  sqp.ean_code = i['ean_code']
                   sqp.quantity = i['quantity']
                   sqp.inches=i['inches']
-                  # sqp.meter = i['meter']
+                  # sqp.centimeter = i['centimeter']
                   sqp.length = i['length']
                   sqp.width = i['width']
                   sqp.height = i['height']
@@ -496,11 +374,9 @@ def addproduct(request):
             
       if request.GET.get('subcategory_id'):
             selected_sub_category = ProductSubCategory.objects.get(id=request.GET.get('subcategory_id'))
-            detailcategories = ProductDetailCategory.objects.filter(subcategory=selected_sub_category)[::-1]
 
       else:
             selected_sub_category=None
-            detailcategories= None
             
 
       sqpies = SizeQuantityPrice.objects.all()[::-1]
@@ -510,7 +386,6 @@ def addproduct(request):
             'sqpies':sqpies,
             'categories':categories,
             'subcategories':subcategories,
-            'detailcategories':detailcategories,
             'selected_category':selected_category,
             'selected_sub_category':selected_sub_category,
             'color_family':ColourFamily.objects.all()
@@ -525,47 +400,52 @@ def addproduct_crud(request,id):
       
       if slug == 'update':
             if request.method == 'POST':
-                  product_name = request.POST.get('product_name')
-                  product_description = request.POST.get('product_description')
                   category_id = request.POST.get('category_id')
                   subcategory_id = request.POST.get('subcategory_id')
-                  detailcategory_id = request.POST.get('detailcategory_id')
+                  id = request.POST.get('id')
+                  season = request.POST.get('season')
+                  season_code = request.POST.get('season_code')
+                  sleeve = request.POST.get('sleeve')
+                  design_surface = request.POST.get('design_surface')
+                  fit = request.POST.get('fit')
+                  neck_type = request.POST.get('neck_type')
+                  fabric_detail = request.POST.get('fabric_detail')
+                  Washcare = request.POST.get('Washcare')
+                  product_name = request.POST.get('product_name')
                   colour_family = request.POST.get('color_family',None)
-                  colour =  request.POST.get('colors',None)
-                  
+                  color =  request.POST.get('color',None)
+                  occasion = request.POST.get('occasion')
                   price = request.POST.get('price')
                   discount =  request.POST.get('discount',None)
                   discount_percentage =  request.POST.get('discount_percentage',None)
-                  add_discounted_price =  request.POST.get('discounted_price',None)
-
-                  additional_info = request.POST.get('additional_info',None)
-                  care_instructions = request.POST.get('care_instructions',None)
-                  thumbnail_img = request.FILES.get('thumbnail_img')
+                  discounted_price =  request.POST.get('update_discounted_price',None)
+                  gender = request.POST.get('gender')
 
                   meta_tags = request.POST.get('meta_tags',None)
                   meta_description = request.POST.get('meta_description',None)
-                  
-                  if thumbnail_img:
-                        product.img=thumbnail_img
-                  else:
-                        product.img = product.img
-                  product.name=product_name
-                  product.description=product_description
-                  product.additional_info=additional_info
-                  product.care_instructions=care_instructions
+                  product.season=season
+                  product.season_code=season_code
+                  product.sleeve=sleeve
+                  product.design_surface=design_surface
+                  product.fit=fit
+                  product.neck_type=neck_type
+                  product.fabric_detail=fabric_detail
+                  product.Washcare=Washcare
+                  product.occasion=occasion
+                  product.name = product_name
+                  product.gender =gender
                   product.category = ProductCategory.objects.get(id=category_id)
                   product.subcategory =ProductSubCategory.objects.get(id=subcategory_id)
-                  product.detail_category= ProductDetailCategory.objects.get(id=detailcategory_id) 
                   product.color_family = ColourFamily.objects.get(name=colour_family)
-                  product.price = price
+                  product.mrp = price
                   product.discount=discount
                   if discount_percentage != None:
                         product.discount_percentage=discount_percentage
-                  if add_discounted_price !=None:
-                        product.discounted_price=add_discounted_price
+                  if discounted_price !=None:
+                        product.discounted_price=discounted_price
                   product.meta_tags = meta_tags
                   product.meta_description=meta_description
-                  product.color =colour
+                  product.color =color
                   
                   product.save()
       
@@ -576,9 +456,11 @@ def addproduct_crud(request,id):
                   sqp_list =request.session['sqp_list']
                   for i  in sqp_list:
                         sqp =SizeQuantityPrice.objects.create(size=i['size'])
+                        sqp.id = i['id']
+                        sqp.ean_code = i['ean_code']
                         sqp.quantity = i['quantity']
                         sqp.inches=i['inches']
-                        sqp.meter = i['meter']
+                        sqp.centimeter = i['centimeter']
                         sqp.length = i['length']
                         sqp.width = i['width']
                         sqp.height = i['height']
@@ -601,7 +483,7 @@ def addproduct_crud(request,id):
             
             for  sqp in product.sqp.all():
                   sqp = SizeQuantityPrice.objects.get(id=sqp.id)
-                  sqp_ = {'size':sqp.size,'meter':sqp.meter,'quantity':sqp.quantity,'inches':sqp.inches,'length':sqp.length,'width':sqp.width,'height':sqp.height,'weight':sqp.weight}
+                  sqp_ = {'id':sqp.id,'ean_code':sqp.ean_code,'size':sqp.size,'meter':sqp.centimeter,'quantity':sqp.quantity,'inches':sqp.inches,'length':sqp.length,'width':sqp.width,'height':sqp.height,'weight':sqp.weight}
                   sqp_list.append(sqp_)
             try:
                   sqp_list = request.session['sqp_list']  
@@ -618,17 +500,13 @@ def addproduct_crud(request,id):
             if request.GET.get('category_id') and request.GET.get('subcategory_id'):
                   selected_sub_category = request.GET.get('subcategory_id')
                   selected_sub_category = ProductSubCategory.objects.get(id=selected_sub_category)
-                  selected_detail_category = None
             else:
                   selected_sub_category=product.subcategory
-                  selected_detail_category = product.detail_category
                                     
             if selected_category:
                   subcategories = ProductSubCategory.objects.filter(category=selected_category)[::-1]
            
-            if selected_sub_category:
-                  detailcategories = ProductDetailCategory.objects.filter(subcategory=selected_sub_category)[::-1]
-
+         
             sqpies = SizeQuantityPrice.objects.all()[::-1] 
             try:
                   product_colors = product.color.split(',')
@@ -640,12 +518,10 @@ def addproduct_crud(request,id):
                   'sqpies':sqpies,
                   'categories':categories,
                   'subcategories':subcategories,
-                  'detailcategories':detailcategories,
                   'selected_category':selected_category,
                   'selected_sub_category':selected_sub_category,
                   'color_family':ColourFamily.objects.all(),
                   'product_colors':product_colors,
-                  'selected_detail_category':selected_detail_category
                   
             } 
             return render(request,'back-end/edit-product.html',cntx)
@@ -665,7 +541,6 @@ def sqp_crud(request):
             size = request.GET.get('size')
             id = request.GET.get('id')
             sqp_list= request.session['sqp_list']
-            print(sqp_list,"@@@@@@@@@@$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
             sqp_list = [item for item in sqp_list if item['size'] != size]
             request.session['sqp_list'] = sqp_list
 
@@ -674,20 +549,23 @@ def sqp_crud(request):
             
       if request.method == 'POST':
             # product_id = request.POST.get('product_id')
+            id=request.POST.get('id',None)
+            ean_code=request.POST.get('ean_code',None)
             size=request.POST.get('size',None)
             quantity=request.POST.get('quantity',None)
-            meter=request.POST.get('meter',None)
+            centimeter=request.POST.get('centimeter',None)
             inches=request.POST.get('inches',None)
             length=request.POST.get('length',None)
             width=request.POST.get('width',None)
             height=request.POST.get('height',None)
             weight=request.POST.get('weight',None)
       
-            sqp = {'size':size,'meter':meter,'quantity':quantity,'inches':inches,'length':length,'width':width,'height':height,'weight':weight}
-            print("1111111111111")
+            sqp = {'id':id,'ean_code':ean_code ,'size':size,'meter':centimeter,'quantity':quantity,'inches':inches,'length':length,'width':width,'height':height,'weight':weight}
             try :
                   sqp_list= request.session['sqp_list']
                   sqp_list.append(sqp)
+                  sqp_list = sorted(sqp_list, key=lambda x: x.get('size', ''))
+
                   request.session['sqp_list'] = sqp_list
                   return JsonResponse({'message':'added'},safe=True)
 

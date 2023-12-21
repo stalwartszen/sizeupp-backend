@@ -12,7 +12,6 @@ urlpatterns = [
     #
     path('img_products/<uuid:id>',views.img_products,name="img_products"),
 
-    path('brands',views.brand,name='brand_dashboard'),
 
 
     path('category',views.category,name='category_dashboard'),
@@ -21,11 +20,9 @@ urlpatterns = [
     path('subcategory',views.subcategory,name='sub_category_dashboard'),
     path('subcategory-crud',views.subcategory_by_id,name='sub_category_crud'),
 
-    path('detail_category',views.detail_category,name='detail_category_dashboard'),
-    path('detail_category-crud',views.detail_category_crud,name='detail_category_crud'),
 
     path('add-product',views.addproduct,name='addproduct'),
-    path('add-product_crud/<uuid:id>',views.addproduct_crud,name='addproduct_crud'),
+    path('add-product_crud/<slug:id>',views.addproduct_crud,name='addproduct_crud'),
     # path('sqp_list/',views.sqp_list,name="sqp_list"),
     path('sqp_crud',views.sqp_crud,name="sqp_crud"),
     # path('product/<uuid:id>/<str:slug>',views.product_by_id,name='product_crud'),
@@ -38,7 +35,7 @@ urlpatterns = [
     path('Colour-Family/',views.colour_family_dashboard,name="colour_family_dashboard"),
 
     path('coupons-List/',views.coupons_list,name="coupons_list"),
-    path('coupons-crud/<uuid:id>',views.coupons_crud,name="coupon_crud"),
+    path('coupons-crud/<slug:id>',views.coupons_crud,name="coupon_crud"),
     
     path('orders-list',views.order_list,name="order_list"),
     path('order-details/<slug:slug>',views.order_details,name="order_details"),

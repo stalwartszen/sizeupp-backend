@@ -60,7 +60,10 @@
                                 
                                                       {% for i in request.session.sqp_list %}
                                                 <div class="multiselect mb-4 multiselect row align-items-center">
-                                                    
+                                                    <label class="form-label-title col-sm-2 mb-0">Article Id:</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text" disabled value="{{i}}">
+                                                    </div>
                                                     <label class="form-label-title col-sm-2 mb-0">Size:</label>
                                                     <div class="col-sm-2">
                                                         <input class="form-control" type="text" disabled value="{{i.size}}">
@@ -129,22 +132,7 @@
                                                         </div>
                                                     {% endif %}
 
-                                                    {% if selected_sub_category %}
                                                     
-                                                        <label class="form-label-title col-sm-3 mb-0">Detail category Name</label>
-                                                        <div class="col-sm-8 d-flex">
-                                                            <select name="detailcategory_id"  class="form-control" id="detail_subcategory-dropdown">
-                                                                
-                                                                <option  value="">--- Select -- </option>
-                                                                {% for detailsubcategory in detailcategories %}
-                                                                        
-                                                                        <option value="{{detailsubcategory.id}}">{{detailsubcategory.name}}</option>
-                                                                {% endfor %}
-                                                            </select>
-                                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#detailcategoryadd" >Add New Detail Category</button>
-
-                                                        </div>
-                                                    {% endif %}
 
                                         
                                             </div>
@@ -163,6 +151,18 @@
 
                                                 <div class="row">
                                                     <div class="col-12">
+
+                                                        <div class="mb-4 row align-items-center">
+                                                            <label class="form-label-title col-sm-3 mb-0">Product
+                                                                Generic Id</label>
+                                                                <div class="col-sm-9">
+                                                                    <input class="form-control" type="text" name="id"
+                                                                        placeholder="Product Generic Id">
+                                                                </div>
+                                                        </div>
+
+
+
                                                         <div class="mb-4 row align-items-center">
                                                             <label class="form-label-title col-sm-3 mb-0">Product
                                                                 Name</label>
@@ -171,29 +171,95 @@
                                                                         placeholder="Product Name">
                                                                 </div>
                                                         </div>
-
                                                         <div class="mb-4 row align-items-center">
-                                                            <label class="form-label-title col-sm-3 mb-0">Product
-                                                                description</label>
-                                                                <div class="col-sm-9">
-                                                                    <textarea class="form-control" id="product_description" name="product_description" rows="3"></textarea>
-
-                                                                </div>
+                                                            <label class="form-label-title col-sm-3 mb-0">Gender :</label>
+                                                            <div class="col-sm-9">
+                                                                <select name="gender" class="form-control"  >
+        
+                                                                    <option disabled>--select--</option>
+        
+                                                                        
+                                                                    <option value="Men" >Men</option>
+                                                                    <option value="Women" >Women</option>
+        
+                                                                        
+                                                                            
+                                                                     
+                                                                </select>
+                                                            </div>
+        
                                                         </div>
-
                                                         <div class="mb-4 row align-items-center">
-                                                            <label class="form-label-title col-sm-3 mb-0">Additional info:
+                                                            <label class="form-label-title col-sm-3 mb-0">Season
                                                             </label>
                                                                 <div class="col-sm-9">
-                                                                    <textarea class="form-control" id="additional_info" name="additional_info" rows="3"></textarea>
+                                                                    <input class="form-control" type="text" name="season"
+                                                                        placeholder="Season">
                                                                 </div>
                                                         </div>
 
                                                         <div class="mb-4 row align-items-center">
-                                                            <label class="form-label-title col-sm-3 mb-0">Care
-                                                                Instructions</label>
+                                                            <label class="form-label-title col-sm-3 mb-0">Season Code
+                                                            </label>
                                                                 <div class="col-sm-9">
-                                                                    <textarea class="form-control" id="care_instructions" name="care_instructions" rows="3"></textarea>
+                                                                    <input class="form-control" type="text" name="season_code"
+                                                                        placeholder="Season Code">
+                                                                </div>
+                                                        </div>
+
+
+                                                        <div class="mb-4 row align-items-center">
+                                                            <label class="form-label-title col-sm-3 mb-0">
+                                                                Occasion</label>
+                                                                <div class="col-sm-9">
+                                                                    <input type="text" name="occasion" placeholder="Occasion" class="form-control">
+                                                                </div>
+                                                        </div>
+                                                        <div class="mb-4 row align-items-center">
+                                                            <label class="form-label-title col-sm-3 mb-0">
+                                                                Sleeve</label>
+                                                                <div class="col-sm-9">
+                                                                    <input type="text" name="sleeve" placeholder="Sleeve" class="form-control">
+                                                                </div>
+                                                        </div>
+
+                                                        <div class="mb-4 row align-items-center">
+                                                            <label class="form-label-title col-sm-3 mb-0">
+                                                                Design Surface</label>
+                                                                <div class="col-sm-9">
+                                                                    <input type="text" name="design_surface" placeholder="Design Surface" class="form-control">
+                                                                </div>
+                                                        </div>
+
+                                                        <div class="mb-4 row align-items-center">
+                                                            <label class="form-label-title col-sm-3 mb-0">
+                                                                Fit</label>
+                                                                <div class="col-sm-9">
+                                                                    <input type="text" name="fit" placeholder="Fit" class="form-control">
+                                                                </div>
+                                                        </div>
+
+                                                        <div class="mb-4 row align-items-center">
+                                                            <label class="form-label-title col-sm-3 mb-0">
+                                                                Neck Type</label>
+                                                                <div class="col-sm-9">
+                                                                    <input type="text" name="neck_type" placeholder="Neck Type" class="form-control">
+                                                                </div>
+                                                        </div>
+
+                                                        <div class="mb-4 row align-items-center">
+                                                            <label class="form-label-title col-sm-3 mb-0">Fabric Detail:
+                                                            </label>
+                                                                <div class="col-sm-9">
+                                                                    <textarea class="form-control" id="fabric_detail" name="fabric_detail" rows="3"></textarea>
+                                                                </div>
+                                                        </div>
+
+                                                        <div class="mb-4 row align-items-center">
+                                                            <label class="form-label-title col-sm-3 mb-0">
+                                                                Wash-Care</label>
+                                                                <div class="col-sm-9">
+                                                                    <textarea class="form-control" id="Washcare" name="Washcare" rows="3"></textarea>
 
                                                                 </div>
                                                         </div>
@@ -205,19 +271,12 @@
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="card-header-2">
-                                                <h5>Product Images</h5>
+                                                <h5>Information</h5>
                                             </div>
 
                                             
 
-                                                <div class="row mb-4 align-items-center">
-                                                    <label class="col-sm-3 col-form-label form-label-title">Thumbnail
-                                                        Image</label>
-                                                    <div class="col-sm-9">
-                                                        <input class="form-control form-choose" type="file" name="thumbnail_img"
-                                                            id="formFileMultiple1"  >
-                                                    </div>
-                                                </div>
+                            
                                                 <div class="mb-4 row align-items-center">
                                                     <label class="form-label-title col-sm-3 mb-0">Colour Family :</label>
                                                     <div class="col-sm-9">
@@ -237,28 +296,12 @@
                                                     </div>
 
                                                 </div>
+                                           
                                                 <div class="mb-4 row align-items-center">
-                                                    
-                                                    <label class="form-label-title col-sm-3 mb-0">Color Type :</label>
-                                                    <div class="col-sm-9">
-                                                        <select class="form-control" type="text"  name="color_type" placeholder="Color ">
-                                                            <option value="single_color">Single Color</option>
-                                                            <option value="multi_color">Multi Color</option>
-
-                                                        </select>
-
-                                                    </div>                                        
-                                                </div>
-                                                <div class="mb-4 row align-items-center">
-                                                    
-                                                    <label class="form-label-title col-sm-3 mb-0">Colours :</label>
-                                                    <div class="col-sm-2" id="colorContainer">
-                                                        <button type="button" onclick="addMoreColors()">+ add more</button>
-                                                        <button type="button" onclick="deleteColors()">- Delete</button>
-                                                        <input class="form-control" type="color" id="color1" placeholder="Color">
-                                                        <input type="hidden" name="colors" id="colorsInput">
-
-                                                    </div>                                        
+                                                    <label class="form-label-title col-sm-3 mb-0">Color:</label>
+                                                    <div class="col-sm-3">
+                                                        <input class="form-control" type="color"  name="color" placeholder="Color" >
+                                                    </div>
                                                 </div>
 
                                                 <div class="mb-4 row align-items-center">
@@ -297,9 +340,8 @@
 
                                         </div>
                                     </div>
-                                    </div>
-
-                                
+                           
+                                </div>
                                     
 
                                     <div class="card">
@@ -339,7 +381,6 @@
                 <!-- footer En -->
             </div>
         </form>
-            <!-- footer Start -->
                  <div class="modal fade" id="sqpadd" tabindex="-1" role="dialog" aria-labelledby="sqpaddLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -354,6 +395,20 @@
                                                 {% csrf_token %}
          
                                                 <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-sm-3 mb-0">Article Id :</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text"  name="id" placeholder="Article Id">
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-sm-3 mb-0">EAN Code:</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="text"  name="ean_code" placeholder="EAN Code">
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-4 row align-items-center">
                                                     <label class="form-label-title col-sm-3 mb-0">Size :</label>
                                                     <div class="col-sm-9">
                                                         <input class="form-control" type="text"  name="size" placeholder="Size ">
@@ -361,9 +416,9 @@
                                                 </div>
 
                                                 <div class="mb-4 row align-items-center">
-                                                    <label class="form-label-title col-sm-3 mb-0">Meter :</label>
+                                                    <label class="form-label-title col-sm-3 mb-0">CentiMeter :</label>
                                                     <div class="col-sm-9">
-                                                        <input class="form-control" type="text"  name="meter" placeholder="Meter ">
+                                                        <input class="form-control" type="text"  name="centimeter" placeholder="Meter ">
                                                     </div>
                                                 </div>
 
@@ -419,53 +474,7 @@
                         </div>
                     </div>
                 </div>
-                {% comment %} 
-                <div class="modal fade" id="brandadd" tabindex="-1" role="dialog" aria-labelledby="brandaddLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Add new Brand</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <form class="theme-form theme-form-2 mega-form" method="POST" action="{% url 'brand_dashboard' %}?slug=Add" id="brandForm">
-                                    {% csrf_token %}
-                                    <div class="mb-4 row align-items-center">
-                                        <label class="form-label-title col-sm-3 mb-0">Brand Name</label>
-                                        <div class="col-sm-9">
-                                            <input class="form-control" type="text" id="brand_name" name="brand_name" placeholder="Brand Name">
-                                            <input class="form-control" type="hidden"  name="redirect" value="productadd">
-                                        </div>
-                                    </div>
-                                    <div class="mb-4 row align-items-center">
-                                        <label class="form-label-title col-sm-3 mb-0">Brand Details</label>
-                                        <div class="col-sm-9">
-                                            <input class="form-control" type="text" id="details" name="details" placeholder="Details">
-                                        </div>
-                                    </div>
-                                    <div class="mb-4 row align-items-center">
-                                        <label class="form-label-title col-sm-3 mb-0">Address</label>
-                                        <div class="col-sm-9">
-                                            <input class="form-control" type="text" id="address" name="address" placeholder="Address">
-                                        </div>
-                                    </div>
-                                    <div class="mb-4 row align-items-center">
-                                        <label class="form-label-title col-sm-3 mb-0">Contact</label>
-                                        <div class="col-sm-9">
-                                            <input class="form-control" type="text" id="contact" name="contact" placeholder="Contact">
-                                        </div>
-                                    </div>
-                                    <button type="button" id="submitBrandFormBtn" class="btn btn-theme">Submit</button>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div> {% endcomment %}
+           
 
                 <div class="modal fade" id="categoryadd" tabindex="-1" role="dialog" aria-labelledby="categoryaddLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
@@ -541,56 +550,11 @@
                     </div>
                 </div>
 
-                <div class="modal fade" id="detailcategoryadd" tabindex="-1" role="dialog" aria-labelledby="categoryaddLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Add new Detail Category</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="detailcategoryForm" class="theme-form theme-form-2 mega-form" method="POST" action="{% url 'detail_category_crud' %}?slug=Add">
-                                    {% csrf_token %}
-                                    <div class="mb-4 row align-items-center">
-                                        <label class="form-label-title col-sm-3 mb-0">Sub Category Name</label>
-                                        <div class="col-sm-9">
-                                           <select name="sub_category_name" id="sub_category_name">
-                                           {% for cat in subcategories %}
-                                           
-                                            <option value="{{cat.name}},{{cat.category.name}}">{{cat.name}}</option>
-                                           {% endfor %}
-                                           </select>
-                                        </div>
-                                    </div>
-                                    <div class="mb-4 row align-items-center">
-                                        <label class="form-label-title col-sm-3 mb-0">Detail Category Name</label>
-                                        <div class="col-sm-9">
-                                            <input class="form-control" type="text" id="detail_category_name" name="detail_category_name" placeholder="Detail Category Name">
-                                            <input class="form-control" type="hidden" name="redirect" value="productadd">
-                                        </div>
-                                    </div>
-                                    <button type="button" id="submitDetailCategoryFormBtn" class="btn btn-theme">Submit</button>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+         
 
 
             
-            <script>
-            
-                CKEDITOR.replace('product_description');
-                CKEDITOR.replace('additional_info');
-                CKEDITOR.replace('care_instructions');
-
-            </script>
+  
 
             {% comment %} <script>
                 document.addEventListener('DOMContentLoaded', function() {
@@ -633,7 +597,7 @@
         });
 
         function updateURL() {
-            var url = 'https://traxzen.pythonanywhere.com/dashboard/add-product?';
+            var url = 'https://103.172.92.235/dashboard/add-product?';
 
             if (categoryDropdown.value != "") {
                 url += 'category_id=' + categoryDropdown.value;
@@ -655,52 +619,6 @@
 </script>
 
     
-
-<script>
-    function addMoreColors() {
-        // Create a new color input
-        var newColorInput = document.createElement("input");
-        newColorInput.className = "form-control";
-        newColorInput.type = "color";
-        newColorInput.placeholder = "Color";
-
-        // Increment the id for each new input
-        var currentColorCount = document.querySelectorAll("input[type=color]").length + 1;
-        newColorInput.id = "color" + currentColorCount;
-
-        // Attach the event listener to the new input
-        newColorInput.addEventListener("input", updateHiddenInput);
-
-        // Append the new input to the container
-        document.getElementById("colorContainer").appendChild(newColorInput);
-
-        // Update the hidden input with all color values
-        updateHiddenInput();
-    }
-
-    function deleteColors() {
-        var colorInputs = document.querySelectorAll("input[type=color]");
-        if (colorInputs.length > 1) {
-            var lastColorInput = colorInputs[colorInputs.length - 1];
-            lastColorInput.remove();
-
-            // Update the hidden input with remaining color values
-            updateHiddenInput();
-        }
-    }
-
-    function updateHiddenInput() {
-        // Get all color values
-        var colorInputs = document.querySelectorAll("input[type=color]");
-        var colorValues = Array.from(colorInputs).map(input => input.value);
-
-        // Update the hidden input value
-        document.getElementById("colorsInput").value = colorValues.join(',');
-    }
-
-    // Attach an event listener to the initial color input
-    document.getElementById("color1").addEventListener("input", updateHiddenInput);
-</script>
 
 
 
@@ -814,37 +732,4 @@
             </script>
 
 
-            <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    var submitSubCategoryFormBtn = document.getElementById("submitDetailCategoryFormBtn");
-                    submitSubCategoryFormBtn.addEventListener("click", function () {
-                        var xhr = new XMLHttpRequest();
-                        var subCategoryForm = document.getElementById("detailcategoryForm");
-
-                        xhr.open("POST", subCategoryForm.action, true);
-                        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-                        xhr.onreadystatechange = function () {
-                            if (xhr.readyState === 4) {
-                                if (xhr.status === 200) {
-                                    // Handle success response if needed
-                                    console.log("Detail Category form submitted successfully");
-                                    // Optionally, close the modal
-                                    document.getElementById("detailcategoryadd").classList.remove("show");
-                                    document.getElementById("detailcategoryadd").style.display = "none";
-                                    document.querySelector(".modal-backdrop").remove();
-                                    document.body.classList.remove("modal-open");
-                                    // Reload the page if needed
-                                    location.reload();
-                                } else {
-                                    // Handle error response if needed
-                                    console.error("Error submitting Sub Category form:", xhr.status, xhr.statusText);
-                                }
-                            }
-                        };
-
-                        xhr.send(new URLSearchParams(new FormData(detailcategoryForm)));
-                    });
-                });
-            </script>
             {% endblock content %}

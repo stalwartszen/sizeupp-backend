@@ -24,7 +24,7 @@ from rest_framework import status
 
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def productfilter(request):
     category_id = request.data.get('category_id', None)
     sub_category_id = request.data.get('sub_category_id', None)
@@ -64,7 +64,7 @@ def productfilter(request):
 
 
 @api_view(['GET'])
-def product_inside(request,uuid):
+def product_inside(request,slug):
 
     sqp_id = request.GET.get('sqp_id',None)
     
@@ -72,13 +72,13 @@ def product_inside(request,uuid):
         sqp = SizeQuantityPrice.objects.get(id=sqp_id)
 
     else:
-        product = get_object_or_404(Product,id =uuid)
+        product = get_object_or_404(Product,id =slug)
         sqp = product.sqp.first()
 
    
 
 
-    product = get_object_or_404(Product,id =uuid)
+    product = get_object_or_404(Product,id =slug)
 
     pro_serializer = product_serializer(product)
 
@@ -125,7 +125,7 @@ def product_inside(request,uuid):
         'wishlist':wishlist,
         'product_images':img_serializer.data,
         # 'order':order,
-        'reviews':ReviewSerializer(Reviews.objects.filter(product=Product.objects.get(id=uuid)),many=True).data,
+        'reviews':ReviewSerializer(Reviews.objects.filter(product=Product.objects.get(id=slug)),many=True).data,
         'related_products_category':product_serializer(Product.objects.filter(category=product.category),many=True).data,
     }
     return Response(cntx,status=status.HTTP_200_OK)
@@ -170,26 +170,14 @@ def allproducts(request):
 
 @api_view(['GET'])
 def cat_list(request):
-    # Get all subcategories
-    subcategories = ProductSubCategory.objects.order_by('-id').all()
-    sub_category = []
-    for subcat in subcategories:
-        subcat_={
-            'id':subcat.id,
-            'name':subcat.name
-        }
-        detail_category=[]
-        for detail_cat in ProductDetailCategory.objects.filter(subcategory=subcat):
-            detail_category.append({'id':detail_cat.id,'name':detail_cat.name})    
-        subcat_['detail_category']=detail_category
-        sub_category.append(subcat_)
+   
         
 
     # Get a list of category names
     categories = [{'name':category.name,'id':category.id} for category in ProductCategory.objects.order_by('-id').all()]
 
     # Combine data and return the response
-    response_data = {'subcategories': sub_category,  'categories': categories}
+    response_data = {'category_details':category_serializer(ProductCategory.objects.all(),many=True).data ,  'category_list': categories}
     return Response(response_data, status=status.HTTP_200_OK)
 
 

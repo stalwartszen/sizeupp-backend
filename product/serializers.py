@@ -8,17 +8,8 @@ class SizeQuantityPriceSerializer(serializers.ModelSerializer):
 
 
 
-class detail_category_serializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductDetailCategory
-        fields = "__all__"
-
-
-
-
 
 class subcategory_serializer(serializers.ModelSerializer):
-    detail_categories = detail_category_serializer(many=True, read_only=True)
     class Meta:
         model = ProductSubCategory
         fields = "__all__"
@@ -43,7 +34,6 @@ class ProductImagesSerializer(serializers.ModelSerializer):
 class product_serializer(serializers.ModelSerializer):
     category = category_serializer()
     subcategory = subcategory_serializer()
-    detail_category = detail_category_serializer()
     sqp = SizeQuantityPriceSerializer(many=True, read_only=True)
     images = ProductImagesSerializer(many=True, read_only=True, source='productimages_set')  # Assuming 'productimages_set' is the related name
    
