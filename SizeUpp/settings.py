@@ -71,28 +71,33 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
-CORS_ALLOW_METHODS = (
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
-)
+
 CORS_ALLOWED_ORIGINS = [
     "http://*",  # Also, add the scheme for consistency
     # Add other allowed origins as needed with the correct scheme
 ]
 CORS_ALLOW_ALL_ORIGINS = True  # Set this to False to use CORS_ALLOWED_ORIGINS
 
-CORS_ALLOW_HEADERS = (
-    "accept",
-    "authorization",
-    "content-type",
-    "user-agent",
-    "x-csrftoken",
-    "x-requested-with",
-)
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -109,6 +114,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'SizeUpp.urls'
 
+CORS_ORIGIN_ALLOW_ALL = True
 
 TEMPLATES = [
     {
