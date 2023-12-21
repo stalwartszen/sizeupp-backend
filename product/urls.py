@@ -18,5 +18,7 @@ urlpatterns = [
       path('export-excel/', ExportExcelView.as_view(), name='export_excel'),
 
 
-    path('upload',upload,name='upload_file')
+    path('upload',upload,name='upload_file'),
+    path('colorfamily',colorfamily,name="colorfamily"),
+    
     ]

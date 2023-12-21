@@ -15,7 +15,6 @@ from django.db.models import Sum
 from django.http import JsonResponse
 from django.db.models.functions import TruncMonth
 from  .export  import export_products_to_excel
-from product.serializers import size_quantity_price_serializer
 
 
 

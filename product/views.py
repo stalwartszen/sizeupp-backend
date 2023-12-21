@@ -214,7 +214,6 @@ def review_post(request):
     
     
 
-from product.serializers import size_quantity_price_serializer
 from django.views.generic import View
 import pandas as pd
 from product.models import Product, ProductImages
@@ -258,3 +257,12 @@ def export_products_to_excel(file_path='products.xlsx'):
 
 def upload(request):
     return redirect('products_dashboard')
+
+
+@api_view(['GET'])
+def colorfamily(request):
+    return Response({'colors':ColourFamilySerializer(ColourFamily.objects.all(),many=True).data},status=status.HTTP_200_OK)
+
+# @api_view(['GET'])
+# def all_sqp(request):
+#     return Response({'sqp':SizeQuantityPriceSerializer(SizeQuantityPrice.objects.all(),many=True).data},status=status.HTTP_200_OK)

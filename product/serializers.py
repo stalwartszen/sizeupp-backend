@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from product.models import Product, Brand,ProductCategory, ProductSubCategory, SizeQuantityPrice,ProductDetailCategory,ProductImages
+from product.models import *
 from dashboard.models import Reviews
 class SizeQuantityPriceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -52,10 +52,10 @@ class product_serializer(serializers.ModelSerializer):
         fields = "__all__"
         
         
-class size_quantity_price_serializer(serializers.ModelSerializer):
-    class Meta:
-        model = SizeQuantityPrice
-        fields = "__all__"
+# class size_quantity_price_serializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = SizeQuantityPrice
+#         fields = "__all__"
     
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
@@ -64,3 +64,8 @@ class ReviewSerializer(serializers.ModelSerializer):
         
 
 
+class ColourFamilySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ColourFamily
+        fields = '__all__'
+        
