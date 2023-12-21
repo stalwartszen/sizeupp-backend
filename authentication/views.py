@@ -576,11 +576,11 @@ def show_Cart(request):
             code=None
             
             pincode = Address.objects.get(user=request.user,is_default=True).postal_code
-            if pincode:
+            # if pincode:
 
-                    deliveryCharges = checkDelivery(pincode)
-            else:
-                    deliveryCharges =None
+            #         # deliveryCharges = checkDelivery(pincode)
+            # else:
+            deliveryCharges = 0
                     
                     
             if request.method == 'POST':
