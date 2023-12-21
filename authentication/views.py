@@ -721,123 +721,120 @@ paypalrestsdk.configure({
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])    
 def create_order(request):
-    if request.method == 'POST':
-        address_id = request.data.get('address',None)
-        sub_total = float(request.data.get('sub_total'))
-        coupon = request.data.get('coupon')
-        sub_sub_total = float(request.data.get('sub_sub_total', 0))
-        delivery_charges =request.data.get('deliverycharges') 
-        total_price = float(request.data.get('total_price'))
-        discount_percentage = float(request.data.get('discount_percentage',0))
-        discount_amount = float(request.data.get('discount_amount',0))
-        mrp_price =float(request.data.get('mrp_price',0))
-        discount_on_price=float(request.data.get('discount_on_price',0))
-        tax = float(request.data.get('tax',0))
-        payment_type = request.data.get('payment_type',None)
-        
-        
-        
-        if not address_id:
-            message='Please Add/select Address'
-            return Response({'message':message},status=status.HTTP_400_BAD_REQUEST)
-
-        address = Address.objects.get(id=address_id)
-        order = Order.objects.create(
-            customer_name = str(request.user.first_name +' ' +request.user.last_name),
-            customer_email = request.user.email,
-            customer_contact = request.user.phone,
-            address_line_1 = address.address_line_1,
-            address_line_2 = address.address_line_2,
-            city = address.city,
-            postal_code = address.postal_code,
-            country = address.country,
-            state = address.state,
+    try :
+        if request.method == 'POST':
+            address_id = request.data.get('address',None)
+            sub_total = float(request.data.get('sub_total'))
+            coupon = request.data.get('coupon')
+            sub_sub_total = float(request.data.get('sub_sub_total', 0))
+            delivery_charges =request.data.get('deliverycharges') 
+            total_price = float(request.data.get('total_price'))
+            discount_percentage = float(request.data.get('discount_percentage',0))
+            discount_amount = float(request.data.get('discount_amount',0))
+            mrp_price =float(request.data.get('mrp_price',0))
+            discount_on_price=float(request.data.get('discount_on_price',0))
+            tax = float(request.data.get('tax',0))
+            payment_type = request.data.get('payment_type',None)
             
-            payment_type = payment_type,
-            payment_status = "Pending",
-            payment_id = None,
-            payment_amount = None, 
-        )        
-        
-
-
-        order.payment_amount = total_price
-        order.deliveryCharges = delivery_charges
-        order.mrp_price = mrp_price
-        order.discount_on_price=discount_on_price
-        order.sub_total = round(sub_total,2)
-        if sub_sub_total:
-            order.sub_sub_total = round(sub_sub_total,2)
-            order.discount_percentage = discount_percentage
-            order.discount_amount = discount_amount
             
-        order.coupon = coupon
-        order.tax = tax
-        order.save()
-        
-        for cart in Cart.objects.filter(user=request.user):
+            
+            if not address_id:
+                message='Please Add/select Address'
+                return Response({'message':message},status=status.HTTP_400_BAD_REQUEST)
+
+            address = Address.objects.get(id=address_id)
+            order = Order.objects.create(
+                customer_name = str(request.user.first_name +' ' +request.user.last_name),
+                customer_email = request.user.email,
+                customer_contact = request.user.phone,
+                address_line_1 = address.address_line_1,
+                address_line_2 = address.address_line_2,
+                city = address.city,
+                postal_code = address.postal_code,
+                country = address.country,
+                state = address.state,
+                
+                payment_type = payment_type,
+                payment_status = "Pending",
+                payment_id = None,
+                payment_amount = None, 
+            )        
+            
 
 
-            order_item = OrderItem.objects.create(
-                    product = cart.product,
-                    quantity = cart.quantity,
-                    color = cart.color,
-                    size = cart.size_quantity_price.size,
-                    price = cart.price,
-                    total=cart.total_price,
-                    sqp_code=cart.size_quantity_price.id,
-                )
-            # if cart.discount_price:
-            #         discount_price = cart.discount_price
-            # if cart.discount_percentage:
-            #         discount_percentage=cart.discount_percentage
-                    
-            order_item.save()
-            order.order_items.add(order_item)
+            order.payment_amount = total_price
+            order.deliveryCharges = delivery_charges
+            order.mrp_price = mrp_price
+            order.discount_on_price=discount_on_price
+            order.sub_total = round(sub_total,2)
+            if sub_sub_total:
+                order.sub_sub_total = round(sub_sub_total,2)
+                order.discount_percentage = discount_percentage
+                order.discount_amount = discount_amount
+                
+            order.coupon = coupon
+            order.tax = tax
             order.save()
-            sqp = SizeQuantityPrice.objects.get(id=cart.size_quantity_price.id)
-            sqp.quantity = int(sqp.quantity) - int(cart.quantity)
-            sqp.save()
             
-        if payment_type == 'COD':
-            return Response({'message':'Order Created'},status=status.HTTP_200_OK)
+            for cart in Cart.objects.filter(user=request.user):
+
+
+                order_item = OrderItem.objects.create(
+                        product = cart.product,
+                        quantity = cart.quantity,
+                        color = cart.color,
+                        size = cart.size_quantity_price.size,
+                        price = cart.price,
+                        total=cart.total_price,
+                        sqp_code=cart.size_quantity_price.id,
+                    )
+                # if cart.discount_price:
+                #         discount_price = cart.discount_price
+                # if cart.discount_percentage:
+                #         discount_percentage=cart.discount_percentage
+                        
+                order_item.save()
+                order.order_items.add(order_item)
+                order.save()
+                sqp = SizeQuantityPrice.objects.get(id=cart.size_quantity_price.id)
+                sqp.quantity = int(sqp.quantity) - int(cart.quantity)
+                sqp.save()
+                
+            if payment_type == 'COD':
+                return Response({'message':'Order Created'},status=status.HTTP_200_OK)
+            
         
-    
-    payment = paypalrestsdk.Payment({
-        "intent": "sale",
-        "payer": {
-            "payment_method": "paypal"
-        },
-        "redirect_urls": {
-            "return_url": "http://127.0.0.1:8000/payment/execute/",
-            "cancel_url": "http://127.0.0.1:8000/payment/cancel/"
-        },
-        "transactions": [{
-            "amount": {
-                "total": total_price,
-                "currency": "USD"
+        payment = paypalrestsdk.Payment({
+            "intent": "sale",
+            "payer": {
+                "payment_method": "paypal"
             },
-            "description": "Payment description"
-        }]
-    })
-    
-    if payment.create():
-        request.session['paypal_payment_id'] = payment.id
-        order.payment_id = payment.id
-        order.save()
-        for link in payment.links:
-            if link.method == "REDIRECT":
-                redirect_url = str(link.href)
-                return redirect(redirect_url)
-    else:
-        messages.error(request,"Payment Canceled")
-        return render(request, 'payment_error.html')
-
-
-
-
-
-
+            "redirect_urls": {
+                "return_url": "http://127.0.0.1:8000/payment/execute/",
+                "cancel_url": "http://127.0.0.1:8000/payment/cancel/"
+            },
+            "transactions": [{
+                "amount": {
+                    "total": total_price,
+                    "currency": "USD"
+                },
+                "description": "Payment description"
+            }]
+        })
+        
+        if payment.create():
+            request.session['paypal_payment_id'] = payment.id
+            order.payment_id = payment.id
+            order.save()
+            for link in payment.links:
+                if link.method == "REDIRECT":
+                    redirect_url = str(link.href)
+                    return redirect(redirect_url)
+        else:
+            messages.error(request,"Payment Canceled")
+            return render(request, 'payment_error.html')
+    except Exception as e : 
+        return Response({'message':e},status=status.HTTP_400_BAD_REQUEST)     
 
 
 
