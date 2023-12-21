@@ -24,44 +24,47 @@ from rest_framework import status
 
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def productfilter(request):
-    category_id = request.data.get('category_id', None)
-    sub_category_id = request.data.get('sub_category_id', None)
-    colorfamily_id = request.data.get('colorfamily_id', None)
-    price = request.data.get('price', None)
-    search = request.data.get('search', None)
-    discounted_products = request.data.get('discounted_products', None)
-    
-    products = Product.objects.all()
+    try:
+        if request.method == 'POST':
+            category_id = request.data.get('category_id', None)
+            sub_category_id = request.data.get('sub_category_id', None)
+            colorfamily_id = request.data.get('colorfamily_id', None)
+            price = request.data.get('price', None)
+            search = request.data.get('search', None)
+            discounted_products = request.data.get('discounted_products', None)
+            
+            products = Product.objects.all()
 
-    if search:
-        products = Product.objects.filter(
-            Q(name__icontains=search) | 
-            Q(description__icontains=search) | 
-            Q(additional_info__icontains=search) |
-            Q(category__name__icontains=search) | 
-            Q(subcategory__name__icontains=search)
-        )
-        return Response({'products': product_serializer(products, many=True).data}, status=status.HTTP_200_OK)
-    
-    if category_id:
-        products = products.filter(category__id=category_id)
-    
-    if sub_category_id:
-        products = products.filter(subcategory__id=sub_category_id)
-    
-    if colorfamily_id:
-        products = products.filter(color_family__id=colorfamily_id)
-        
-    if price:
-        products = products.filter(price__lt=float(price))
-        
-    if discounted_products:
-        products = products.filter(discount=True)
-        
-    return Response({'products': product_serializer(products, many=True).data}, status=status.HTTP_200_OK)
-
+            if search:
+                products = Product.objects.filter(
+                    Q(name__icontains=search) | 
+                    Q(description__icontains=search) | 
+                    Q(additional_info__icontains=search) |
+                    Q(category__name__icontains=search) | 
+                    Q(subcategory__name__icontains=search)
+                )
+                return Response({'products': product_serializer(products, many=True).data}, status=status.HTTP_200_OK)
+            
+            if category_id:
+                products = products.filter(category__id=category_id)
+            
+            if sub_category_id:
+                products = products.filter(subcategory__id=sub_category_id)
+            
+            if colorfamily_id:
+                products = products.filter(color_family__id=colorfamily_id)
+                
+            if price:
+                products = products.filter(price__lt=float(price))
+                
+            if discounted_products:
+                products = products.filter(discount=True)
+                
+            return Response({'products': product_serializer(products, many=True).data}, status=status.HTTP_200_OK)
+    except Exception as e :
+        return Response({"message": e},status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def product_inside(request,uuid):
