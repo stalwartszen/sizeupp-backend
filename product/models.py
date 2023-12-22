@@ -50,7 +50,7 @@ class ProductSubCategory(models.Model):
 
 
 class SizeQuantityPrice(models.Model):
-    id = models.CharField(max_length=15,primary_key=True,  editable=False)
+    id = models.CharField(max_length=25,primary_key=True,  editable=False)
     ean_code = models.CharField(max_length=15,editable=False)
     
     
@@ -70,7 +70,7 @@ class SizeQuantityPrice(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.ean_code)
+        return str(self.id)
     
 
 

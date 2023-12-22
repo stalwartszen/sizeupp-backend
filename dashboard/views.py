@@ -340,9 +340,10 @@ def addproduct(request):
             )
             product.save()
             sqp_list =request.session['sqp_list']
+            print("!!!!!!!!!!!!!!!!!!!!!!",sqp_list)
             for i  in sqp_list:
-                  sqp =SizeQuantityPrice.objects.create(size=i['size'])
-                  sqp.id = i['id']
+                  sqp =SizeQuantityPrice.objects.create(id= i['id'])
+                  sqp.size = i['size']
                   sqp.ean_code = i['ean_code']
                   sqp.quantity = i['quantity']
                   sqp.inches=i['inches']

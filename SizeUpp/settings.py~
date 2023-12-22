@@ -133,7 +133,7 @@ TEMPLATES = [
 ]
 
 
-WSGI_APPLICATION = 'SizeUpp.SizeUpp.wsgi.application'
+WSGI_APPLICATION = 'SizeUpp.wsgi.application'
 
 user = os.environ.get('USER')
 

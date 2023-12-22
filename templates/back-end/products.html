@@ -42,12 +42,11 @@
                                                 <thead>
                                                     <tr>
                                                         <th>Option</th>
-                                                        <th>Product Image</th>
                                                         <th>Product Name</th>
 
                                                         <th>Category</th>
                                                         <th>Sub Category</th>
-                                                        <th>Detail Category</th>
+                                                        <th>Color</th>
                                                         <th>Price</th>
                                                         <th>Discount Percentage (%)</th>
                                                         <th>Price after Discount </th>
@@ -80,20 +79,15 @@
                                                                 </li>
                                                             </ul>
                                                         </td>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="../..{{pro.img}}" class="img-fluid"
-                                                                    alt="">
-                                                            </div>
-                                                        </td>
+                                                        
 
                                                         
                                                         <td>{{pro.name}}</td>
 
                                                         <td>{{pro.category.name}}</td>
                                                         <td>{{pro.subcategory.name}}</td>
-                                                        <td>{{pro.detail_category.name}}</td>
-                                                        <td>{{pro.price}}</td>
+                                                        <td>{{pro.color}}</td>
+                                                        <td>{{pro.mrp}}</td>
                                                         <td>{{pro.discount_percentage}}</td>
                                                         <td>{{pro.discounted_price}}</td>
                                                         

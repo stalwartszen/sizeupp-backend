@@ -170,17 +170,17 @@ def allproducts(request):
 
 @api_view(['GET'])
 def cat_list(request):
-   
-        
-
-    # Get a list of category names
-    categories = [{'name':category.name,'id':category.id} for category in ProductCategory.objects.order_by('-id').all()]
+    categories = ProductCategory.objects.all()
+    
+    # Serialize categories with nested subcategories
+    category_data = category_serializer(categories, many=True).data
+    
+    # Extract category details for the category_list
+    category_list = [{'name': category.name, 'id': category.id} for category in categories.order_by('-id').all()]
 
     # Combine data and return the response
-    response_data = {'category_details':category_serializer(ProductCategory.objects.all(),many=True).data ,  'category_list': categories}
+    response_data = {'category_details': category_data, 'category_list': category_list}
     return Response(response_data, status=status.HTTP_200_OK)
-
-
 
 
 
