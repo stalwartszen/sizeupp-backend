@@ -27,9 +27,9 @@ urlpatterns = [
     
     path('track-order/',views.Track_order,name="track_order"),
 
-    path('add-to-cart/<uuid:uuid>',views.Add_Cart,name="add_cart"),
+    path('add-to-cart/<slug:uuid>',views.Add_Cart,name="add_cart"),
     path('my-cart',views.show_Cart,name="show_cart"), 
-    path('delete_cart/<uuid:uuid>',views.del_cart,name="del_item"),
+    path('delete_cart/<slug:uuid>',views.del_cart,name="del_item"),
 
     path('wishlist/',views.wishlist,name="wishlist"),
     path('add_wishlist/<uuid:uuid>',views.add_wishlist,name="add_wishlist"),

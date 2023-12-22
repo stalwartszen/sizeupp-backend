@@ -50,22 +50,15 @@ class Cart(models.Model):
     product = models.ForeignKey(Product,on_delete=models.CASCADE)
     size_quantity_price = models.ForeignKey(SizeQuantityPrice,on_delete=models.CASCADE,null=True, blank=True)
     quantity = models.IntegerField(validators=[MinValueValidator(0)])
-    color = models.CharField(max_length=20,null=True,blank=True)
     
-    price = models.CharField(max_length=10,null=True,blank=True)
+    mrp = models.CharField(max_length=10,null=True,blank=True)
     
-    discount_on_price = models.CharField(max_length=10,null=True,blank=True)
+    # discount_on_price = models.CharField(max_length=10,null=True,blank=True)
     sub_total = models.CharField(max_length=10,null=True,blank=True)
-    total_price =models.CharField(max_length=400,null=True,blank=True)
+    # total_price =models.CharField(max_length=400,null=True,blank=True)
     
-    
-    
-    
-
     created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now_add=True)
-    discount_coupon = models.BooleanField(default=False)
-    discount_percentage= models.FloatField(validators=[MinValueValidator(0)],null=True, blank=True)
     
 
 
