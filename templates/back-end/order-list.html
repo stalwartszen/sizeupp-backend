@@ -31,15 +31,12 @@
                                                     <tr data-bs-toggle="offcanvas" href="#order-details">
                                                         
 
-                                                        <td> {{order.serial_id}}</td>
+                                                        <td> {{order.id}}</td>
 
                                                         <td>{{order.created_at}}</td>
 
-                                                        <td>{% if order.payment_id == 'Cash On Counter' %}
-                                                            Cash On Counter
-                                                        {% else %}
-                                                        paypal
-                                                        {% endif %} </td>
+                                                        <td>{{order.payment_type}}
+                                                         </td>
 
                                                         {% if order.delivery_status == 'Delivered' %}
                                                         
@@ -56,12 +53,12 @@
                                                         </td>
                                                         {% endif %}
 
-                                                        <td>£{{order.payment_amount}}</td>
+                                                        <td>₹{{order.payment_amount}}</td>
 
                                                         <td>
                                                             <ul>
                                                                 <li>
-                                                                    <a href="{% url 'order_details' order.serial_id %}">
+                                                                    <a href="{% url 'order_details' order.id %}">
                                                                         <i class="ri-eye-line"></i>
                                                                     </a>
                                                                 </li>
@@ -73,13 +70,13 @@
                                                                 </li>
 
                                                                 <li>
-                                                                    <a href="{% url  'order_crud' order.serial_id %}?slug=delete" >
+                                                                    <a href="{% url  'order_crud' order.id %}?slug=delete" >
                                                                         <i class="ri-delete-bin-line"></i>
                                                                     </a>
                                                                 </li>
                                                                 <li>
                                                                     <a class="btn btn-sm btn-solid text-white"
-                                                                        href="{% url 'invoice' order.serial_id %}">
+                                                                        href="{% url 'invoice' order.id %}">
                                                                         View Invoice
                                                                     </a>
                                                                 </li>

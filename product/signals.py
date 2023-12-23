@@ -1,55 +1,79 @@
-from django.db.models.signals import post_save,post_delete
+# signals.py
+from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import  Product, SizeQuantityPrice,DiscountOnProducts
-from authentication.models import Cart
+from .models import ExcelFile
+import pandas as pd
+from product.models import *
 
 
 
+@receiver(post_save, sender=ExcelFile)
+def handle_excel_file_upload(sender, instance, created, **kwargs):
+    if created:
+        # Trigger Celery task to process each row of the Excel file
+        excel_file = ExcelFile.objects.get(pk=instance.id)
+        df = pd.read_excel(excel_file.file.path)
+        for index, row in df.iterrows():
+        # Iterate through all columns in the row
+            print(index)
+            var = {}
+            for col_name, value in row.items():
+                # Print or save the values as per your requirement
+                var[col_name] = value
+            
+            
+            
+            if Product.objects.all() and int(Product.objects.order_by('-id')[0].id) == int(var['Generic']):
+                        product = Product.objects.order_by('-id')[0]
+            else:
+                        product = Product.objects.create(id = var['Generic'])
+                        product.season = var['Season']
+                        product.season_code = var['Season code']
+                        product.color = var['COLOR']
+                        product.mrp = var['MRP']
+                        product.sleeve = var['SLEEVE']
+                        product.design_surface = var['DESIGN/SURFACE']
+                        product.occasion = var['OCCASION']
+                        product.name = var['Product Title']
+                        product.fit = var['FIT']
+                        product.neck_type = var['NECK TYPE']
+                        product.gender = var['Gender']
+                        product.fabric_detail = var['FABRIC DETAILS']
+                        product.Washcare = var['Washcare']
+                        if ProductCategory.objects.filter(name=var['Category']).exists():
+                            category =  ProductCategory.objects.get(name=var['Category'])
+                        else:
+                            category =  ProductCategory.objects.create(name=var['Category'])
 
-@receiver(post_save, sender=DiscountOnProducts)
+                        product.category = category
+                        
+                        if ProductSubCategory.objects.filter(name=var['Sub-Category']).exists():
+                            subcategory =  ProductSubCategory.objects.get(category=category,name=var['Sub-Category'])
+                        else:
+                            subcategory =  ProductSubCategory.objects.create(category=category,name=var['Sub-Category'])
+                            
+                            
+                        product.subcategory = subcategory
+                        if ColourFamily.objects.filter(name=var['Color Family']).exists():
+                            colour_family = ColourFamily.objects.get(name=var['Color Family'])
+                        else:
+                            colour_family = ColourFamily.objects.create(name=var['Color Family'])
 
-
-
-def update_price_with_discount(sender, instance, **kwargs):
-    """
-    Update the price fields of SizeQuantityPrice objects when a new DiscountCoupon is created
-    and associated with a Product object.
-    """
-    products = instance.products.all()
-    for product in products:
-        sqps = product.size_quantity_price.all()
-        for sqp in sqps:
-            if sqp.price:
-                original_price = float(sqp.price)
-                percentage = float(instance.percentage)
-                discounted_price = original_price - (original_price * percentage / 100)
-                sqp.discount_percentage = f'{percentage}%'
-                sqp.discounted_price = discounted_price
-                sqp.discount = True
-                sqp.save()
-
-        carts = Cart.objects.filter(product=product)
-        for cart in carts:
-            cart.total_price= int(cart.quantity) *float(cart.size_quantity_price.discounted_price)
-            cart.save()
-
-
-
-@receiver(post_delete, sender=DiscountOnProducts)
-def clear_discount_fields(sender, instance, **kwargs):
-    """
-    Clear the discount-related fields in SizeQuantityPrice objects when a DiscountOnProducts object is deleted.
-    """
-    products = instance.products.all()
-    for product in products:
-        sqps = product.size_quantity_price.all()
-        for sqp in sqps:
-            sqp.discount_percentage = None
-            sqp.discounted_price = None
-            sqp.discount = False
+                            product.color_family = colour_family
+                        product.save()
+                        
+            sqp = SizeQuantityPrice.objects.create(
+                            id = var['Article'],
+                            ean_code = var['EAN code'],
+                            size = var['SIZE'],
+                            inches = var['inches'],
+                            length = var['Length (cm)'],
+                            width = var['Width (cm)'],
+                            weight = var['Weight (gm)'],
+                            quantity =var['Stock Quantity']
+                        )
             sqp.save()
-
-        carts = Cart.objects.filter(product=product)
-        for cart in carts:
-            cart.total_price= int(cart.quantity) *float(cart.size_quantity_price.discounted_price)
-            cart.save()
+            product.sqp.add(sqp)
+            product.save()
+                    
+                

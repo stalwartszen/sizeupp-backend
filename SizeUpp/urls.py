@@ -35,8 +35,8 @@ urlpatterns = [
 
     path('api/', include('authentication.urls')),
     path('api/product/', include('product.urls')),
-    path('dashboard/', include('dashboard.urls')),
-    path("", include("django.contrib.auth.urls")), 
+    path('', include('dashboard.urls')),
+    # path("", include("django.contrib.auth.urls")), 
     path('invoice/<slug:slug>',invoice,name='invoice'),
 
 

@@ -46,7 +46,7 @@
                                                                 <span># {{i.id}}</span>
                                                             </div>
                                                         </td>
-                                                        <td>{{i.order.serial_id}}</td>
+                                                        <td>{{i.order.id}}</td>
 
                                                         <td>{{i.created}}</td>
                                                         <td>{{i.issue}}</td>
@@ -54,7 +54,7 @@
                                                         <td>
                                                             <ul>
                                                                 <li>
-                                                                    <button type="button" class="btn btn-primary" onclick="openModal(event, '{{i.order.customer_name}}', '{{i.order.customer_email}}', '{{i.order.serial_id}}', '{{i.issue}}', '{{i.product}}', '{{i.feedback}}')">
+                                                                    <button type="button" class="btn btn-primary" onclick="openModal(event, '{{i.order.customer_name}}', '{{i.order.customer_email}}', '{{i.order.id}}', '{{i.issue}}', '{{i.product}}', '{{i.feedback}}')">
                                                                         <i class="ri-eye-line"></i>
                                                                     </button>
                                                                 </li>

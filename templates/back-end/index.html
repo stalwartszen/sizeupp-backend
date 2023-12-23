@@ -29,7 +29,7 @@
                                 <div class="custome-2-bg b-r-4 card-body">
                                     <div class="media static-top-widget">
                                         <div class="media-body p-0">
-                                            <span class="m-0"> Orders Delivered</span>
+                                            <span class="m-0"> Orders Processing</span>
                                             <h4 class="mb-0 counter">{{order_count}}
                                                
                                             </h4>
@@ -197,7 +197,7 @@
                                                             <div class="best-product-box">
                                                                 <div class="product-name">
                                                                     <h5>Order Id:</h5>
-                                                                    <a href="{% url 'order_details' order.serial_id %}">#{{order.serial_id}}</a>
+                                                                    <a href="{% url 'order_details' order.id %}">#{{order.id}}</a>
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -373,7 +373,7 @@
     
         <script>
                     // Fetch revenue data from backend
-                    fetch("/dashboard/revenue-data")
+                    fetch("/revenue-data")
                     .then(response => response.json())
                     .then(data => {
                       const xValues = data.map(item => Object.keys(item)[0]);

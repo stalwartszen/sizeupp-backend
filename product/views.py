@@ -170,16 +170,22 @@ def allproducts(request):
 
 @api_view(['GET'])
 def cat_list(request):
-    categories = ProductCategory.objects.all()
-    
-    # Serialize categories with nested subcategories
-    category_data = category_serializer(categories, many=True).data
-    
-    # Extract category details for the category_list
-    category_list = [{'name': category.name, 'id': category.id} for category in categories.order_by('-id').all()]
+    men_products = Product.objects.filter(gender='Men')
+
+    # Get distinct categories related to the filtered products
+    men_categories = ProductCategory.objects.filter(products__in=men_products).distinct()
+
+    # Serialize the data for categories
+    category_data = category_serializer(men_categories, many=True).data
+
+    # Add subcategories for each category
+    for cat in category_data:
+        category_instance = ProductCategory.objects.get(id=cat['id'])
+        men_subcategories = ProductSubCategory.objects.filter(products__in=men_products, category=category_instance).distinct()
+        cat['subcategories'] = subcategory_serializer(men_subcategories, many=True).data
 
     # Combine data and return the response
-    response_data = {'category_details': category_data, 'category_list': category_list}
+    response_data = {'men_category': category_data}
     return Response(response_data, status=status.HTTP_200_OK)
 
 
@@ -244,6 +250,9 @@ def export_products_to_excel(file_path='products.xlsx'):
 
 
 def upload(request):
+    if request.method == 'POST':
+        file = request.FILES['file']
+        ExcelFile.objects.create(file=file).save()
     return redirect('products_dashboard')
 
 

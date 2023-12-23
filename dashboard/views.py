@@ -33,7 +33,7 @@ def dashboard(request):
 
 
       try:
-            revenue = round(Order.objects.filter(payment_status='Completed').filter(delivery_status='Delivered').aggregate(total_revenue=Sum('payment_amount'))['total_revenue'],2)
+            revenue = round(Order.objects.filter(order_cancel=False).aggregate(total_revenue=Sum('payment_amount'))['total_revenue'],2)
       except:
             revenue = 0
       
@@ -46,14 +46,14 @@ def dashboard(request):
             
       top_selling_products_list = []
       for i in top_selling_products:
-            orders = Order.objects.filter(payment_status='Completed').filter(delivery_status='Delivered').filter(order_items__product__id = i.id).count()
+            orders = Order.objects.filter(order_cancel=False).filter(delivery_status='Delivered').filter(order_items__product__id = i.id).count()
 
 
             top_selling_products_list.append({'orders':orders,'product': i})
 
 
       orders = Order.objects.filter(delivery_status='Order Processing')[::-1][0:6]
-      order_count =Order.objects.filter(payment_status='Completed').filter(delivery_status='Delivered').count()
+      order_count =Order.objects.filter(order_cancel=False).count()
 
 
       
@@ -716,7 +716,7 @@ def order_list(request):
       if not request.user.is_superuser:
          messages.error(request,"Not Allowed")
          return redirect('dashboard')
-      orders = Order.objects.filter(payment_status='Completed')[::-1] 
+      orders = Order.objects.filter(order_cancel=False)[::-1] 
       return render(request,"back-end/order-list.html",{'title':'order-list','orders':orders})
 
 def order_details(request,slug):
@@ -726,7 +726,8 @@ def order_details(request,slug):
       if not request.user.is_superuser:
          messages.error(request,"Not Allowed")
          return redirect('dashboard')
-      order = Order.objects.get(serial_id=slug)
+      order = Order.objects.get(id=slug)
+      
       return render(request,"back-end/order-detail.html",{'title':'order-list','order':order})
 
 
@@ -738,7 +739,7 @@ def order_tracking(request, slug):
         messages.error(request, "Not Allowed")
         return redirect('dashboard')
     
-    order = Order.objects.get(serial_id=slug)
+    order = Order.objects.get(id=slug)
     
     delivery_status = order.delivery_status  # Get the delivery status of the order
     if request.method == 'POST':
@@ -762,20 +763,20 @@ def order_tracking(request, slug):
           order.delivery_status = order_status
           order.expected_date = expected_date
           order.save()
-          return redirect('order_tracking',order.serial_id)
+          return redirect('order_tracking',order.id)
     
     return render(request, "back-end/order-tracking.html", {'title': 'order-list', 'order': order, 'delivery_status': delivery_status})
 
-def order_crud(request,slug):
+def order_crud(request,id):
       if not request.user.is_authenticated:
             return redirect('dashboard')
     
       if not request.user.is_superuser:
          messages.error(request,"Not Allowed")
          return redirect('dashboard')
-      slug = request.GET.get('slug')
-      if slug == 'delete':
-        order = Order.objects.get(serial_id=slug)
+      status_ = request.GET.get('slug')
+      if status_ == 'delete':
+        order = Order.objects.get(id=id)
         order.delete()        
         return redirect('order_list')
       
@@ -941,12 +942,10 @@ def all_articles(request):
 
 
 def invoice(request,slug):
-            order = Order.objects.get(serial_id=slug)
-            if order.payment_status == 'Completed':
+            order = Order.objects.get(id=slug)
                   
-                  return render(request,'invoice/invoice-1.html',{'title':f'#{order.serial_id}','order':order})
-            else:
-                  return render(request, "404.html")
+            return render(request,'invoice/invoice-1.html',{'title':f'#{order.id}','order':order})
+            
 
 
 
@@ -966,7 +965,7 @@ def pos(request):
       try:
             order_id=request.session['orderId']
 
-            order_deatils = Order.objects.get(serial_id=order_id)
+            order_deatils = Order.objects.get(id=order_id)
                             
 
       except:
@@ -978,7 +977,7 @@ def pos(request):
                   if request.GET.get('createorder'):
                         try:
                               order_id =request.session['orderId']
-                              order = Order.objects.get(serial_id=order_id)
+                              order = Order.objects.get(id=order_id)
                         except:
                               messages.error(request,'User Details Not added')
                               return redirect('pos')
@@ -1078,7 +1077,7 @@ def pos(request):
                   if request.GET.get('userinfo') == 'Update':
                               order_id=request.session['orderId']
 
-                              order = Order.objects.get(serial_id=order_id)
+                              order = Order.objects.get(id=order_id)
                               order.customer_name=name
                               order.customer_email=email
                               order.customer_contact=contact
@@ -1092,7 +1091,7 @@ def pos(request):
                               order.delivery_status='Order Processing'
 
                   order.save()
-                  request.session['orderId']=order.serial_id
+                  request.session['orderId']=order.id
                   return redirect('pos')
        
       aproduct = request.GET.get('aproduct')
@@ -1278,7 +1277,7 @@ def revenue_data(request):
 
       monthly_revenue = (
       Order.objects
-      .filter(payment_status='Completed')
+      .filter(order_cancel=False)
       .annotate(month=TruncMonth('created_at'))
       .values('month')
       .annotate(revenue=Sum('payment_amount'))

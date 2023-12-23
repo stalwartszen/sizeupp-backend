@@ -31,12 +31,164 @@ import requests
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from .serializer import *
-
+from SizeUpp import settings
 from datetime import datetime
+url = 'https://api.instashipin.com/api/v1/tenancy/authToken'
+payload ={
+    "api_key": 
+        "6092655223372029e7404dc4"
+    }
+headers = {
+        'Content-Type': 'application/json',
+    }
+response = requests.post(url, json=payload, headers=headers)
+if response.status_code == 200:
+        data = response.json()
+        token = data['data']['response']['token_id']    
+        settings.SHIPING_TOKEN = token
+
+
+def checkDelivery(pincode): 
+        
+    url = 'https://api.instashipin.com/api/v1/courier-vendor/freight-calculator'
+    payload = {
+        "token_id": settings.SHIPING_TOKEN,
+        "fm_pincode": "400075",
+        "lm_pincode": pincode,
+        "weight": "0.5",
+        "payType": "PPD",
+        "collectable": ""
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+
+    if response.status_code == 200:
+        # Request was successful
+        data = response.json()
+        deliveryCharges = data['data']['response']['total_freight']
+        return deliveryCharges
+    else:
+        return None
 
 
 
 
+@api_view(['GET'])
+def validate_pincode(request,slug):
+    
+        
+    url = 'https://api.instashipin.com/api/v1/courier-vendor/check-pincode'
+
+    payload = {
+        "token_id": settings.SHIPING_TOKEN,
+        "pincode": slug,
+      
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+
+    if response.status_code == 200:
+        # Request was successful
+        data = response.json()
+        message = data['data']['response']['message']
+        return Response({'message':message},status=status.HTTP_200_OK)
+
+
+
+def placeDelivery(order_id):
+    order = Order.objects.get(id=order_id)
+    url = 'https://api.instashipin.com/api/v1/courier-vendor/external-book'
+    toatal_weight =0
+    items = []
+    for orderitem in order.order_items.all():
+        sqp = SizeQuantityPrice.objects.get( id= orderitem.sqp_code) 
+        toatal_weight = round(toatal_weight + float(sqp.weight),2)
+        items.append(
+        {
+        "name": orderitem.product.name,
+        "quantity": orderitem.quantity,
+        "sku": orderitem.sqp_code,
+        "unit_price": orderitem.mrp,
+        "actual_weight": orderitem.size,
+        "item_color": "",
+        "item_size": orderitem.size,
+        "item_category": "",
+        "item_image": "",
+        "item_brand": ""
+        }
+        )
+    payload = {
+        "token_id": settings.SHIPING_TOKEN,
+        "auto_approve": "true",
+        "order_number": order.id,
+        "payment_method": order.payment_type,
+        "discount_total": "0.00",
+        "cod_shipping_charge": "00.00",
+        "invoice_total": order.payment_amount,
+        "cod_total": order.payment_amount,
+        # "length": "10",
+        # "breadth": "10",
+        # "height": "10",
+        "actual_weight": toatal_weight,
+        "volumetric_weight": "0.50",
+        "shipping": {
+        "first_name": order.customer_name,
+        # "last_name": "Kumar",
+        "address_1": order.address_line_1,
+        "address_2": order.address_line_2,
+        "city": order.city,
+        "state": order.state,
+        "postcode": order.postal_code,
+        "country": "India",
+        "phone": order.customer_contact,
+        "cust_email": order.customer_email
+        },
+        "line_items": items,
+        
+        
+        
+        "pickup": {
+        "vendor_name": "Test Vendor",
+        "address_1": "Demo Address, do not pick",
+        "address_2": "",
+        "city": "Gurgaon",
+        "state": "Haryana",
+        "postcode": "122016",
+        "country": "India",
+        "phone": "8104739401"
+        },
+        "rto": {
+        "vendor_name": "Test Vendor",
+        "address_1": "Do not pick",
+        "address_2": " ",
+        "city": "Gurgaon",
+        "state": "Haryana",
+        "postcode": "122016",
+        "country": "India",
+        "phone": "8104739401"
+        },
+        "gst_details": {
+        "gst_number": "",
+        "cgst": "",
+        "igst": "",
+        "sgst": "",
+        "hsn_number": "",
+        "ewaybill_number": ""
+        }
+            
+            }
+    response = requests.post(url, json=payload, headers=headers)
+
+    if response.status_code == 200:
+        # Request was successful
+        data = response.json()
+        airwaybilno = data['data']['response']['airwaybilno']
+        courier = data['data']['response']['courier']
+        dispatch_label_url = data['data']['response']['dispatch_label_url']
+        return airwaybilno,courier,dispatch_label_url
+    
+    
+    
 @api_view(['GET','POST'])
 def home(request):
     if request.method == 'POST':
@@ -436,36 +588,41 @@ def address_by_id(request, id,slug):
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated]) 
-def updateCart(request,uuid):
-    product = get_object_or_404(Product,id=uuid)
+def updateCart(request,slug):
+    product = get_object_or_404(Product,id=slug)
     cart = Cart.objects.get(user=request.user,product=product)
+    
     if request.method == 'POST':
         qty= request.data.get('qty',None)
-        status_ = request.data.get('status','add')
+        status_ = request.data.get('status')
 
-        selected_color = request.data.get('selected_color',None)
         sqp_id = request.data.get('sqp_id',None)
         
-        if qty:
+        
+        if status_:
             if status_ == 'add':
-                cart.quantity = int(cart.quantity) + int(qty)
-            else:
+                cart.quantity = int(cart.quantity) + 1
+            elif status_ == 'subtract':
+                cart.quantity = int(cart.quantity) - 1
+            
+        if qty:
+            
                 cart.quantity = int(qty) 
             # if status_ == 'subtract':
+        cart.save()
+        cart.mrp = product.mrp
+        cart.sub_total = round((float(cart.quantity)*float(cart.mrp)),2)
             
-            cart.price = product.price
-            cart.total_price = round((float(qty)*float(cart.price)),2)
-            
-            if product.discount == True:
-                cart.discount_price = product.discounted_price
-                cart.discount_percentage = product.discount_percentage
-                cart.total_price =round((float(qty)*float(cart.discount_price)),2)   
+            # if product.discount == True:
+            #     cart.discount_price = product.discounted_price
+            #     cart.discount_percentage = product.discount_percentage
+            #     cart.total_price =round((float(qty)*float(cart.discount_price)),2)   
         
         if sqp_id:
             sqp = SizeQuantityPrice.objects.get(id=sqp_id)
             cart.size_quantity_price = sqp
-        if selected_color:
-            cart.color = selected_color
+        # if selected_color:
+        #     cart.color = selected_color
             
         cart.save()
         return Response({'message':'Cart is Updated'},status=status.HTTP_200_OK)
@@ -474,7 +631,7 @@ def updateCart(request,uuid):
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])    
-def Add_Cart(request,uuid):
+def Add_Cart(request,slug):
 
     if request.user.is_authenticated:
         
@@ -484,7 +641,7 @@ def Add_Cart(request,uuid):
             sqp_id = request.data.get('sqp_id')
             
         user = get_object_or_404(User,id=request.user.id)
-        pro = get_object_or_404(Product,id=uuid)
+        pro = get_object_or_404(Product,id=slug)
         size_quantity_price = get_object_or_404(SizeQuantityPrice,id=sqp_id)
         
 
@@ -530,57 +687,24 @@ def Add_Cart(request,uuid):
 
 
 
-def checkDelivery(pincode):
-    url = 'https://api.instashipin.com/api/v1/tenancy/authToken'
-    payload ={
-    "api_key": "6092655223372029e7404dc4"
-        # "6092655223372029e7404dc4"
-    }
-    headers = {
-        'Content-Type': 'application/json',
-    }
-    response = requests.post(url, json=payload, headers=headers)
-    if response.status_code == 200:
-        data = response.json()
-        token = data['data']['response']['token_id']    
-        
-    url = 'https://api.instashipin.com/api/v1/courier-vendor/freight-calculator'
-    payload = {
-        "token_id": token,
-        "fm_pincode": "400075",
-        "lm_pincode": pincode,
-        "weight": "0.5",
-        "payType": "PPD",
-        "collectable": ""
-    }
-
-    response = requests.post(url, json=payload, headers=headers)
-
-    if response.status_code == 200:
-        # Request was successful
-        data = response.json()
-        deliveryCharges = data['data']['response']['total_freight']
-        return deliveryCharges
-    else:
-        return None
 
 @api_view(['POST','GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])    
 def show_Cart(request):
-    try:
+    # try:
         if request.user.is_authenticated:
         
             cart_items = Cart.objects.filter(user=request.user)
+            
             code=None
             
-            pincode = Address.objects.get(user=request.user,is_default=True).postal_code
+            # pincode = Address.objects.get(user=request.user,is_default=True).postal_code
             # if pincode:
 
             #         # deliveryCharges = checkDelivery(pincode)
             # else:
             deliveryCharges = 0
-                    
                     
             if request.method == 'POST':
                 code = request.data.get('code')
@@ -624,13 +748,13 @@ def show_Cart(request):
                 if discountcoupon.price:
                     coupon_discount =  float(discountcoupon.price)
 
-                sub_sub_total = round(sub_total - round(coupon_discount *sub_total,2))
+                cupon_discount = coupon_discount *sub_total
             else:
-                sub_sub_total = None
+                cupon_discount = 0
             
             total_price = round(sub_total + float(deliveryCharges),2)
-            if sub_sub_total:
-                total_price = round(sub_sub_total + float(deliveryCharges),2)
+            if cupon_discount !=0:
+                total_price = sub_total - round(coupon_discount *sub_total,2) 
 
                 
             cntx={
@@ -640,27 +764,26 @@ def show_Cart(request):
                     'sub_total':sub_total,
                     'delivery_charges':deliveryCharges,
                     'coupon':coupon,
-                    'sub_sub_total':sub_sub_total,
+                    'cupon_discount':cupon_discount,
                     'mrp_price':mrp_price,
                     'discount_on_price':discount_on_price
 
                 }
 
             
-            print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",cntx)
             return Response(cntx,status =status.HTTP_200_OK)
         
         
-    except Exception as e:
-        return Response({"e":e}, status=status.HTTP_400_BAD_REQUEST)
+    # except Exception as e:
+    #     return Response({"e":e}, status=status.HTTP_400_BAD_REQUEST)
             
 @api_view(['DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])    
-def del_cart(request, uuid):
+def del_cart(request, slug):
     if request.user.is_authenticated:
         
-        product = Product.objects.get(id=uuid)
+        product = Product.objects.get(id=slug)
         if Cart.objects.filter(product=product,user= request.user).exists():
             cart = Cart.objects.get(product=product,user= request.user)
             cart.delete()
@@ -724,20 +847,17 @@ paypalrestsdk.configure({
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])    
 def create_order(request):
-    try :
         if request.method == 'POST':
-            address_id = request.data.get('address',None)
-            sub_total = float(request.data.get('sub_total'))
-            coupon = request.data.get('coupon')
-            sub_sub_total = float(request.data.get('sub_sub_total', 0))
-            delivery_charges =request.data.get('deliverycharges') 
-            total_price = float(request.data.get('total_price'))
-            discount_percentage = float(request.data.get('discount_percentage',0))
-            discount_amount = float(request.data.get('discount_amount',0))
-            mrp_price =float(request.data.get('mrp_price',0))
-            discount_on_price=float(request.data.get('discount_on_price',0))
-            tax = float(request.data.get('tax',0))
-            payment_type = request.data.get('payment_type',None)
+            address_id = request.data.get('address_id')
+           
+            mrp_price = float(request.data.get('mrp_price', 0))
+            sub_total = float(request.data.get('sub_total', 0))
+            cupon_discount = float(request.data.get('cupon_discount', 0))
+            total_price = float(request.data.get('total_price', 0))
+            cupon_discount = float(request.data.get('cupon_discount',0))
+            
+            coupon = request.data.get('coupon',None)
+            payment_type = request.data.get('payment_type','COD')
             
             
             
@@ -746,8 +866,10 @@ def create_order(request):
                 return Response({'message':message},status=status.HTTP_400_BAD_REQUEST)
 
             address = Address.objects.get(id=address_id)
+            
+            
             order = Order.objects.create(
-                customer_name = str(request.user.first_name +' ' +request.user.last_name),
+                customer_name = request.user.first_name + '' + request.user.last_name,
                 customer_email = request.user.email,
                 customer_contact = request.user.phone,
                 address_line_1 = address.address_line_1,
@@ -763,20 +885,19 @@ def create_order(request):
                 payment_amount = None, 
             )        
             
-
+            try :
+                delivery_charges = checkDelivery(address.postal_code)
+            except Exception as e:
+                delivery_charges = 0
 
             order.payment_amount = total_price
             order.deliveryCharges = delivery_charges
-            order.mrp_price = mrp_price
-            order.discount_on_price=discount_on_price
+            order.mrp_price = mrp_price            
             order.sub_total = round(sub_total,2)
-            if sub_sub_total:
-                order.sub_sub_total = round(sub_sub_total,2)
-                order.discount_percentage = discount_percentage
-                order.discount_amount = discount_amount
+            if coupon:
+                order.cupon_discount = round(cupon_discount,2)
                 
             order.coupon = coupon
-            order.tax = tax
             order.save()
             
             for cart in Cart.objects.filter(user=request.user):
@@ -785,10 +906,10 @@ def create_order(request):
                 order_item = OrderItem.objects.create(
                         product = cart.product,
                         quantity = cart.quantity,
-                        color = cart.color,
                         size = cart.size_quantity_price.size,
-                        price = cart.price,
-                        total=cart.total_price,
+                        mrp = cart.mrp,
+                        color = cart.product.color,
+                        sub_total=cart.sub_total,
                         sqp_code=cart.size_quantity_price.id,
                     )
                 # if cart.discount_price:
@@ -799,46 +920,75 @@ def create_order(request):
                 order_item.save()
                 order.order_items.add(order_item)
                 order.save()
+                
+                
+                
                 sqp = SizeQuantityPrice.objects.get(id=cart.size_quantity_price.id)
                 sqp.quantity = int(sqp.quantity) - int(cart.quantity)
                 sqp.save()
                 
             if payment_type == 'COD':
+                airwaybilno,courier,dispatch_label_url = placeDelivery(order.id)
+                order.delivery_status= 'Order Processing'
+                order.airwaybilno = airwaybilno
+                order.courier = courier
+                order.dispatch_label_url = dispatch_label_url
                 return Response({'message':'Order Created'},status=status.HTTP_200_OK)
             
         
-        payment = paypalrestsdk.Payment({
-            "intent": "sale",
-            "payer": {
-                "payment_method": "paypal"
-            },
-            "redirect_urls": {
-                "return_url": "http://127.0.0.1:8000/payment/execute/",
-                "cancel_url": "http://127.0.0.1:8000/payment/cancel/"
-            },
-            "transactions": [{
-                "amount": {
-                    "total": total_price,
-                    "currency": "USD"
-                },
-                "description": "Payment description"
-            }]
-        })
+    #     payment = paypalrestsdk.Payment({
+    #         "intent": "sale",
+    #         "payer": {
+    #             "payment_method": "paypal"
+    #         },
+    #         "redirect_urls": {
+    #             "return_url": "http://127.0.0.1:8000/payment/execute/",
+    #             "cancel_url": "http://127.0.0.1:8000/payment/cancel/"
+    #         },
+    #         "transactions": [{
+    #             "amount": {
+    #                 "total": total_price,
+    #                 "currency": "USD"
+    #             },
+    #             "description": "Payment description"
+    #         }]
+    #     })
         
-        if payment.create():
-            request.session['paypal_payment_id'] = payment.id
-            order.payment_id = payment.id
-            order.save()
-            for link in payment.links:
-                if link.method == "REDIRECT":
-                    redirect_url = str(link.href)
-                    return redirect(redirect_url)
-        else:
-            messages.error(request,"Payment Canceled")
-            return render(request, 'payment_error.html')
-    except Exception as e : 
-        return Response({'message':e},status=status.HTTP_400_BAD_REQUEST)     
+    #     if payment.create():
+    #         request.session['paypal_payment_id'] = payment.id
+    #         order.payment_id = payment.id
+    #         order.save()
+    #         for link in payment.links:
+    #             if link.method == "REDIRECT":
+    #                 redirect_url = str(link.href)
+    #                 return redirect(redirect_url)
+    #     else:
+    #         messages.error(request,"Payment Canceled")
+    #         return render(request, 'payment_error.html')
+    # except Exception as e : 
+    #     return Response({'message':e},status=status.HTTP_400_BAD_REQUEST)     
 
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])    
+def update_order(request,uuid):
+    order = Order.objects.get(id=uuid)
+    if order.payment_type != 'COD':
+        
+        payment_status = request.data.get('payment_status',None)
+        payment_id = request.data.get('payment_id',None)
+        # delivery_status = request.data.get('payment_status',None)
+        # payment_status = request.data.get('payment_status',None)
+        order.payment_status = payment_status
+        order.payment_id = payment_id
+        if payment_status == 'Completed':
+            order.delivery_status = "Order Processing"
+
+            #ship-delite integration
+            
+            
+    return Response({'message':'Order Updated'},status=status.HTTP_200_OK)
 
 
 
@@ -962,10 +1112,10 @@ def wishlist(request):
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])    
-def add_wishlist(request,uuid):
+def add_wishlist(request,slug):
     if request.user.is_authenticated:
         try:
-            pro = get_object_or_404(Product,id=uuid)
+            pro = get_object_or_404(Product,id=slug)
             WishList.objects.create(user=request.user,product=pro).save()
 
             return Response({'message':"Added to wishlist"},status=status.HTTP_200_OK)
@@ -980,9 +1130,9 @@ def add_wishlist(request,uuid):
 @api_view(['DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])  
-def remove_wishlist(request,uuid):
+def remove_wishlist(request,slug):
      if request.user.is_authenticated:
-        product = get_object_or_404(Product,id=uuid)
+        product = get_object_or_404(Product,id=slug)
         if WishList.objects.filter(product=product).exists():
             WishList.objects.get(product=product).delete()
 
@@ -998,7 +1148,7 @@ def Track_order(request):
      
      id = request.GET.get('id')
      if id:
-            order = Order.objects.get(serial_id=id)
+            order = Order.objects.get(id=id)
      else:       
         try:
              
@@ -1057,12 +1207,12 @@ def Update_Profile(request):
 
 def return_product(request):
      order_id = request.GET.get('id')
-     order =Order.objects.get(serial_id = order_id)
+     order =Order.objects.get(id = order_id)
      if request.method == 'POST':
             order_id = request.GET.get('id')
             issue = request.data.get('issue')
             feedback =request.data.get('feedback')
-            order = Order.objects.get(serial_id =order_id)
+            order = Order.objects.get(id =order_id)
             if ReturnOrders.objects.filter(order = order).exists():
                 messages.error(request,"Return Order Already Initiated !!")
                 return redirect('userprofile')

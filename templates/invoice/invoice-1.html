@@ -12,7 +12,7 @@
       href="../../static/backend_assets/assets/images/favicon.png"
       type="image/x-icon"
     />
-    <title>SizeUpp | Invoice #{{order.serial_id}}</title>
+    <title>SizeUpp | Invoice #{{order.id}}</title>
 
     <!--Google font-->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -84,7 +84,7 @@
             <div class="invoice-wrapper">
               <div class="invoice-header border-bottom">
                 <div class="header-image d-flex">
-                  
+{% comment %}                   
                   <div class="container d-flex row p-2 m-auto">
                     <span>
                       Bentley House 202 Market Street, 
@@ -94,9 +94,9 @@
                       Tel:01274 598894
 
                     </span>
-                  </div>
+                  </div> {% endcomment %}
                   <img
-                    src="../../static/assets/images/logo/logo_5.png"
+                    src="https://sizeupp-frontend-v.vercel.app/assets/logo-DJXYCXpX.png"
                     class="img-fluid"
                     alt="logo"
                   />
@@ -139,7 +139,7 @@
                             </li>
                             <li >
                               Invoice No :
-                              <span >#{{order.serial_id}}</span>
+                              <span >#{{order.id}}</span>
 
                             </li>
                             <li >
@@ -152,11 +152,12 @@
                               Payment Mode :
                               <span 
                                 >
-                                {% if order.payment_id == 'Cash On Counter' %}
+                                {{order.payment_type }}
+                                {% if order.payment_type != 'COD' %}
+                                
                                 {{order.payment_id}}
-                                {% else %}
-                                  Paypal - ( {{order.payment_id}})
                                 {% endif %}
+                                
                                </span
                               >
                             </li>
@@ -212,18 +213,18 @@
                           </td>
                           <td ><span class="custom" >{{i.quantity}}</span></td>
                           <td>
-                            <span class="custom" >£{{i.price}}</span>
+                            <span class="custom" >₹{{i.mrp}}</span>
                           </td>
                           
                          
                           <td>
                             <span class="custom" >
-                              -£ {% if i.discount_price == None %}0.00 {% else %}{{i.discount_price}} {% endif %}
+                              -₹ {% if i.discount_price == None %}0.00 {% else %}{{i.discount_price}} {% endif %}
                              </span>
                           </td>
                           
                           <td>
-                            <span class="custom" style="padding-right: 0px !important;">£{{i.total| floatformat:2}}</span>
+                            <span class="custom" style="padding-right: 0px !important;">₹{{i.sub_total| floatformat:2}}</span>
                           </td>
                           
                        
@@ -240,13 +241,13 @@
                         <tr class="th" style="border: 0px ; border-style:hidden;">
                           <th class="text-end new-total">Sub Total </th>
                           
-                          <th class=" text-end new-total" style="padding-right: 19px;">£{{order.sub_total|floatformat:2}}</th>
+                          <th class=" text-end new-total" style="padding-right: 19px;">₹{{order.sub_total|floatformat:2}}</th>
 
                         </tr>
                         <tr class="th"style="border: 0;border-style:hidden">
                           <th class="text-end new-total">Delivery Charges</th>
                           
-                          <th class=" text-end new-total"  style="padding-right: 19px;">£ {% if order.deliveryCharges %}
+                          <th class=" text-end new-total"  style="padding-right: 19px;">₹ {% if order.deliveryCharges %}
                             {{order.deliveryCharges|floatformat:2}}
                           {% else %}
                           0.00 
@@ -269,7 +270,7 @@
                           {% elif order.discount_amount %}
                             {{order.discount_amount|floatformat:2}}
                             {% else %}
-                            £ 0.00
+                            ₹ 0.00
                           {% endif %}</th>
 
                         </tr>
@@ -280,7 +281,7 @@
                         <tr class="th"style="border: 0;border-style:hidden  ">
                           <th class="text-end new-total">Grand Total</th>
                           
-                          <th class=" text-end new-total" style="padding-right: 19px;">£{{order.payment_amount|floatformat:2}}</th>
+                          <th class=" text-end new-total" style="padding-right: 19px;">₹{{order.payment_amount|floatformat:2}}</th>
 
                         </tr>
                       </body>
@@ -310,7 +311,7 @@
                 </h4>
                 </div>
                 <div class="container justify-content-center m-auto d-flex"><span >Visit Again </span>
-                <a class="text" href="http://SizeUpp.co.uk" style="margin-left: 5px;"target='_blank'>http://SizeUpp.co.uk</a>
+                <a class="text" href="http://SizeUpp.co.uk" style="margin-left: 5px;"target='_blank'>https://SizeUpp.com</a>
               </div>
               
             </div>

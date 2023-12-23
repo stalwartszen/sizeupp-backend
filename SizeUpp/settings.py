@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 from django.contrib.messages import constants as messages
 
+# SECURE_SSL_REDIRECT = True
 
 MESSAGE_TAGS = {
         messages.DEBUG: 'alert-secondary',
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'drf_yasg',
+    # 'background_task',
     
 
 ]
@@ -184,3 +186,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "authentication.User"
 
 LOGOUT_REDIRECT_URL = "/"  # new
+# DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50 megabytes
+
+# CELERY_BROKER_URL = 'pyamqp://guest:guest@localhost//'
+# CELERY_RESULT_BACKEND = 'rpc://'
+# CELERY_ACCEPT_CONTENT = ['json']
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_TASK_RESULT_EXPIRES = 60 * 60 * 24  # 24 hours
+# CELERY_TIMEZONE = 'UTC'
+
+SHIPING_TOKEN = None

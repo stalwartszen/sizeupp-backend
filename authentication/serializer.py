@@ -18,8 +18,20 @@ class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
         fields = '__all__'
-    
+
+
+
+class OrderItemserSerializer(serializers.ModelSerializer):
+    product = product_serializer()
+    class Meta:
+        model= OrderItem
+        fields = '__all__'
+        
+            
 class OrderserSerializer(serializers.ModelSerializer):
+    order_items = OrderItemserSerializer(many=True)
     class Meta:
         model= Order
         fields = '__all__'
+
+

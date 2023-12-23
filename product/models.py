@@ -131,13 +131,17 @@ class Product(models.Model):
     
 
 class ProductImages(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    products = models.ForeignKey(Product,on_delete=models.CASCADE)
-    img = models.ImageField(upload_to=image_path)
+    products = models.ForeignKey(Product, on_delete=models.CASCADE)
+    # img = models.ImageField(upload_to='product_images/')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def image_upload_path(instance, filename):
+        gender_folder = 'Men' if instance.products.gender == 'Men' else 'Women'
+        product_folder = f"{instance.products.id}_{instance.products.color.upper()}"
+        return f'media/product/{gender_folder}/{product_folder}/{filename}'
 
+    img = models.ImageField(upload_to=image_upload_path)
 
 
 
@@ -168,7 +172,12 @@ class DiscountOnProducts(models.Model):
 
 
 
+class ExcelFile(models.Model):
+    file = models.FileField(upload_to='uploads/excel/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.file.name
 
 
 

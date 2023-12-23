@@ -84,17 +84,17 @@ class OrderItem(models.Model):
     color = models.CharField(max_length=400, null=True, blank=True)
 
     size = models.CharField(max_length=400,null=True,blank=True)
-    price = models.CharField(max_length=400,null=True,blank=True)
-    total = models.FloatField(default=0)
-    discount_price = models.FloatField(null=True,blank=True,default=0)
-    discount_percentage = models.FloatField(null=True, blank=True,)
+    mrp = models.CharField(max_length=400,null=True,blank=True)
+    sub_total = models.FloatField(default=0)
+    # discount_price = models.FloatField(null=True,blank=True,default=0)
+    # discount_percentage = models.FloatField(null=True, blank=True,)
     created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
 
 
 class Order(models.Model):
-    serial_id = models.CharField(max_length=8,null=True,blank=True)
+    id = models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
     customer_name = models.CharField(max_length=400,null=True, blank=True)
     customer_email = models.EmailField(null=True, blank=True)
@@ -132,21 +132,21 @@ class Order(models.Model):
     coupon = models.CharField(max_length=15,null=True,blank=True)
 
     mrp_price = models.FloatField(default=0)
-    discount_on_price = models.FloatField(default=0)
     sub_total = models.FloatField(default=0)
-    sub_sub_total = models.FloatField(default=0)
-    tax = models.FloatField(default=0)
-    tax_percentage = models.FloatField(default=0)
-    discount_percentage = models.DecimalField(max_digits=1000000,decimal_places=2,null=True, blank=True)  
-    discount_amount = models.DecimalField(max_digits=1000000,decimal_places=2,null=True, blank=True)  
-    tax = models.DecimalField(max_digits=1000000,decimal_places=2,null=True, blank=True)
-    delivery_status = models.CharField(max_length=20, choices=delivery_status_choices, default='Order Processing')
-    tracking_id =models.CharField(max_length=100,null=True,blank=True)
-    deliveryCountry = models.CharField(max_length=100,null=True,blank=True)
     deliveryCharges = models.IntegerField(validators=[MinValueValidator(0)],null=True, blank=True)
+    cupon_discount = models.DecimalField(max_digits=1000000,decimal_places=2,null=True, blank=True)  
+    
+    # discount_on_ = models.FloatField(default=0)
+    
+    discount_percentage = models.DecimalField(max_digits=1000000,decimal_places=2,null=True, blank=True)  
+    
+    delivery_status = models.CharField(max_length=20, choices=delivery_status_choices, default='Order Processing')
+    airwaybilno =models.CharField(max_length=100,null=True,blank=True)
+    courier =models.CharField(max_length=100,null=True,blank=True)
+    dispatch_label_url =models.CharField(max_length=100,null=True,blank=True)
     
     expected_date = models.DateField(blank=True,null=True)
-    order_return = models.BooleanField(default=False)
+    order_cancel = models.BooleanField(default=False)
     
     def __str__(self):
         return str(self.payment_status) + '  '+str(self.id) + '  ' + str(self.payment_amount)

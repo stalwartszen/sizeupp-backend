@@ -23,7 +23,7 @@
 
                                                         <div class="order-image-contain">
                                                             <div class="tracker-number">
-                                                                <p>Order Number : <span>#{{order.serial_id}}</span></p>
+                                                                <p>Order Number : <span>#{{order.id}}</span></p>
                                                                 <p>Order Placed : <span>{{order.created_at}}</span></p>
                                                             </div>
                                                             {% if order.delivery_status == 'Cancel' %}
@@ -65,7 +65,7 @@
                                                 <div class="col-12">
                                                     <div class="tracker-table">
                                                         <div class="">
-                                                            <form action="{% url 'order_tracking' order.serial_id %}" method ="POST">
+                                                            <form action="{% url 'order_tracking' order.id %}" method ="POST">
                                                                 {% csrf_token %}
                                                                     <div class="right-sidebar-box">
                                                                     <div class="row">

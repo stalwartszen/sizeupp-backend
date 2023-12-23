@@ -40,7 +40,7 @@ urlpatterns = [
     path('orders-list',views.order_list,name="order_list"),
     path('order-details/<slug:slug>',views.order_details,name="order_details"),
     path('order-tracking/<slug:slug>',views.order_tracking,name="order_tracking"),
-    path('order-edit/<slug:slug>',views.order_crud,name="order_crud"),
+    path('order-edit/<slug:id>',views.order_crud,name="order_crud"),
 
 
     path('product-reviews/',views.product_reviews,name="product_reviews"),
