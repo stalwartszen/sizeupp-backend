@@ -98,85 +98,80 @@ def validate_pincode(request,slug):
 def placeDelivery(order_id):
     order = Order.objects.get(id=order_id)
     url = 'https://api.instashipin.com/api/v1/courier-vendor/external-book'
-    toatal_weight =0
+    total_weight = 0
     items = []
+
     for orderitem in order.order_items.all():
-        sqp = SizeQuantityPrice.objects.get( id= orderitem.sqp_code) 
-        toatal_weight = round(toatal_weight + float(sqp.weight),2)
+        sqp = SizeQuantityPrice.objects.get(id=orderitem.sqp_code)
+        total_weight = round(total_weight + float(sqp.weight), 2)
         items.append(
-        {
-        "name": orderitem.product.name,
-        "quantity": orderitem.quantity,
-        "sku": orderitem.sqp_code,
-        "unit_price": orderitem.mrp,
-        "actual_weight": orderitem.size,
-        "item_color": "",
-        "item_size": orderitem.size,
-        "item_category": "",
-        "item_image": "",
-        "item_brand": ""
-        }
+            {
+                "name": orderitem.product.name,
+                "quantity": orderitem.quantity,
+                "sku": orderitem.sqp_code,
+                "unit_price": str(orderitem.mrp),  # Convert Decimal to string
+                "actual_weight": str(orderitem.size),  # Convert Decimal to string
+                "item_color": "",
+                "item_size": str(orderitem.size),  # Convert Decimal to string
+                "item_category": "",
+                "item_image": "",
+                "item_brand": ""
+            }
         )
+
     payload = {
         "token_id": settings.SHIPING_TOKEN,
         "auto_approve": "true",
-        "order_number": order.id,
+        "order_number": str(order.id),
         "payment_method": order.payment_type,
         "discount_total": "0.00",
         "cod_shipping_charge": "00.00",
-        "invoice_total": order.payment_amount,
-        "cod_total": order.payment_amount,
-        # "length": "10",
-        # "breadth": "10",
-        # "height": "10",
-        "actual_weight": toatal_weight,
+        "invoice_total": str(order.payment_amount),  # Convert Decimal to string
+        "cod_total": str(order.payment_amount),  # Convert Decimal to string
+        "actual_weight": total_weight,
         "volumetric_weight": "0.50",
         "shipping": {
-        "first_name": order.customer_name,
-        # "last_name": "Kumar",
-        "address_1": order.address_line_1,
-        "address_2": order.address_line_2,
-        "city": order.city,
-        "state": order.state,
-        "postcode": order.postal_code,
-        "country": "India",
-        "phone": order.customer_contact,
-        "cust_email": order.customer_email
+            "first_name": order.customer_name,
+            "address_1": order.address_line_1,
+            "address_2": order.address_line_2,
+            "city": order.city,
+            "state": order.state,
+            "postcode": order.postal_code,
+            "country": "India",
+            "phone": order.customer_contact,
+            "cust_email": order.customer_email
         },
         "line_items": items,
-        
-        
-        
         "pickup": {
-        "vendor_name": "Test Vendor",
-        "address_1": "Demo Address, do not pick",
-        "address_2": "",
-        "city": "Gurgaon",
-        "state": "Haryana",
-        "postcode": "122016",
-        "country": "India",
-        "phone": "8104739401"
+            "vendor_name": "Test Vendor",
+            "address_1": "Demo Address, do not pick",
+            "address_2": "",
+            "city": "Gurgaon",
+            "state": "Haryana",
+            "postcode": "122016",
+            "country": "India",
+            "phone": "8104739401"
         },
         "rto": {
-        "vendor_name": "Test Vendor",
-        "address_1": "Do not pick",
-        "address_2": " ",
-        "city": "Gurgaon",
-        "state": "Haryana",
-        "postcode": "122016",
-        "country": "India",
-        "phone": "8104739401"
+            "vendor_name": "Test Vendor",
+            "address_1": "Do not pick",
+            "address_2": " ",
+            "city": "Gurgaon",
+            "state": "Haryana",
+            "postcode": "122016",
+            "country": "India",
+            "phone": "8104739401"
         },
         "gst_details": {
-        "gst_number": "",
-        "cgst": "",
-        "igst": "",
-        "sgst": "",
-        "hsn_number": "",
-        "ewaybill_number": ""
+            "gst_number": "",
+            "cgst": "",
+            "igst": "",
+            "sgst": "",
+            "hsn_number": "",
+            "ewaybill_number": ""
         }
-            
-            }
+    }
+
     response = requests.post(url, json=payload, headers=headers)
 
     if response.status_code == 200:

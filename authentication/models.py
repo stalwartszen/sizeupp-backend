@@ -4,6 +4,7 @@ import uuid
 from product.models import Product, SizeQuantityPrice
 from django.core.validators import MinValueValidator, MaxValueValidator
 import datetime  # Import the datetime module
+import secrets
 
 class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -94,7 +95,7 @@ class OrderItem(models.Model):
 
 
 class Order(models.Model):
-    id = models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
+    id = models.PositiveIntegerField(primary_key=True, default=secrets.randbelow(90000) + 10000, editable=False, unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
     customer_name = models.CharField(max_length=400,null=True, blank=True)
     customer_email = models.EmailField(null=True, blank=True)
@@ -151,4 +152,8 @@ class Order(models.Model):
     def __str__(self):
         return str(self.payment_status) + '  '+str(self.id) + '  ' + str(self.payment_amount)
     
-    
+    def save(self, *args, **kwargs):
+        # Override the save method to ensure a new order ID is generated each time
+        if not self.id:
+            self.id = secrets.randbelow(90000) + 10000
+        super().save(*args, **kwargs)
