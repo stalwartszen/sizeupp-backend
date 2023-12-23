@@ -921,13 +921,13 @@ def create_order(request):
                 sqp = SizeQuantityPrice.objects.get(id=cart.size_quantity_price.id)
                 sqp.quantity = int(sqp.quantity) - int(cart.quantity)
                 sqp.save()
-                
+                cart.delete()
             if payment_type == 'COD':
-                airwaybilno,courier,dispatch_label_url = placeDelivery(order.id)
-                order.delivery_status= 'Order Processing'
-                order.airwaybilno = airwaybilno
-                order.courier = courier
-                order.dispatch_label_url = dispatch_label_url
+                # airwaybilno,courier,dispatch_label_url = placeDelivery(order.id)
+                # order.delivery_status= 'Order Processing'
+                # order.airwaybilno = airwaybilno
+                # order.courier = courier
+                # order.dispatch_label_url = dispatch_label_url
                 return Response({'message':'Order Created'},status=status.HTTP_200_OK)
             
         
