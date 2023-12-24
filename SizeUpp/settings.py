@@ -144,7 +144,7 @@ DATABASES = {
         'NAME': BASE_DIR / "db.sqlite3",
     }
 }
-DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50 megabytes
+DATA_UPLOAD_MAX_MEMORY_SIZE = None  # 50 megabytes
 
 
 
