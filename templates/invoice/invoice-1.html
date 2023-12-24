@@ -244,6 +244,14 @@
                           <th class=" text-end new-total" style="padding-right: 19px;">₹{{order.sub_total|floatformat:2}}</th>
 
                         </tr>
+
+                        <tr class="th" style="border: 0px ; border-style:hidden;">
+                          <th class="text-end new-total">Coupon Discount <br> <span style="font-size:10px;font-weight:bold">(code : {{order.coupon}})</span> </th>
+                          
+                          <th class=" text-end text-danger new-total" style="padding-right: 19px;">-₹{{order.cupon_discount|floatformat:2}}</th>
+
+                        </tr>
+
                         <tr class="th"style="border: 0;border-style:hidden">
                           <th class="text-end new-total">Delivery Charges</th>
                           

@@ -10,7 +10,7 @@ urlpatterns = [
     path('banner-images',views.banner_images,name="banner_images"),
 
     #
-    path('img_products/<uuid:id>',views.img_products,name="img_products"),
+    path('img_products/<slug:id>',views.img_products,name="img_products"),
 
 
 

@@ -53,7 +53,7 @@ def checkDelivery(pincode):
     url = 'https://api.instashipin.com/api/v1/courier-vendor/freight-calculator'
     payload = {
         "token_id": settings.SHIPING_TOKEN,
-        "fm_pincode": "400075",
+        "fm_pincode": "400072",
         "lm_pincode": pincode,
         "weight": "0.5",
         "payType": "PPD",
@@ -101,23 +101,23 @@ def placeDelivery(order_id):
     total_weight = 0
     items = []
 
-    for orderitem in order.order_items.all():
-        sqp = SizeQuantityPrice.objects.get(id=orderitem.sqp_code)
-        total_weight = round(total_weight + float(sqp.weight), 2)
-        items.append(
-            {
-                "name": orderitem.product.name,
-                "quantity": orderitem.quantity,
-                "sku": orderitem.sqp_code,
-                "unit_price": str(orderitem.mrp),  # Convert Decimal to string
-                "actual_weight": str(orderitem.size),  # Convert Decimal to string
-                "item_color": "",
-                "item_size": str(orderitem.size),  # Convert Decimal to string
-                "item_category": "",
-                "item_image": "",
-                "item_brand": ""
-            }
-        )
+    # for orderitem in order.order_items.all():
+    #     sqp = SizeQuantityPrice.objects.get(id=orderitem.sqp_code)
+    #     total_weight = round(total_weight + float(sqp.weight), 2)
+    #     items.append(
+    #         {
+    #             "name": orderitem.product.name,
+    #             "quantity": orderitem.quantity,
+    #             "sku": orderitem.sqp_code,
+    #             "unit_price": str(orderitem.mrp),  # Convert Decimal to string
+    #             "actual_weight": str(orderitem.size),  # Convert Decimal to string
+    #             "item_color": "",
+    #             "item_size": str(orderitem.size),  # Convert Decimal to string
+    #             "item_category": "",
+    #             "item_image": "",
+    #             "item_brand": ""
+    #         }
+    #     )
 
     payload = {
         "token_id": settings.SHIPING_TOKEN,
@@ -177,10 +177,12 @@ def placeDelivery(order_id):
     if response.status_code == 200:
         # Request was successful
         data = response.json()
-        airwaybilno = data['data']['response']['airwaybilno']
-        courier = data['data']['response']['courier']
-        dispatch_label_url = data['data']['response']['dispatch_label_url']
-        return airwaybilno,courier,dispatch_label_url
+        
+        # airwaybilno = data['data']['response']['airwaybilno']
+        # courier = data['data']['response']['courier']
+        # dispatch_label_url = data['data']['response']['dispatch_label_url']
+        # return airwaybilno,courier,dispatch_label_url
+        return data
     
     
     
@@ -494,7 +496,7 @@ def address(request):
             address_line_2 = request.data.get('address_line_2')
             city = request.data.get('city')
             postal_code = request.data.get('postal_code')
-            country = request.data.get('country')
+            country = request.data.get('country','India')
             state = request.data.get('state')
             is_default = request.data.get('is_default')
             if is_default == "on":
@@ -849,7 +851,7 @@ def create_order(request):
             sub_total = float(request.data.get('sub_total', 0))
             cupon_discount = float(request.data.get('cupon_discount', 0))
             total_price = float(request.data.get('total_price', 0))
-            cupon_discount = float(request.data.get('cupon_discount',0))
+            # cupon_discount = float(request.data.get('cupon_discount',0))
             
             coupon = request.data.get('coupon',None)
             payment_type = request.data.get('payment_type','COD')
@@ -921,10 +923,11 @@ def create_order(request):
                 sqp = SizeQuantityPrice.objects.get(id=cart.size_quantity_price.id)
                 sqp.quantity = int(sqp.quantity) - int(cart.quantity)
                 sqp.save()
-                cart.delete()
+                # cart.delete()
             if payment_type == 'COD':
-                # airwaybilno,courier,dispatch_label_url = placeDelivery(order.id)
-                # order.delivery_status= 'Order Processing'
+                data = placeDelivery(order.id)
+                order.delivery_status= 'Order Processing'
+                order.shipping_details = data
                 # order.airwaybilno = airwaybilno
                 # order.courier = courier
                 # order.dispatch_label_url = dispatch_label_url

@@ -17,11 +17,11 @@
                                 <div class="card-body">
                                     <div class="title-header option-title d-sm-flex d-block">
                                         <h5>Products List</h5>
+                                        <input type="text" id="searchInput"class="form-control w-50" style="font-size:15px" placeholder="Search by Product Name or Id">
+
                                         <div class="right-options">
                                             <ul>
-                                                {% comment %} <li>
-                                                    <a href="javascript:void(0)">import</a>
-                                                </li> {% endcomment %}
+                                              
                                                 <li>
                                                     <a href="{% url 'export_excel' %}" class="btn btn-primary">Download Excel</a>
 
@@ -42,6 +42,7 @@
                                                 <thead>
                                                     <tr>
                                                         <th>Option</th>
+                                                        <th>Id</th>
                                                         <th>Product Name</th>
 
                                                         <th>Category</th>
@@ -61,9 +62,9 @@
                                                             <ul style="    display: flex;
                                                             justify-content: center;">
                                                                 <li style="padding:5%">
-                                                                    {% comment %} <a href="{% url 'img_products' pro.id %}"> {% endcomment %}
+                                                                    <a href="{% url 'img_products' pro.id %}"> 
                                                                         <i class="ri-eye-line"></i>
-                                                                    {% comment %} </a> {% endcomment %}
+                                                                  </a> 
                                                                 </li>
 
                                                                 <li style="padding:5%">
@@ -81,7 +82,8 @@
                                                         </td>
                                                         
 
-                                                        
+                                                        <td>{{pro.id}}</td>
+
                                                         <td>{{pro.name}}</td>
 
                                                         <td>{{pro.category.name}}</td>
@@ -134,5 +136,37 @@
     </div>
   </div>
 </div>
+
+<script>
+    // JavaScript function to filter table rows by product name, ID, or category
+    function filterTable() {
+        // Get input value and convert it to lowercase for case-insensitive search
+        var input = document.getElementById('searchInput').value.toLowerCase();
+        
+        // Get the table and table rows
+        var table = document.getElementById('table_id');
+        var rows = table.getElementsByTagName('tr');
+
+        // Loop through all table rows, starting from index 1 to skip the header row
+        for (var i = 1; i < rows.length; i++) {
+            var productName = rows[i].getElementsByTagName('td')[1].innerText.toLowerCase();
+            var productId = rows[i].getElementsByTagName('td')[0].innerText.toLowerCase();
+            var category = rows[i].getElementsByTagName('td')[2].innerText.toLowerCase();
+
+            // Check if the current row's product name, ID, or category contains the input text
+            if (productName.includes(input) || productId.includes(input) || category.includes(input)) {
+                rows[i].style.display = ''; // Show the row
+            } else {
+                rows[i].style.display = 'none'; // Hide the row
+            }
+        }
+    }
+
+    // Attach the filterTable function to the input field's 'input' event
+    document.getElementById('searchInput').addEventListener('input', filterTable);
+</script>
+
+
+
             {% endblock content %}            
  

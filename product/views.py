@@ -212,40 +212,124 @@ from django.views.generic import View
 import pandas as pd
 from product.models import Product, ProductImages
 from django.http import HttpResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from openpyxl import Workbook
+from django.utils import timezone
 
-class ExportExcelView(View):
-    def get(self, request):
-        # Generate Excel file
-        file_path = 'products.xlsx'
-        export_products_to_excel(file_path)
+def convert_to_unaware_datetime(dt):
+    if dt:
+        return dt.astimezone(timezone.utc).replace(tzinfo=None)
+    return None
 
-        # Prepare response with Excel file
-        with open(file_path, 'rb') as excel_file:
-            response = HttpResponse(excel_file.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-            response['Content-Disposition'] = 'attachment; filename=products.xlsx'
+
+
+class DownloadProductDetailsView(View):
+
+    @method_decorator(csrf_exempt)  # Only for development, you might want to remove this in production
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        # Retrieve products (replace this with your actual query)
+        products = Product.objects.all()
+
+        # Create the Excel file
+        excel_file = export_products_to_excel()
+
+        # Serve the file as a response
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=products.xlsx'
+        
 
         return response
 
 def export_products_to_excel(file_path='products.xlsx'):
     # Retrieve all products and related images
     products = Product.objects.all()
-    images_data = []
+
+    data = {
+        'ID': [],
+        'Name': [],
+        'Season': [],
+        'Season Code': [],
+        'Sleeve': [],
+        'Design Surface': [],
+        'Fit': [],
+        'Neck Type': [],
+        'Occasion': [],
+        'Fabric Detail': [],
+        'Washcare': [],
+        'Color Family': [],
+        'Color': [],
+        'MRP': [],
+        'Gender': [],
+        'Discount': [],
+        'Discount Percentage': [],
+        'Discounted Price': [],
+        'Category': [],
+        'Subcategory': [],
+        'Meta Tags': [],
+        'Meta Description': [],
+        
+        'SQP ID': [],
+        'EAN Code': [],
+        'Size': [],
+        'Inches': [],
+        'Centimeter': [],
+        'Length': [],
+        'Width': [],
+        'Weight': [],
+        'Height': [],
+        'Quantity': [],
+       
+    }
+
     for product in products:
-        for img in product.productimages_set.all():
-            images_data.append({'product_id': product.id, 'image_url': img.img.url})
+        for sqp in product.sqp.all():
+            data['ID'].append(product.id)
+            data['Name'].append(product.name)
+            data['Season'].append(product.season)
+            data['Season Code'].append(product.season_code)
+            data['Sleeve'].append(product.sleeve)
+            data['Design Surface'].append(product.design_surface)
+            data['Fit'].append(product.fit)
+            data['Neck Type'].append(product.neck_type)
+            data['Occasion'].append(product.occasion)
+            data['Fabric Detail'].append(product.fabric_detail)
+            data['Washcare'].append(product.Washcare)
+            data['Color Family'].append(product.color_family.name if product.color_family else '')
+            data['Color'].append(product.color)
+            data['MRP'].append(product.mrp)
+            data['Gender'].append(product.gender)
+            data['Discount'].append(product.discount)
+            data['Discount Percentage'].append(product.discount_percentage)
+            data['Discounted Price'].append(product.discounted_price)
+            data['Category'].append(product.category.name if product.category else '')
+            data['Subcategory'].append(product.subcategory.name if product.subcategory else '')
+            data['Meta Tags'].append(product.meta_tags)
+            data['Meta Description'].append(product.meta_description)
+         
 
-    # Create DataFrame
-    product_df = pd.DataFrame(list(products.values()))
-    images_df = pd.DataFrame(images_data)
+            # SizeQuantityPrice details
+            data['SQP ID'].append(sqp.id)
+            data['EAN Code'].append(sqp.ean_code)
+            data['Size'].append(sqp.size)
+            data['Inches'].append(sqp.inches)
+            data['Centimeter'].append(sqp.centimeter)
+            data['Length'].append(sqp.length)
+            data['Width'].append(sqp.width)
+            data['Weight'].append(sqp.weight)
+            data['Height'].append(sqp.height)
+            data['Quantity'].append(sqp.quantity)
+      
 
-    # Merge DataFrames on product_id
-    merged_df = pd.merge(product_df, images_df, left_on='id', right_on='product_id', how='left')
+    df = pd.DataFrame(data)
 
-    # Drop redundant columns
-    merged_df = merged_df.drop(['id_y', 'product_id'], axis=1)
+    df.to_excel(file_path)
 
-    # Save to Excel file
-    merged_df.to_excel(file_path, index=False)
+
+    return file_path
 
 
 

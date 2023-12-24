@@ -39,11 +39,11 @@
                                                             {% for item in order.order_items.all %}
                                                             <tr class="table-order">
                                                                 <td>
-                                                                    {% for img in item.product.productimage.all  %}
+                                                                    {% for img in item.product.productimage_set.all  %}
                                                                     
                                                                     <a href="javascript:void(0)">
-                                                                        <img src="../../media/{{img.img}}"
-                                                                            class="img-fluid blur-up lazyload" alt="">
+                                                                        <img src="../../{{img.img.url}}"
+                                                                            class="img-fluid blur-up lazyload" alt="{{item.product.name}}">
                                                                     </a>
                                                                     {% endfor %}
                                                                 </td>
@@ -85,6 +85,15 @@
                                                                 </td>
                                                                 <td>
                                                                     <h4>₹{{order.deliveryCharges}}</h4>
+                                                                </td>
+                                                            </tr>
+
+                                                            <tr class="table-order">
+                                                                <td colspan="3">
+                                                                    <h5>Coupon Discount : ({{order.coupon}})</h5>
+                                                                </td> 
+                                                                <td>
+                                                                    <h4 class="text-danger">-₹{{order.cupon_discount}}</h4>
                                                                 </td>
                                                             </tr>
 

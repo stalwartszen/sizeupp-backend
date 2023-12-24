@@ -105,7 +105,7 @@
                         <!-- Earning chart  end-->
 
 
-                        <!-- Best Selling Product Start -->
+                        {% comment %} <!-- Best Selling Product Start -->
                         <div class="col-xl-6 col-md-12">
                             <div class="card o-hidden card-hover">
                                 <div class="card-header card-header-top card-header--2 px-0 pt-0">
@@ -114,17 +114,7 @@
                                     </div>
 
                                     <div class="best-selling-box d-sm-flex d-none">
-                                        {% comment %} <span>Short By:</span>
-                                        <div class="dropdown">
-                                            <button class="btn p-0 dropdown-toggle" type="button"
-                                                id="dropdownMenuButton1" data-bs-toggle="dropdown"
-                                                data-bs-auto-close="true">Today</button>
-                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                                <li><a class="dropdown-item" href="#">Action</a></li>
-                                                <li><a class="dropdown-item" href="#">Another action</a></li>
-                                                <li><a class="dropdown-item" href="#">Something else here</a></li>
-                                            </ul>
-                                        </div> {% endcomment %}
+                                      
                                     </div>
                                 </div>
 
@@ -171,7 +161,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Best Selling Product End -->
+                        <!-- Best Selling Product End --> {% endcomment %}
 
 
                         <!-- Recent orders start-->
@@ -228,13 +218,14 @@
 
                                                         <td>
                                                             <div class="product-detail-box">
-                                                                <h6>Payment</h6>
-                                                                {% if order.payment_status == 'Completed' %}
+                                                                <h6>Payment Type</h6>
+                                                                <h5>{{order.payment_type}}</h5>
+                                                                {% comment %} {% if order.payment_status == 'Completed' %}
                                                                 <h5 class="text-success">Paid</h5>
 
                                                                 {% else %}
                                                                 <h5 class="text-danger">Unpaid</h5>
-                                                                {% endif %}
+                                                                {% endif %} {% endcomment %}
                                                             </div>
                                                         </td>
                                                     </tr>

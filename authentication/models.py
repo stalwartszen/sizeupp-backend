@@ -149,6 +149,8 @@ class Order(models.Model):
     expected_date = models.DateField(blank=True,null=True)
     order_cancel = models.BooleanField(default=False)
     
+    
+    shipping_details = models.TextField(blank=True, null=True)
     def __str__(self):
         return str(self.payment_status) + '  '+str(self.id) + '  ' + str(self.payment_amount)
     

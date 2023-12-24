@@ -10,6 +10,9 @@
                                 <div class="card-body">
                                     <div class="title-header option-title">
                                         <h5>Order List</h5>
+
+                                        <input type="text" id="searchInput" class="form-control w-50" style="font-size:15px" placeholder="Search by Order ID">
+
                                         <a href="#" class="btn btn-solid">Download all orders</a>
                                     </div>
                                     <div>
@@ -99,4 +102,31 @@
                 <!-- footer start-->
                  
             </div>
+
+            <script>
+                // JavaScript function to filter table rows by order ID
+                function filterTable() {
+                    // Get input value and convert it to lowercase for case-insensitive search
+                    var input = document.getElementById('searchInput').value.toLowerCase();
+                    
+                    // Get the table and table rows
+                    var table = document.getElementById('table_id');
+                    var rows = table.getElementsByTagName('tr');
+            
+                    // Loop through all table rows, starting from index 1 to skip the header row
+                    for (var i = 1; i < rows.length; i++) {
+                        var orderId = rows[i].getElementsByTagName('td')[0].innerText.toLowerCase();
+            
+                        // Check if the current row's order ID contains the input text
+                        if (orderId.includes(input)) {
+                            rows[i].style.display = ''; // Show the row
+                        } else {
+                            rows[i].style.display = 'none'; // Hide the row
+                        }
+                    }
+                }
+            
+                // Attach the filterTable function to the input field's 'input' event
+                document.getElementById('searchInput').addEventListener('input', filterTable);
+            </script>
             {% endblock content %}
