@@ -4,10 +4,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 from dashboard.views import invoice
 # Media files
-from django.urls import re_path
-from rest_framework import permissions
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
+# from django.urls import re_path
+# from rest_framework import permissions
+# from drf_yasg.views import get_schema_view
+# from drf_yasg import openapi
 
 from rest_framework.authtoken import views
 
