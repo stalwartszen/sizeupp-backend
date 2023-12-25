@@ -406,14 +406,14 @@ def otp(request):
                 return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
             
         if request.method == 'GET':  
-            if user.otp == '':
+            # if user.otp == '':
                 otp = random.randint(1000, 9999)
                 user.otp = otp
                 user.save()
                 # send opt to email
-                send_email_otp(user=user,otp=otp)
+                send_email_otp(email=user.email,otp=otp)
                 return Response({'message': 'OTP sent on Email','user_email':user.email}, status=status.HTTP_200_OK)
-            return Response({'message': 'OTP Already sent on Email','user_email':user.email}, status=status.HTTP_200_OK)
+            # return Response({'message': 'OTP Already sent on Email','user_email':user.email}, status=status.HTTP_200_OK)
 
 
      
