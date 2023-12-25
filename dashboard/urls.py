@@ -44,7 +44,7 @@ urlpatterns = [
 
 
     path('product-reviews/',views.product_reviews,name="product_reviews"),
-    path('Delivery-Charges/',views.taxes_dashboard,name="taxes_dashboard"),
+    path('discount-event/',views.event_list,name="event_list"),
 
 
     path('All-Articles/',views.all_articles,name="all_articles"),

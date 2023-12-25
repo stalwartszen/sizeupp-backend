@@ -120,6 +120,8 @@ class Product(models.Model):
     category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE, null=True, blank=True, related_name='products')
     subcategory = models.ForeignKey(ProductSubCategory, on_delete=models.CASCADE, null=True, blank=True, related_name='products')
 
+    launch_date= models.DateField(blank=True, null=True)
+    
     meta_tags = models.CharField(max_length=400, null=True, blank=True)
     meta_description = models.CharField(max_length=400, null=True, blank=True)
     
@@ -160,12 +162,13 @@ class DiscountCoupon(models.Model):
 
 
 
-class DiscountOnProducts(models.Model):
+class DiscountEvents(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    img_offer_583x157 = models.ImageField(upload_to='Home/offer_583x157',null=True,blank=True)
-    products = models.ManyToManyField(Product,blank=True)
-    end_date = models.DateTimeField()
-    percentage = models.CharField(max_length=400)
+    # img_offer_583x157 = models.ImageField(upload_to='Home/offer_583x157',null=True,blank=True)
+    name = models.CharField(max_length=400)
+    subcategory = models.ManyToManyField(ProductSubCategory,blank=True)
+    end_date = models.DateField()
+    percentage = models.FloatField(null=True, blank=True,)
     active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -794,53 +794,69 @@ def product_reviews(request):
       reviews = Reviews.objects.all()[::-1] 
       return render(request,"back-end/product-review.html",{'title':'Product Reviews',"reviews":reviews})
 
-def taxes_dashboard(request):
+def event_list(request):
       if not request.user.is_authenticated:
             return redirect('dashboard')
     
       if not request.user.is_superuser:
          messages.error(request,"Not Allowed")
          return redirect('dashboard')
-      delivery_charges = DeliveryCharges.objects.all()[::-1] 
+      events = DiscountEvents.objects.all()[::-1] 
       slug = request.GET.get('slug')
       if slug:
             if slug == 'add':
                   if request.method == 'POST':
                         name = request.POST.get('name')
-                        detail = request.POST.get('details')
-                        charges = float(request.POST.get('charges'))
+                        subcategory = request.POST.get('subcategory').split(',')
+                        end_date = float(request.POST.get('end_date'))
+                        percentage = float(request.POST.get('percentage'))
+                        active = float(request.POST.get('active'))
+                        if active == 'on':
+                              active =True
+                        else :
+                              active=False
 
-                        delivery_charges = DeliveryCharges.objects.create(
-                              country_name=name,details=detail,charges=charges
+                        events = DiscountEvents.objects.create(
+                              name=name,end_date=end_date,percentage=percentage,active=active
                         )
-                        delivery_charges.save()
-                        return redirect('taxes_dashboard') 
-                  return render(request,'back-end/add-deliveryChargers.html',{'title':'Add Charges','slug':'add'})
+                        for subcat in subcategory:
+                             subcat= ProductSubCategory.objects.get(id=subcat)
+                             events.subcategory.add(subcat)
+                        events.save()
+                        return redirect('event_list') 
+                  subcategories =ProductSubCategory.objects.all()[::-1]
+                  return render(request,'back-end/add-event.html',{'title':'Add Event','slug':'add','subcategories':subcategories})
             
             if slug == 'update':
-                  print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                   id = request.GET.get('id')
-                  delivery_charges =DeliveryCharges.objects.get(id=id)
+                  event =DiscountEvents.objects.get(id=id)
                   if request.method == 'POST':
                         name = request.POST.get('name')
-                        charges = float(request.POST.get('charges'))
-                        detail = request.POST.get('details')
+                        subcategory = request.POST.get('subcategory').split(',')
+                        end_date = float(request.POST.get('end_date'))
+                        percentage = float(request.POST.get('percentage'))
+                        active = float(request.POST.get('active'))
 
 
 
-                        delivery_charges.country_name =name
-                        delivery_charges.details = detail
-                        delivery_charges.charges= charges
-                        delivery_charges.save()
-                        return redirect('taxes_dashboard') 
-                  return render(request,'back-end/add-deliveryChargers.html',{'title':'Update delivery Charges','slug':'update','delivery_charges':delivery_charges})
+                        event.name =name
+                        event.percentage = percentage
+                        event.end_date= end_date
+                        event.active=active
+                        for subcat in subcategory:
+                             subcat= ProductSubCategory.objects.get(id=subcat)
+                             event.subcategory.add(subcat)
+                        event.save()
+                        return redirect('event_list') 
+                  subcategories = ProductSubCategory.objects.all()[::-1]
+                  return render(request,'back-end/add-event.html',{'title':'Update delivery Charges','slug':'update','event':event,'subcategories':subcategories})
             if slug == 'delete':
                   id = request.GET.get('id')
 
-                  DeliveryCharges.objects.get(id=id).delete()
-                  return redirect('taxes_dashboard')
+                  DiscountEvents.objects.get(id=id).delete()
+                  return redirect('event_list')
 
-      return render(request,"back-end/deliveryChargers.html",{'title':'Delivery Chargers','delivery_charges':delivery_charges})
+      return render(request,"back-end/event-discount.html",{'title':'Discount Events','events':events})
 
 
 

@@ -42,7 +42,7 @@
                                                                     {% for img in item.product.productimage_set.all  %}
                                                                     
                                                                     <a href="javascript:void(0)">
-                                                                        <img src="../../{{img.img.url}}"
+                                                                        <img src="../../{{img.img}}"
                                                                             class="img-fluid blur-up lazyload" alt="{{item.product.name}}">
                                                                     </a>
                                                                     {% endfor %}

@@ -95,7 +95,7 @@ class OrderItem(models.Model):
 
 
 class Order(models.Model):
-    id = models.PositiveIntegerField(primary_key=True, default=secrets.randbelow(90000) + 10000, editable=False, unique=True)
+    id = models.CharField(max_length=10,primary_key=True, editable=False, unique=True, default=secrets.randbelow(90000) + 10000)
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
     customer_name = models.CharField(max_length=400,null=True, blank=True)
     customer_email = models.EmailField(null=True, blank=True)
@@ -154,6 +154,6 @@ class Order(models.Model):
         return str(self.payment_status) + '  '+str(self.id) + '  ' + str(self.payment_amount)
     
     def save(self, *args, **kwargs):
-        if not self.id.startswith("SZ-"):
+        if not str(self.id).startswith("SZ-"):
             self.id = "SZ-" + str(secrets.randbelow(90000) + 10000)
         super().save(*args, **kwargs)

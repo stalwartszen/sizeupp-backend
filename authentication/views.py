@@ -124,21 +124,21 @@ def placeDelivery(order_id):
         "auto_approve": "true",
         "order_number": str(order.id),
         "payment_method": order.payment_type,
-        "discount_total": "0.00",
-        "cod_shipping_charge": "00.00",
-        "invoice_total": str(order.payment_amount),  # Convert Decimal to string
-        "cod_total": str(order.payment_amount),  # Convert Decimal to string
-        "actual_weight": total_weight,
-        "volumetric_weight": "0.50",
+        "discount_total": 0.00,
+        "cod_shipping_charge": 00.00,
+        "invoice_total": float(order.payment_amount),  # Convert Decimal to string
+        "cod_total": float(order.payment_amount),  # Convert Decimal to string
+        "actual_weight": round(float(total_weight),2),
+        "volumetric_weight": 0.50,
         "shipping": {
             "first_name": order.customer_name,
             "address_1": order.address_line_1,
             "address_2": order.address_line_2,
             "city": order.city,
             "state": order.state,
-            "postcode": order.postal_code,
+            "postcode": int(order.postal_code),
             "country": "India",
-            "phone": order.customer_contact,
+            "phone": int(order.customer_contact),
             "cust_email": order.customer_email
         },
         "line_items": items,
@@ -148,9 +148,9 @@ def placeDelivery(order_id):
             "address_2": "",
             "city": "Gurgaon",
             "state": "Haryana",
-            "postcode": "122016",
+            "postcode":122016,
             "country": "India",
-            "phone": "8104739401"
+            "phone": 8104739401
         },
         "rto": {
             "vendor_name": "Test Vendor",

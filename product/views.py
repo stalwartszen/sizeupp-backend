@@ -246,100 +246,72 @@ class DownloadProductDetailsView(View):
         # Create the Excel file
         excel_file = export_products_to_excel()
 
-        # Serve the file as a response
-        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = 'attachment; filename=products.xlsx'
+        response = HttpResponse(excel_file.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=exported_products.xlsx'
+
+        return response
         
 
         return response
+import pandas as pd
+from io import BytesIO
+from django.core.files import File
+from openpyxl import Workbook
 
-def export_products_to_excel(file_path='products.xlsx'):
-    # Retrieve all products and related images
+def export_products_to_excel():
+    # Fetch all products
     products = Product.objects.all()
 
-    data = {
-        'ID': [],
-        'Name': [],
-        'Season': [],
-        'Season Code': [],
-        'Sleeve': [],
-        'Design Surface': [],
-        'Fit': [],
-        'Neck Type': [],
-        'Occasion': [],
-        'Fabric Detail': [],
-        'Washcare': [],
-        'Color Family': [],
-        'Color': [],
-        'MRP': [],
-        'Gender': [],
-        'Discount': [],
-        'Discount Percentage': [],
-        'Discounted Price': [],
-        'Category': [],
-        'Subcategory': [],
-        'Meta Tags': [],
-        'Meta Description': [],
-        
-        'SQP ID': [],
-        'EAN Code': [],
-        'Size': [],
-        'Inches': [],
-        'Centimeter': [],
-        'Length': [],
-        'Width': [],
-        'Weight': [],
-        'Height': [],
-        'Quantity': [],
-       
-    }
-
+    # Create a DataFrame with the product details
+    data = []
     for product in products:
         for sqp in product.sqp.all():
-            data['ID'].append(product.id)
-            data['Name'].append(product.name)
-            data['Season'].append(product.season)
-            data['Season Code'].append(product.season_code)
-            data['Sleeve'].append(product.sleeve)
-            data['Design Surface'].append(product.design_surface)
-            data['Fit'].append(product.fit)
-            data['Neck Type'].append(product.neck_type)
-            data['Occasion'].append(product.occasion)
-            data['Fabric Detail'].append(product.fabric_detail)
-            data['Washcare'].append(product.Washcare)
-            data['Color Family'].append(product.color_family.name if product.color_family else '')
-            data['Color'].append(product.color)
-            data['MRP'].append(product.mrp)
-            data['Gender'].append(product.gender)
-            data['Discount'].append(product.discount)
-            data['Discount Percentage'].append(product.discount_percentage)
-            data['Discounted Price'].append(product.discounted_price)
-            data['Category'].append(product.category.name if product.category else '')
-            data['Subcategory'].append(product.subcategory.name if product.subcategory else '')
-            data['Meta Tags'].append(product.meta_tags)
-            data['Meta Description'].append(product.meta_description)
-         
-
-            # SizeQuantityPrice details
-            data['SQP ID'].append(sqp.id)
-            data['EAN Code'].append(sqp.ean_code)
-            data['Size'].append(sqp.size)
-            data['Inches'].append(sqp.inches)
-            data['Centimeter'].append(sqp.centimeter)
-            data['Length'].append(sqp.length)
-            data['Width'].append(sqp.width)
-            data['Weight'].append(sqp.weight)
-            data['Height'].append(sqp.height)
-            data['Quantity'].append(sqp.quantity)
-      
+            row = {
+                'Generic': product.id,
+                'Article': sqp.id,
+                'EAN code': sqp.ean_code,
+                'Season': product.season,
+                'Season code': product.season_code,
+                'COLOR': product.color,
+                'MRP': product.mrp,
+                'SLEEVE': product.sleeve,
+                'DESIGN/SURFACE': product.design_surface,
+                'OCCASION': product.occasion,
+                'Product Title': product.name,
+                'FIT': product.fit,
+                'NECK TYPE': product.neck_type,
+                'Gender': product.gender,
+                'FABRIC DETAILS': product.fabric_detail,
+                'Washcare': product.Washcare,
+                'Category': product.category.name if product.category else None,
+                'Sub-Category': product.subcategory.name if product.subcategory else None,
+                'Color Family': product.color_family.name if product.color_family else None,
+                'SIZE': sqp.size,
+                'inches': sqp.inches,
+                'Length (cm)': sqp.length,
+                'Width (cm)': sqp.width,
+                'Weight (gm)': sqp.weight,
+                'Stock Quantity': sqp.quantity,
+                'launch_date':product.launch_date if product.launch_date else None,
+            }
+            data.append(row)
 
     df = pd.DataFrame(data)
 
-    df.to_excel(file_path)
+    # Create a BytesIO buffer to write the Excel file
+    buffer = BytesIO()
+    with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False)
 
+    # Save the buffer content to a Django File
+    buffer.seek(0)
+    excel_file = File(buffer)
+    excel_file.name = 'exported_products.xlsx'
 
-    return file_path
-
+    # Save the file to your ExcelFile model or use it as needed
+    # For example, you can save it to the database or return it in a Django view
+    # excel_file.save()
+    return excel_file
 
 
 def upload(request):
