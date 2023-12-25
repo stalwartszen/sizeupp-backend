@@ -171,12 +171,15 @@ def allproducts(request):
 @api_view(['GET'])
 def cat_list(request):
     men_products = Product.objects.filter(gender='Men')
+    women_products = Product.objects.filter(gender='Women')
 
     # Get distinct categories related to the filtered products
     men_categories = ProductCategory.objects.filter(products__in=men_products).distinct()
+    women_categories = ProductCategory.objects.filter(products__in=women_products).distinct()
 
     # Serialize the data for categories
     category_data = category_serializer(men_categories, many=True).data
+    women_category_data = category_serializer(women_categories, many=True).data
 
     # Add subcategories for each category
     for cat in category_data:
@@ -184,8 +187,14 @@ def cat_list(request):
         men_subcategories = ProductSubCategory.objects.filter(products__in=men_products, category=category_instance).distinct()
         cat['subcategories'] = subcategory_serializer(men_subcategories, many=True).data
 
+    for cat in women_category_data:
+        category_instance = ProductCategory.objects.get(id=cat['id'])
+        women_subcategories = ProductSubCategory.objects.filter(products__in=women_products, category=category_instance).distinct()
+        cat['subcategories'] = subcategory_serializer(women_subcategories, many=True).data
+        
+        
     # Combine data and return the response
-    response_data = {'men_category': category_data}
+    response_data = {'men_category': category_data,'women_category_data':women_category_data}
     return Response(response_data, status=status.HTTP_200_OK)
 
 

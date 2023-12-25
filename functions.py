@@ -2,14 +2,17 @@ import os
 from django.core.mail import EmailMessage
 from django.core.mail.backends.smtp import EmailBackend
 from authentication.models import Order
+
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-def send_email_otp(email, otp):
+
+
+def send_welcome_email(user):
     sender_email = "noreply@sizeupp.com"
     sender_password = "Dristi@98s"
-    recipient_email = email
+    recipient_email = user.email
     smtp_server = "smtpout.secureserver.net"
     smtp_port = 465
 
@@ -17,16 +20,24 @@ def send_email_otp(email, otp):
     message = MIMEMultipart()
     message["From"] = sender_email
     message["To"] = recipient_email
-    message["Subject"] = "SizeUpp One Time Password (OTP)"
+    message["Subject"] = "Wlcome to SizeUpp"
+    project_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(project_dir, "templates", "email", "welcome.html")
+
+    # Read the content of otp.html
+    with open(file_path, "r") as file:
+        otp_html_content = file.read()
 
     # Add HTML content to the message
-    body = """
-    <!DOCTYPE html>
-    <html lang="en">
-        <!-- Your HTML content here -->
-    </html>
-    """.format(first_name=email, otp=otp)
-
+    body = otp_html_content.format(
+    name=user.first_name,
+    # first_name=user.first_name,
+    # last_name=user.last_name,
+    # phone_number=user.phone,
+    # email=user.email,
+    # username=user.email,  # Assuming username is the same as the email
+    # help_url="https://www.sizeupp.com/help"  # Replace with your actual help URL
+)    
     message.attach(MIMEText(body, "html"))
 
     # Connect to the SMTP server
@@ -38,25 +49,27 @@ def send_email_otp(email, otp):
         server.sendmail(sender_email, recipient_email, message.as_string())
 
     print("OTP sent successfully!")
-
 # Call the function with user and OTP
-send_email_otp(user, otp)
+# send_email_otp(user, otp)
 
 
-def send_email_reset_link( user, link,user_email):
-    EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
-    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
-    EMAIL_HOST = os.environ.get("EMAIL_HOST")
-    EMAIL_PORT = os.environ.get("EMAIL_PORT")
 
-    email_backend = EmailBackend(
-        host=EMAIL_HOST,
-        port=EMAIL_PORT,
-        username=EMAIL_HOST_USER,
-        password=EMAIL_HOST_PASSWORD,
-        use_tls=True,
-    )
-    subject = "SizeUpp One Time Password (OTP)"
+
+
+def send_email_otp(user, otp):
+    sender_email = "noreply@sizeupp.com"
+    sender_password = "Dristi@98s"
+    recipient_email = user.email
+    smtp_server = "smtpout.secureserver.net"
+    smtp_port = 465
+
+    # Create a MIME object
+    message = MIMEMultipart()
+    message["From"] = sender_email
+    message["To"] = recipient_email
+    message["Subject"] = "SizeUpp One Time Password (OTP)"
+
+    # Add HTML content to the message
     body = """
     
     <!DOCTYPE html>
@@ -83,16 +96,7 @@ text-align: center; margin: 0 auto; width: 650px; font-family: 'Public Sans', sa
                         </tr>
                     </table>
 
-                    <table class="contant-table" style="margin-bottom: -6px;" align="center" border="0" cellpadding="0"
-                        cellspacing="0" width="100%">
-                        <thead>
-                            <tr>
-                                <td>
-                                    <img src="https://themes.himani'cc.com.com/Size Upp/email-templete/images/welcome-poster.jpg" alt="">
-                                </td>
-                            </tr>
-                        </thead>
-                    </table>
+                 
 
                     <table class="contant-table" style="margin-top: 40px;" align="center" border="0" cellpadding="0"
                         cellspacing="0" width="100%">
@@ -108,7 +112,7 @@ text-align: center; margin: 0 auto; width: 650px; font-family: 'Public Sans', sa
                                     <p
                                         style="font-size: 14px;font-weight: 600;width: 82%;margin: 8px auto 0;line-height: 1.5;color: #939393;font-family: 'Nunito Sans', sans-serif;">
                                         We hope our product will lead you, like many other before you. to a place where
-                                        yourideas where your ideas can spark and grow.n a place where you’ll find all
+                                        your ideas where your ideas can spark and grow.n a place where you’ll find all
                                         your inspiration needs. before we get started, we’ll need to verify your email.
                                     </p>
                                 </td>
@@ -121,7 +125,7 @@ text-align: center; margin: 0 auto; width: 650px; font-family: 'Public Sans', sa
                         <thead>
                             <tr style="display: block;">
                                 <td style="display: block;">
-                                    <a href="{link}" class="password-button">{link}</button>
+                                    <button class="password-button">{otp}</button>
                                 </td>
                             </tr>
                         </thead>
@@ -134,10 +138,8 @@ text-align: center; margin: 0 auto; width: 650px; font-family: 'Public Sans', sa
                                     <p
                                         style="font-size: 14px; font-weight: 600; width: 82%; margin: 0 auto; line-height: 1.5; color: #939393; font-family: 'Nunito Sans', sans-serif;">
                                         If you have any question, please email us at <span
-                                            class="theme-color">Size Upp@example.com</span> or vixit our <span
-                                            class="theme-color">FAQs.</span> You can also chat with a real live human
-                                        during our operating hours. they can answer questions about account or help you
-                                        with your meditation practice.</p>
+                                            class="theme-color">feedback@SizeUpp.com</span> or visit our <span
+                                            class="theme-color">FAQs.</span></p>
                                 </td>
                             </tr>
                         </thead>
@@ -170,50 +172,35 @@ text-align: center; margin: 0 auto; width: 650px; font-family: 'Public Sans', sa
 </div>
 
 </html>
-    """.format(first_name=user.first_name,link=link)
-    recipients = [user_email]
-
-    email = EmailMessage(
-        subject=subject,
-        body=body,
-        from_email=EMAIL_HOST_USER,
-        to=recipients,
-        connection=email_backend,
-    )
-    email.content_subtype = "html"
-    email.send(fail_silently=False,
-)
+    """.format(first_name=user.first_name,otp=otp)
+    
 
 
+    message.attach(MIMEText(body, "html"))
 
+    # Connect to the SMTP server
+    with smtplib.SMTP_SSL(smtp_server, smtp_port) as server:
+        # Login to the SMTP server
+        server.login(sender_email, sender_password)
 
+        # Send the email
+        server.sendmail(sender_email, recipient_email, message.as_string())
 
-
-
-
-
-
-
-
-
+    print("OTP sent successfully!")
 
 
 def send_email_receipt(request,order_id,user):
-    EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
-    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
-    EMAIL_HOST = os.environ.get("EMAIL_HOST")
-    EMAIL_PORT = os.environ.get("EMAIL_PORT")
+    sender_email = "noreply@sizeupp.com"
+    sender_password = "Dristi@98s"
+    recipient_email = user.email
+    smtp_server = "smtpout.secureserver.net"
+    smtp_port = 465
 
-    invoice_url =f'http://127.0.0.1:8000/invoice/{order_id}'
-
-    email_backend = EmailBackend(
-        host=EMAIL_HOST,
-        port=EMAIL_PORT,
-        username=EMAIL_HOST_USER,
-        password=EMAIL_HOST_PASSWORD,
-        use_tls=True,
-    )
-    subject = "Receipt of Purchase Order "
+    # Create a MIME object
+    message = MIMEMultipart()
+    message["From"] = sender_email
+    message["To"] = recipient_email
+    message['subject'] = "Receipt of Purchase Order "
     body = """
 
 
@@ -234,8 +221,8 @@ def send_email_receipt(request,order_id,user):
                                 <tr class="header"
                                     style="background-color: #f7f7f7;display: flex;align-items: center;justify-content: space-between;width: 100%;">
                                     <td class="header-logo" style="padding: 10px 32px;">
-                                        <a href="../front-end/index.html" style="display: block; text-align: left;">
-                                            <img src="http://127.0.0.1:8000/static/assets/images/logo/logo_5.png" class="main-logo" alt="logo">
+                                        <a href="https://sizeupp.com/" style="display: block; text-align: left;">
+                                            <img src="https://www.sizeupp.com/assets/logo-DJXYCXpX.png" class="main-logo" style="width:50%" alt="logo">
                                         </a>
                                     </td>
                                 </tr>
@@ -266,8 +253,8 @@ def send_email_receipt(request,order_id,user):
                                             <p
                                                 style="font-size: 14px;font-weight: 600;width: 82%;margin: 8px auto 0;line-height: 1.5;color: #939393;font-family: 'Nunito Sans', sans-serif;">
                                                 We hope our product will lead you, like many other before you. to a place where
-                                                yourideas where your ideas can spark and grow.n a place where you’ll find all
-                                                your inspiration needs. before we get started, we’ll need to verify your email.
+                                                your ideas  can spark and grow.n a place where you’ll find all
+                                                your inspiration needs.
                                             </p>
                                         </td>
                                     </tr>
@@ -278,7 +265,7 @@ def send_email_receipt(request,order_id,user):
                                 cellspacing="0" width="100%">
                                 <thead>
                                     <tr style="display: block;">
-                                        button  
+                                        <a href="https://dashboard.sizeupp.com/invoice/{order_id}" class="btn btn-primary">View Receipt<a>  
                                     </tr>
                                 </thead>
                             </table>
@@ -289,8 +276,8 @@ def send_email_receipt(request,order_id,user):
                                         <td style="display: block;">
                                             <p
                                                 style="font-size: 14px; font-weight: 600; width: 82%; margin: 0 auto; line-height: 1.5; color: #939393; font-family: 'Nunito Sans', sans-serif;">
-                                                If you have any question, please email us at <span
-                                                    class="theme-color">Size Upp@example.com</span> or vixit our <span
+                                                If you have any question, please email us at <a href="mailto:feedback@sizeupp.com"
+                                                    class="theme-color">feedback@sizeupp.com</a> or visit our <span
                                                     class="theme-color">FAQs.</span> You can also chat with a real live human
                                                 during our operating hours. they can answer questions about account or help you
                                                 with your meditation practice.</p>
@@ -329,14 +316,13 @@ def send_email_receipt(request,order_id,user):
 
 
 
-            """.format(first_name=user.first_name)
-    recipients = [user.email]
-    email = EmailMessage(
-        subject=subject,
-        body=body,
-        from_email=EMAIL_HOST_USER,
-        to=recipients,
-        connection=email_backend,
-    )
-    email.content_subtype = "html"
-    email.send()
+            """.format(first_name=user.first_name,order_id=order_id)
+    message.attach(MIMEText(body, "html"))
+
+    # Connect to the SMTP server
+    with smtplib.SMTP_SSL(smtp_server, smtp_port) as server:
+        # Login to the SMTP server
+        server.login(sender_email, sender_password)
+
+        # Send the email
+        server.sendmail(sender_email, recipient_email, message.as_string())

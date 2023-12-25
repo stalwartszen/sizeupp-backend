@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login
 import random
 from django.contrib.auth import logout
 from django.views.decorators.http import require_GET
-from functions import send_email_otp,send_email_reset_link
+from functions import *
 from django.contrib import messages
 from django.db.models import Q
 # from django.utils.timezone import datetime
@@ -245,6 +245,17 @@ def home(request):
     return Response( cntx,status=status.HTTP_200_OK)
 
 
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def validate_token(request):
+    token = request.data.get('token')
+    if Token.objects.filter(token = token).exists():
+        
+        return Response({'message':'Token Accepted'},status=status.HTTP_200_OK)
+    else:
+        return Response({'message':"Invalid Token"},status=status.HTTP_400_BAD_REQUEST)
 @csrf_protect
 @api_view(['POST'])
 def signup(request):
@@ -297,7 +308,7 @@ def signup(request):
             login(request, user)
 
             token, created = Token.objects.get_or_create(user=user)
-
+            # send_welcome_email(user)
             return Response({
                         'message': 'Login successful.',
                         'user_verified': user.is_verified,
@@ -351,26 +362,23 @@ def signin(request):
       
 
 
-@api_view(['POST'])
-def forgot_password(request):
+# @api_view(['POST'])
+# def forgot_password(request):
     
 
-    if request.method == 'POST':
-        email = request.data.get('email')
-        pass1 = request.data.get('password')
-
-
-        # Check if the user exists
-        if  User.objects.filter(email=email).exists():
-            return Response({'message': 'Email Exist'}, status=status.HTTP_200_OK)
+#     if request.method == 'POST':
+#         email = request.data.get('email')
+#         # Check if the user exists
+#         if  User.objects.filter(email=email).exists():
+#             return Response({'message': 'Email Exist'}, status=status.HTTP_200_OK)
         
 
-        else:
-            # Handle the case where the user does not exist
-            message='Email Not Exist!!'
-            return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
+#         else:
+#             # Handle the case where the user does not exist
+#             message='Email Not Exist!!'
+#             return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
      
-    # If it's a GET request, render the empty form
+#     # If it's a GET request, render the empty form
 
 
 @api_view(['POST','GET'])
@@ -390,8 +398,7 @@ def otp(request):
         if request.method == 'POST':
             otp = request.data.get('otp')
          
-            otp = str(otp['1']) + str(otp['2'])+ str(otp['3']) + str(otp    ['4'])
-            print("^^^^^^^^^^^^^^",otp)
+            otp = str(otp['1']) + str(otp['2'])+ str(otp['3']) + str(otp['4'])
             if int(user.otp) == int(otp):
                 
                 user.is_verified = True
@@ -411,50 +418,49 @@ def otp(request):
                 user.otp = otp
                 user.save()
                 # send opt to email
-                send_email_otp(email=user.email,otp=otp)
+                send_email_otp(user=user,otp=otp)
                 return Response({'message': 'OTP sent on Email','user_email':user.email}, status=status.HTTP_200_OK)
             # return Response({'message': 'OTP Already sent on Email','user_email':user.email}, status=status.HTTP_200_OK)
 
 
      
-@api_view(['POST','GET'])
+@api_view(['POST'])
 def otp_forgot_pass(request):
         
-        email = request.data.get('email')
-        pass1 = request.data.get('password')
-        user = User.objects.get(email=email)
-
-        
-        
         if request.method == 'POST':
-            otp_ = request.data.get('otp')
-            print("*************",otp_)
-            otp1 = request.data.get('otp1')
-            otp2 = request.data.get('otp2')
-            otp3 = request.data.get('otp3')
-            otp4 = request.data.get('otp4')
-            otp = str(otp1) + str(otp2)+ str(otp3) + str(otp4)
-
-
-            if user.otp == otp:
-                user.is_verified = True
-                user.otp = ''
-                user.set_password(pass1)
-                user.save()
-
-                return Response({'message': 'Verification Done','user_verified':user.is_verified}, status=status.HTTP_200_OK)
-                            
+            email = request.data.get('email')
+            pass1 = request.data.get('password')
+            if User.objects.filter(email=email).exists():
+                user = User.objects.get(email=email)
             else:
-                message="OTP Invalid"
-                return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'message':'Email not  resgister !'},status=status.HTTP_400_BAD_REQUEST)
             
-        otp = random.randint(1000, 9999)
-        user.otp = otp
-        user.save()
-        # send opt to email
-        send_email_otp(user=user,otp=otp)
-        message= 'OTP sent on email'
-        return Response({'message': message}, status=status.HTTP_200_OK)
+            
+            otp = request.data.get('otp')
+
+            if otp:
+                otp = str(otp['1']) + str(otp['2'])+ str(otp['3']) + str(otp['4'])
+                if user.otp == otp:
+                    user.is_verified = True
+                    user.otp = ''
+                    user.set_password(pass1)
+                    user.save()
+
+                    return Response({'message': 'Verification Done','user_verified':user.is_verified}, status=status.HTTP_200_OK)
+                            
+                else:
+                    message="OTP Invalid"
+                    return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
+            
+            
+            else:           
+                otp = random.randint(1000, 9999)
+                user.otp = otp
+                user.save()
+                # send opt to email
+                send_email_otp(user=user,otp=otp)
+                message= 'OTP sent on email'
+                return Response({'message': message}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
@@ -475,7 +481,7 @@ def userprofile(request):
     
     
     
-    return Response({'title':'Profile','addresses':address.data,'orders':orders.data}, status=status.HTTP_200_OK)
+    return Response({'user_info':UserSerialize(request.user).data,'addresses':address.data,'orders':orders.data}, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -549,7 +555,8 @@ def address_by_id(request, id,slug):
                 city = request.data.get('city')
                 country = request.data.get('country')
                 postal_code = request.data.get('postal_code')
-                is_default = request.data.get('is_default')
+                is_default = request.data.get('is_default',"on")
+                
                 if is_default == "on":
                     is_default = True
                 else:
@@ -561,13 +568,20 @@ def address_by_id(request, id,slug):
                     for old_address in addresses:
                         old_address.is_default = False
                         old_address.save()
-                        
-                address.address_line_1 = address_line_1
-                address.address_line_2 = address_line_2
-                address.city = city
-                address.postal_code = postal_code
-                address.country = country
-                address.state = state
+                if address_line_1:
+                    
+                    address.address_line_1 = address_line_1
+                if address_line_2:
+                    address.address_line_2 = address_line_2
+                if city:
+                    address.city = city
+                if postal_code:
+                    address.postal_code = postal_code
+                if country:
+                    address.country = country
+                if state:
+                    address.state = state
+                    
                 address.is_default = is_default
                 address.save()
                 message= "Address Updated Successfully"
@@ -693,7 +707,8 @@ def show_Cart(request):
         if request.user.is_authenticated:
         
             cart_items = Cart.objects.filter(user=request.user)
-            
+            if not cart_items:
+                return Response({'message':"Empty Cart"},status=status.HTTP_200_OK)
             code=None
             
             # pincode = Address.objects.get(user=request.user,is_default=True).postal_code
@@ -845,7 +860,7 @@ paypalrestsdk.configure({
 @permission_classes([IsAuthenticated])    
 def create_order(request):
         if request.method == 'POST':
-            address_id = request.data.get('address_id')
+            # address_id = request.data.get('address_id')
            
             mrp_price = float(request.data.get('mrp_price', 0))
             sub_total = float(request.data.get('sub_total', 0))
@@ -858,11 +873,11 @@ def create_order(request):
             
             
             
-            if not address_id:
-                message='Please Add/select Address'
-                return Response({'message':message},status=status.HTTP_400_BAD_REQUEST)
+            # if not address_id:
+            #     message='Please Add/select Address'
+            #     return Response({'message':message},status=status.HTTP_400_BAD_REQUEST)
 
-            address = Address.objects.get(id=address_id)
+            address = Address.objects.get(user = request.user,is_default=True )
             
             
             order = Order.objects.create(
@@ -923,14 +938,14 @@ def create_order(request):
                 sqp = SizeQuantityPrice.objects.get(id=cart.size_quantity_price.id)
                 sqp.quantity = int(sqp.quantity) - int(cart.quantity)
                 sqp.save()
-                # cart.delete()
+                cart.delete()
+                
+                
+            send_email_receipt(request,order.id,request.user)
             if payment_type == 'COD':
                 data = placeDelivery(order.id)
                 order.delivery_status= 'Order Processing'
                 order.shipping_details = data
-                # order.airwaybilno = airwaybilno
-                # order.courier = courier
-                # order.dispatch_label_url = dispatch_label_url
                 return Response({'message':'Order Created'},status=status.HTTP_200_OK)
             
         
@@ -966,6 +981,15 @@ def create_order(request):
     # except Exception as e : 
     #     return Response({'message':e},status=status.HTTP_400_BAD_REQUEST)     
 
+
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])   
+def order_detail(request,slug):
+    order =OrderserSerializer(Order.objects.get(id=slug)).data
+    return Response({'order':order},status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
@@ -1176,11 +1200,15 @@ def Update_Profile(request):
                 message = 'Phone numeber is already registered !!'
                 return Response({"message":"Mobile Number Already Register"},status=status.HTTP_400_BAD_REQUEST)
 
-
-         user.first_name = first_name
-         user.last_name = last_name
-         user.phone = contact
-         user.gender = gender
+         if first_name:
+            user.first_name = first_name
+         if last_name:
+            user.last_name = last_name
+         if  contact:
+            user.phone = contact
+         if gender:
+            user.gender = gender
+            
          user.save()
 
          if new_email:
@@ -1203,17 +1231,20 @@ def Update_Profile(request):
 
 
 
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])  
 def return_product(request):
-     order_id = request.GET.get('id')
-     order =Order.objects.get(id = order_id)
+     
      if request.method == 'POST':
             order_id = request.GET.get('id')
             issue = request.data.get('issue')
             feedback =request.data.get('feedback')
             order = Order.objects.get(id =order_id)
+            
             if ReturnOrders.objects.filter(order = order).exists():
-                messages.error(request,"Return Order Already Initiated !!")
-                return redirect('userprofile')
+                message = "Return Order Already Initiated !!"
+                return Response({'message':message},status=status.HTTP_400_BAD_REQUEST)
             else:
                  order.order_return = True
                  order.delivery_status = 'Cancel'

@@ -123,9 +123,8 @@ class Order(models.Model):
 
     delivery_status_choices = (
         ('Order Processing', 'Order Processing'),
-        ('Pre-Production', 'Pre-Production'),
         ('In Production', 'In Production'),
-        ('Shipped','Shipped'),
+        ('Shipping','Shipping'),
         ('Delivered','Delivered'),
         ('Cancel','Cancel')
         
@@ -148,14 +147,13 @@ class Order(models.Model):
     
     expected_date = models.DateField(blank=True,null=True)
     order_cancel = models.BooleanField(default=False)
-    
+    order_return = models.BooleanField(default=False)
     
     shipping_details = models.TextField(blank=True, null=True)
     def __str__(self):
         return str(self.payment_status) + '  '+str(self.id) + '  ' + str(self.payment_amount)
     
     def save(self, *args, **kwargs):
-        # Override the save method to ensure a new order ID is generated each time
-        if not self.id:
-            self.id = secrets.randbelow(90000) + 10000
+        if not self.id.startswith("SZ-"):
+            self.id = "SZ-" + str(secrets.randbelow(90000) + 10000)
         super().save(*args, **kwargs)
