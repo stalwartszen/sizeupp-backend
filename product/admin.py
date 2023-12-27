@@ -11,11 +11,11 @@ class ProductSubCategoryInline(admin.TabularInline):
 
 admin.site.register(SizeQuantityPrice)
 admin.site.register(ProductCategory)
-# admin.site.register(ProductDetailCategory)
+admin.site.register(ProductSubSubCategory)
 admin.site.register(ProductSubCategory)
 admin.site.register(Product)
 admin.site.register(ExcelFile)
 admin.site.register(DiscountCoupon)
-admin.site.register(DiscountOnProducts)
+admin.site.register(DiscountEvents)
 admin.site.register(ProductImages)
 admin.site.register(DeliveryCharges)

@@ -37,9 +37,18 @@ def handle_excel_file_upload(sender, instance, created, **kwargs):
                         product.name = var['Product Title']
                         product.fit = var['FIT']
                         product.neck_type = var['NECK TYPE']
-                        product.gender = var['Gender']
+                        # product.gender = var['Gender']
                         product.fabric_detail = var['FABRIC DETAILS']
                         product.Washcare = var['Washcare']
+                        
+                        product.launch_date = var['Launch Date']
+                        product.is_enable = var['is_enable']
+                        product.model_size = var['model_size']
+                        product.mc_desc = var['MC Desc.']
+                        product.style = var['STYLE']
+                        product.manufacturer = var['Manufacturer name']
+
+
                         if ProductCategory.objects.filter(name=var['Category']).exists():
                             category =  ProductCategory.objects.get(name=var['Category'])
                         else:
@@ -47,13 +56,25 @@ def handle_excel_file_upload(sender, instance, created, **kwargs):
 
                         product.category = category
                         
-                        if ProductSubCategory.objects.filter(name=var['Sub-Category']).exists():
+                        if ProductSubCategory.objects.filter(category=category,name=var['Sub-Category']).exists():
                             subcategory =  ProductSubCategory.objects.get(category=category,name=var['Sub-Category'])
                         else:
                             subcategory =  ProductSubCategory.objects.create(category=category,name=var['Sub-Category'])
                             
                             
                         product.subcategory = subcategory
+                        
+                        
+                        if ProductSubSubCategory.objects.filter(subcategory=subcategory,name=var['Sub-Sub-Category']).exists():
+                            subsubcategory =  ProductSubSubCategory.objects.get(subcategory=subcategory,name=var['Sub-Category'])
+                        else:
+                            subsubcategory =  ProductSubSubCategory.objects.create(subcategory=subcategory,name=var['Sub-Category'])
+                            
+                            
+                        product.subsubcategory = subsubcategory
+                        
+                        
+                        
                         if ColourFamily.objects.filter(name=var['Color Family']).exists():
                             colour_family = ColourFamily.objects.get(name=var['Color Family'])
                         else:
@@ -70,7 +91,8 @@ def handle_excel_file_upload(sender, instance, created, **kwargs):
                             length = var['Length (cm)'],
                             width = var['Width (cm)'],
                             weight = var['Weight (gm)'],
-                            quantity =var['Stock Quantity']
+                            quantity =var['Stock Quantity'],
+                            centimeter = var['cm']
                         )
             sqp.save()
             product.sqp.add(sqp)

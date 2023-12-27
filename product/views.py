@@ -285,6 +285,7 @@ def export_products_to_excel():
                 'Washcare': product.Washcare,
                 'Category': product.category.name if product.category else None,
                 'Sub-Category': product.subcategory.name if product.subcategory else None,
+                'Sub-Sub-Category': product.subsubcategory.name if product.subsubcategory else None,
                 'Color Family': product.color_family.name if product.color_family else None,
                 'SIZE': sqp.size,
                 'inches': sqp.inches,
@@ -292,7 +293,13 @@ def export_products_to_excel():
                 'Width (cm)': sqp.width,
                 'Weight (gm)': sqp.weight,
                 'Stock Quantity': sqp.quantity,
-                'launch_date':product.launch_date if product.launch_date else None,
+                'Launch Date':product.launch_date if product.launch_date else None,
+                'model_size':product.model_size if product.model_size else None,
+                'is_enable':product.is_enable if product.is_enable else None,
+                'MC Desc.':product.mc_desc if product.mc_desc else None,
+                'Manufacturer name':product.manufacturer if product.manufacturer else None,
+                'STYLE':product.style if product.style else None,
+                'cm':sqp.centimeter
             }
             data.append(row)
 

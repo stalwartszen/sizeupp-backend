@@ -48,6 +48,16 @@ class ProductSubCategory(models.Model):
         return self.name
 
 
+class ProductSubSubCategory(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=400)
+    subcategory = models.ForeignKey(ProductSubCategory, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.name
+
+
 
 class SizeQuantityPrice(models.Model):
     id = models.CharField(max_length=25,primary_key=True,  editable=False)
@@ -108,10 +118,10 @@ class Product(models.Model):
     
     mrp = models.FloatField(max_length=400,null=True,blank=True)
     
-    gender_choice = (
-    ('Men','Men'),('Women','Women')
-    )
-    gender = models.CharField(max_length=10,choices=gender_choice,default='Men')
+    # gender_choice = (
+    # ('Men','Men'),('Women','Women')
+    # )
+    subsubcategory = models.ForeignKey(ProductSubSubCategory,on_delete=models.CASCADE,null=True,blank=True)
     
     discount = models.BooleanField(default=False,null=True,blank=True)
     discount_percentage = models.FloatField(null=True, blank=True,)
@@ -121,6 +131,13 @@ class Product(models.Model):
     subcategory = models.ForeignKey(ProductSubCategory, on_delete=models.CASCADE, null=True, blank=True, related_name='products')
 
     launch_date= models.DateField(blank=True, null=True)
+    is_enable= models.BooleanField(default = True)
+    model_size= models.CharField(max_length=100,blank=True, null=True)
+    mc_desc= models.CharField(max_length=100,blank=True, null=True)
+    style= models.CharField(max_length=100,blank=True, null=True)
+    manufacturer = models.CharField(max_length=100,blank=True, null=True)
+    
+    
     
     meta_tags = models.CharField(max_length=400, null=True, blank=True)
     meta_description = models.CharField(max_length=400, null=True, blank=True)

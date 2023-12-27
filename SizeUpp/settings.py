@@ -72,6 +72,7 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000000 # higher than the count of fields
 
 CORS_ALLOWED_ORIGINS = [
     "http://*",  # Also, add the scheme for consistency

@@ -17,7 +17,7 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 
 from dashboard.models import HomeBannerImages,HomeBannerScrolling
-from product.models import Product,DiscountOnProducts
+from product.models import Product
 from product import serializers
 from product.serializers import product_serializer
 from dashboard.models import *
@@ -222,7 +222,7 @@ def home(request):
     serializer = serializers.product_serializer(products,many=True)
     products=serializer.data
 
-    sale_on_product = DiscountOnProducts.objects.filter(active=True).order_by('created_at').reverse()[:2]
+    # sale_on_product = DiscountOnProducts.objects.filter(active=True).order_by('created_at').reverse()[:2]
 
 
     #topselling products 
