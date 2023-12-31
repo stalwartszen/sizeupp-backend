@@ -1,6 +1,13 @@
 from rest_framework import serializers
 from product.models import *
 from dashboard.models import Reviews
+
+
+
+
+
+
+
 class SizeQuantityPriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = SizeQuantityPrice
@@ -42,7 +49,7 @@ class product_serializer(serializers.ModelSerializer):
     subsubcategory = subsubcategory_serializer()
     sqp = SizeQuantityPriceSerializer(many=True, read_only=True)
     images = ProductImagesSerializer(many=True, read_only=True, source='productimages_set')  # Assuming 'productimages_set' is the related name
-   
+    color_family = ColourFamily()
     class Meta:
         model = Product
         fields = "__all__"
@@ -65,3 +72,17 @@ class ColourFamilySerializer(serializers.ModelSerializer):
         model = ColourFamily
         fields = '__all__'
         
+        
+
+class DiscountEventsSerialize(serializers.ModelSerializer):
+    subsubcategory_products = serializers.SerializerMethodField()
+
+    class Meta:
+        model = DiscountEvents
+        fields = '__all__'
+        
+    def get_subsubcategory_products(self, obj):
+        # Get the products related to the subsubcategories in the DiscountEvent
+        products = Product.objects.filter(subsubcategory__in=obj.subsubcategory.all())
+        product_serialize = product_serializer(products, many=True)
+        return product_serialize.data

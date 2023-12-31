@@ -19,7 +19,7 @@ urlpatterns = [
     # Update Details Url's
     path('userprofile',views.userprofile,name='userprofile'),
     path('address',views.address,name='address_add'),
-    path('address/<uuid:id>/<str:slug>',views.address_by_id,name='address_crud'),
+    path('address/<slug:slug>',views.address_by_id,name='address_crud'),
 
 
     # path('card',views.card,name='card_add'),
@@ -58,6 +58,7 @@ urlpatterns = [
     
     
     
-    path('validate-pincode/<slug:slug>',views.validate_pincode,name='validate_pincode')
+    path('validate-pincode/<slug:slug>',views.validate_pincode,name='validate_pincode'),
+    path('home-scrolling',views.banner_scrolling)
 
 ]

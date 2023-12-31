@@ -47,6 +47,12 @@ if response.status_code == 200:
         token = data['data']['response']['token_id']    
         settings.SHIPING_TOKEN = token
 
+@api_view(['GET'])
+def banner_scrolling(request):
+    banner = HomeBannerScrollingSerializer(HomeBannerScrolling.objects.all()[::-1],many=True).data
+    return Response(banner,status=status.HTTP_200_OK)
+
+
 
 def checkDelivery(pincode): 
         
@@ -101,23 +107,23 @@ def placeDelivery(order_id):
     total_weight = 0
     items = []
 
-    # for orderitem in order.order_items.all():
-    #     sqp = SizeQuantityPrice.objects.get(id=orderitem.sqp_code)
-    #     total_weight = round(total_weight + float(sqp.weight), 2)
-    #     items.append(
-    #         {
-    #             "name": orderitem.product.name,
-    #             "quantity": orderitem.quantity,
-    #             "sku": orderitem.sqp_code,
-    #             "unit_price": str(orderitem.mrp),  # Convert Decimal to string
-    #             "actual_weight": str(orderitem.size),  # Convert Decimal to string
-    #             "item_color": "",
-    #             "item_size": str(orderitem.size),  # Convert Decimal to string
-    #             "item_category": "",
-    #             "item_image": "",
-    #             "item_brand": ""
-    #         }
-    #     )
+    for orderitem in order.order_items.all():
+        sqp = SizeQuantityPrice.objects.get(id=orderitem.sqp_code)
+        total_weight = round(total_weight + float(sqp.weight), 2)
+        items.append(
+            {
+                "name": orderitem.product.name,
+                "quantity": orderitem.quantity,
+                "sku": orderitem.sqp_code,
+                "unit_price": str(orderitem.mrp),  # Convert Decimal to string
+                "actual_weight": str(orderitem.size),  # Convert Decimal to string
+                "item_color": "",
+                "item_size": str(orderitem.size),  # Convert Decimal to string
+                "item_category": "",
+                "item_image": "",
+                "item_brand": ""
+            }
+        )
 
     payload = {
         "token_id": settings.SHIPING_TOKEN,
@@ -538,7 +544,7 @@ def address(request):
 @api_view(['PUT','DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])      
-def address_by_id(request, id,slug):
+def address_by_id(request,slug):
 
     if not request.user.is_authenticated:
         return redirect('signin')
@@ -548,7 +554,7 @@ def address_by_id(request, id,slug):
             return redirect('otp')
     
     if request.method == 'PUT':
-                address_id = id
+                address_id = slug
                 address_line_1 = request.data.get('address_line_1')
                 address_line_2 = request.data.get('address_line_2')
                 state = request.data.get('state')
@@ -590,7 +596,7 @@ def address_by_id(request, id,slug):
     
         
     if request.method == 'DELETE':
-        address_id =id
+        address_id =slug
         address = Address.objects.get(id=address_id)
         address.delete()
         return Response({'message': "Deleted Successfully"}, status=status.HTTP_200_OK)
@@ -897,10 +903,10 @@ def create_order(request):
                 payment_amount = None, 
             )        
             
-            try :
-                delivery_charges = checkDelivery(address.postal_code)
-            except Exception as e:
-                delivery_charges = 0
+            # try :
+            delivery_charges = checkDelivery(address.postal_code)
+            # except Exception as e:
+                # delivery_charges = 0
 
             order.payment_amount = total_price
             order.deliveryCharges = delivery_charges
@@ -1109,22 +1115,21 @@ def contactus(request):
 def wishlist(request):
     if request.user.is_authenticated:
         wishlist = WishList.objects.filter(user=request.user)
-        print("wishlist",wishlist)
-        cart_items_lis = Cart.objects.filter(user=request.user)
+        # cart_items_lis = Cart.objects.filter(user=request.user)
 
-        cart_items=[]
-        if wishlist:
-            for item in wishlist:
-                for citem in cart_items_lis:
-                    pro = get_object_or_404(Product,id=item.product.id)
-                    product =product_serializer(pro).data
-                    if citem.product.id == item.product.id:
-                        product['cart'] = True
-                    else:
-                        product['cart'] = True
-                    cart_items.append(product)
+        # cart_items=[]
+        # if wishlist:
+        #     for item in wishlist:
+        #         for citem in cart_items_lis:
+        #             pro = get_object_or_404(Product,id=item.product.id)
+        #             product =product_serializer(pro).data
+        #             if citem.product.id == item.product.id:
+        #                 product['cart'] = True
+        #             else:
+        #                 product['cart'] = True
+        #             cart_items.append(product)
         cntx={
-                'wishlist':cart_items,
+                'wishlist':WishListSerializer(wishlist,many=True).data,
             }
         return Response(cntx,status=status.HTTP_200_OK)
 
@@ -1153,14 +1158,25 @@ def add_wishlist(request,slug):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])  
 def remove_wishlist(request,slug):
-     if request.user.is_authenticated:
-        product = get_object_or_404(Product,id=slug)
-        if WishList.objects.filter(product=product).exists():
-            WishList.objects.get(product=product).delete()
+    #  if request.user.is_authenticated:
+    #     product = get_object_or_404(Product,id=slug)
+    #     if WishList.objects.filter(product=product).exists():
+    #         WishList.objects.get(product=product).delete()
 
-        wishlist = WishListSerializer(WishList.objects.filter(user=request.user),many=True).data
-        return Response({'wishlist':wishlist},status=status.HTTP_200_OK)
-        
+    #     wishlist = WishListSerializer(WishList.objects.filter(user=request.user),many=True).data
+    #     return Response({'wishlist':wishlist},status=status.HTTP_200_OK)
+    
+    
+    if request.user.is_authenticated:
+        product = get_object_or_404(Product, id=slug)
+        wishlists = WishList.objects.filter(user=request.user, product=product)
+
+        if wishlists.exists():
+            wishlists.delete()
+
+        updated_wishlist = WishListSerializer(WishList.objects.filter(user=request.user), many=True).data
+
+        return Response({'wishlist': updated_wishlist}, status=status.HTTP_200_OK)    
 
 
 

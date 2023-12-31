@@ -44,7 +44,7 @@ urlpatterns = [
 
 
     path('product-reviews/',views.product_reviews,name="product_reviews"),
-    path('discount-event/',views.event_list,name="event_list"),
+    path('discount-event',views.event_list,name="event_list"),
 
 
     path('All-Articles/',views.all_articles,name="all_articles"),
@@ -55,8 +55,8 @@ urlpatterns = [
     path('todolist/',views.todoList_crud,name='todoList_crud'),
     path('revenue-data',views.revenue_data,name="revenue-data"),
 
-    path('return-orders/',views.return_orders_lst,name="return_order_list")
-
+    path('return-orders/',views.return_orders_lst,name="return_order_list"),
+    path('download-order-history',views.export_orders,name='export_orders')
 
 
 

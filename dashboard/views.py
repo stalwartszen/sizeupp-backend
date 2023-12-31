@@ -303,6 +303,7 @@ def addproduct(request):
             Washcare = request.POST.get('Washcare')
             product_name = request.POST.get('product_name')
             colour_family = request.POST.get('color_family',None)
+            cf = request.POST.get('cf',None)
             color =  request.POST.get('color',None)
             gender =  request.POST.get('gender',None)
             occasion = request.POST.get('occasion')
@@ -329,6 +330,7 @@ def addproduct(request):
                   category = ProductCategory.objects.get(id=category_id),
                   subcategory =ProductSubCategory.objects.get(id=subcategory_id),
                   color_family = ColourFamily.objects.get(name=colour_family),
+                  cf = cf,
                   mrp = price,
                   color=color,
                   discount=discount,
@@ -413,6 +415,7 @@ def addproduct_crud(request,id):
                   fabric_detail = request.POST.get('fabric_detail')
                   Washcare = request.POST.get('Washcare')
                   product_name = request.POST.get('product_name')
+                  cf = request.POST.get('cf',None)
                   colour_family = request.POST.get('color_family',None)
                   color =  request.POST.get('color',None)
                   occasion = request.POST.get('occasion')
@@ -438,6 +441,7 @@ def addproduct_crud(request,id):
                   product.category = ProductCategory.objects.get(id=category_id)
                   product.subcategory =ProductSubCategory.objects.get(id=subcategory_id)
                   product.color_family = ColourFamily.objects.get(name=colour_family)
+                  product.cf = cf
                   product.mrp = price
                   product.discount=discount
                   if discount_percentage != None:
@@ -804,38 +808,34 @@ def event_list(request):
       events = DiscountEvents.objects.all()[::-1] 
       slug = request.GET.get('slug')
       if slug:
-            if slug == 'add':
+            if slug == 'Add':
                   if request.method == 'POST':
                         name = request.POST.get('name')
-                        subcategory = request.POST.get('subcategory').split(',')
-                        end_date = float(request.POST.get('end_date'))
+                        subcategories = request.POST.getlist('susubcat')
+                        end_date = request.POST.get('end_date')
                         percentage = float(request.POST.get('percentage'))
-                        active = float(request.POST.get('active'))
-                        if active == 'on':
-                              active =True
-                        else :
-                              active=False
-
+                        active = request.POST.get('active')
+                       
                         events = DiscountEvents.objects.create(
                               name=name,end_date=end_date,percentage=percentage,active=active
                         )
-                        for subcat in subcategory:
-                             subcat= ProductSubCategory.objects.get(id=subcat)
-                             events.subcategory.add(subcat)
+                        for subcat in subcategories:
+                             subsubcategory= ProductSubSubCategory.objects.get(id=subcat)
+                             events.subsubcategory.add(subsubcategory)
                         events.save()
                         return redirect('event_list') 
-                  subcategories =ProductSubCategory.objects.all()[::-1]
-                  return render(request,'back-end/add-event.html',{'title':'Add Event','slug':'add','subcategories':subcategories})
+                  subcategories =ProductSubSubCategory.objects.all()[::-1]
+                  return render(request,'back-end/add-event.html',{'title':'Add Event','slug':'Add','subcategories':subcategories})
             
             if slug == 'update':
                   id = request.GET.get('id')
                   event =DiscountEvents.objects.get(id=id)
                   if request.method == 'POST':
                         name = request.POST.get('name')
-                        subcategory = request.POST.get('subcategory').split(',')
-                        end_date = float(request.POST.get('end_date'))
+                        subcategories = request.POST.getlist('susubcat')
+                        end_date = request.POST.get('end_date')
                         percentage = float(request.POST.get('percentage'))
-                        active = float(request.POST.get('active'))
+                        active = request.POST.get('active')
 
 
 
@@ -843,12 +843,13 @@ def event_list(request):
                         event.percentage = percentage
                         event.end_date= end_date
                         event.active=active
-                        for subcat in subcategory:
-                             subcat= ProductSubCategory.objects.get(id=subcat)
-                             event.subcategory.add(subcat)
+                        
+                        for subcat in subcategories:
+                             subcat= ProductSubSubCategory.objects.get(id=subcat)
+                             event.subsubcategory.add(subcat)
                         event.save()
                         return redirect('event_list') 
-                  subcategories = ProductSubCategory.objects.all()[::-1]
+                  subcategories = ProductSubSubCategory.objects.all()[::-1]
                   return render(request,'back-end/add-event.html',{'title':'Update delivery Charges','slug':'update','event':event,'subcategories':subcategories})
             if slug == 'delete':
                   id = request.GET.get('id')
@@ -1350,3 +1351,111 @@ def banner_images(request):
 def return_orders_lst(request):
       return_orders = ReturnOrders.objects.all()[::-1]
       return render(request,'back-end/return_order_list.html',{'return_orders':return_orders})
+
+
+import pandas as pd
+
+def export_orders_to_excel(filename='orders_data.xlsx'):
+    orders = Order.objects.all()
+    
+    data = {
+        'Created At': [],
+        'Order ID': [],
+        'Product Generic Id':[],
+        'Product Name':[],
+        'Article Id':[],
+        'Size':[],
+        'Color':[]
+        ,'MRP':[]
+        ,'Quantity':[]
+        ,'Product Total':[],
+        
+        'Customer Name': [],
+        'Customer Email': [],
+        'Customer Contact': [],
+        'Address Line 1': [],
+        'Address Line 2': [],
+        'City': [],
+        'Postal Code': [],
+        'Country': [],
+        'State': [],
+        'Payment Type': [],
+        'Payment Status': [],
+        'Payment ID': [],
+        'Payment Amount': [],
+        'Delivery Status': [],
+        'Airway Bill No': [],
+        'Courier': [],
+        'Dispatch Label URL': [],
+        'Expected Date': [],
+        'Order Cancel': [],
+        'Order Return': [],
+        'Shipping Details': [],
+        'Coupon': [],
+        'MRP Price': [],
+        'Subtotal': [],
+        'Delivery Charges': [],
+        'Coupon Discount': [],
+        'Event': [],
+        'Discount Percentage': [],
+        'Updated At': [],
+    }
+
+    for order in orders:
+        for order_item in order.order_items.all():
+            data['Order ID'].append(order.id)
+            data['Product Generic Id'].append(order_item.product.id)
+            data['Product Name'].append(order_item.product.name)
+            data['Article Id'].append(order_item.sqp_code)
+            data['Size'].append(order_item.size)
+            data['color'].append(order_item.color)
+            data['mrp'].append(order_item.mrp)
+            data['quantity'].append(order_item.quantity)
+            data['sub_total'].append(order_item.sub_total)
+      
+            data['Customer Name'].append(order.customer_name)
+            data['Customer Email'].append(order.customer_email)
+            data['Customer Contact'].append(order.customer_contact)
+            data['Address Line 1'].append(order.address_line_1)
+            data['Address Line 2'].append(order.address_line_2)
+            data['City'].append(order.city)
+            data['Postal Code'].append(order.postal_code)
+            data['Country'].append(order.country)
+            data['State'].append(order.state)
+            data['Payment Type'].append(order.payment_type)
+            data['Payment Status'].append(order.payment_status)
+            data['Payment ID'].append(order.payment_id)
+            data['Payment Amount'].append(order.payment_amount)
+            data['Delivery Status'].append(order.delivery_status)
+            data['Airway Bill No'].append(order.airwaybilno)
+            data['Courier'].append(order.courier)
+            data['Dispatch Label URL'].append(order.dispatch_label_url)
+            data['Order Cancel'].append(order.order_cancel)
+            data['Order Return'].append(order.order_return)
+            data['Shipping Details'].append(order.shipping_details)
+            data['Coupon'].append(order.coupon)
+            data['MRP Price'].append(order.mrp_price)
+            data['Subtotal'].append(order.sub_total)
+            data['Delivery Charges'].append(order.deliveryCharges)
+            data['Coupon Discount'].append(order.cupon_discount)
+            data['Event'].append(order.event)
+            data['Discount Percentage'].append(order.discount_percentage)
+            data['Created At'].append(order.created_at.replace(tzinfo=None) if order.created_at else None)
+            data['Updated At'].append(order.updated_at.replace(tzinfo=None) if order.updated_at else None)
+            data['Expected Date'].append(order.expected_date.replace(tzinfo=None) if order.expected_date else None)
+
+
+    df = pd.DataFrame(data)
+    df.to_excel(filename, index=False)
+
+# Example usage in a Django view
+from django.http import HttpResponse
+
+def export_orders(request):
+    export_orders_to_excel()
+    filename = 'orders_data.xlsx'
+    with open(filename, 'rb') as excel_file:
+        response = HttpResponse(excel_file.read())
+        response['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response

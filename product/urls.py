@@ -9,6 +9,7 @@ urlpatterns = [
     
     #API for category list
     path('category-details',cat_list,name="cat_list"),
+    path('discount-events',discountevents),
 
 
 

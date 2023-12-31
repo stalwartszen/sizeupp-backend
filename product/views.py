@@ -26,41 +26,43 @@ from rest_framework import status
 
 @api_view(['POST'])
 def productfilter(request):
-    category_id = request.data.get('category_id', None)
-    sub_category_id = request.data.get('sub_category_id', None)
-    colorfamily_id = request.data.get('colorfamily_id', None)
-    price = request.data.get('price', None)
+    category = request.data.get('category', None)
+    sub_category = request.data.get('sub_category', None)
+    sub_sub_category = request.data.get('sub_sub_category',None)
+    colorfamily = request.data.get('colorfamily', None)
     search = request.data.get('search', None)
-    discounted_products = request.data.get('discounted_products', None)
-    
+    fit =request.data.get('fit', None)
+    design=request.data.get('design', None)
+    size =  request.data.get('size', None)
     products = Product.objects.all()
 
     if search:
         products = Product.objects.filter(
-            Q(name__icontains=search) | 
-            Q(description__icontains=search) | 
-            Q(additional_info__icontains=search) |
-            Q(category__name__icontains=search) | 
-            Q(subcategory__name__icontains=search)
+             Q(name__exact=search) |
+        Q(sleeve__exact=search) |
+        Q(design_surface__exact=search) |
+        Q(fit__exact=search) |
+        Q(neck_type__exact=search) |
+        Q(occasion__exact=search) |
+        Q(fabric_detail__exact=search)
         )
         return Response({'products': product_serializer(products, many=True).data}, status=status.HTTP_200_OK)
     
-    if category_id:
-        products = products.filter(category__id=category_id)
+    if category:
+        products = products.filter(category__id__in=category)
     
-    if sub_category_id:
-        products = products.filter(subcategory__id=sub_category_id)
+    if sub_category:
+        products = products.filter(subcategory__id__in=sub_category)
     
-    if colorfamily_id:
-        products = products.filter(color_family__id=colorfamily_id)
-        
-    if price:
-        products = products.filter(price__lt=float(price))
-        
-    if discounted_products:
-        products = products.filter(discount=True)
-        
+    if sub_sub_category:
+        products = products.filter(subsubcategory__id__in = sub_sub_category)
+    
+    if colorfamily:
+        products = products.filter(color_family__id__in=colorfamily)     
+       
     return Response({'products': product_serializer(products, many=True).data}, status=status.HTTP_200_OK)
+
+
 
 
 @api_view(['GET'])
@@ -132,72 +134,78 @@ def product_inside(request,slug):
 
 
 @api_view(['GET'])
-# @authentication_classes([TokenAuthentication])
-# @permission_classes([IsAuthenticated])
 def allproducts(request):
-    products = Product.objects.all()
-    pro_list = product_serializer(products,many=True).data
-    
+  
+    products = Product.objects.all().order_by('?')
+    pro_list = product_serializer(products, many=True).data
+  
     if request.user.is_authenticated:
         cart = Cart.objects.filter(user=request.user)
-        cart_products = []
+        cart_products = [product_c.product.id for product_c in cart]
 
         wishlist = WishList.objects.filter(user=request.user)
-        wishlist_products = []
+        wishlist_products = [product_i.product.id for product_i in wishlist]
 
-        for product_i in wishlist:
-            wishlist_products.append(product_i.product.id)
-
-        for product_c in cart:
-            cart_products.append(product_c.product.id)
         for pro in pro_list:
-        
-            if pro['id'] in cart_products:
-                pro['cart'] =True
-            else:
-                pro['cart']= False
+            pro_id = pro.get('id', None)
 
-            if pro['id'] in wishlist_products:
-                pro['wishlist']= True
-            else:
-                pro['wishlist']= False   
+            if pro_id is not None:
+                pro['cart'] = pro_id in cart_products
+                pro['wishlist'] = pro_id in wishlist_products
 
-    return Response( pro_list,status=status.HTTP_200_OK)
-
+    return Response(pro_list, status=status.HTTP_200_OK)
 
 
 #Category API
 
 @api_view(['GET'])
 def cat_list(request):
-    men_products = Product.objects.filter(gender='Men')
-    women_products = Product.objects.filter(gender='Women')
+    
+    categories = category_serializer(ProductCategory.objects.all().distinct(), many=True).data
+    
+    for cat in categories:
+        cat['subcategories'] = []
+        # Filter subcategories based on the category and gender
+        subcategories = ProductSubCategory.objects.filter(category=cat['id'], products__category__name=cat['name']).distinct()
+        for subcat in subcategories:
+            subcat_data = subcategory_serializer(subcat).data  # Use the appropriate serializer
+            subcat_data['subsubcategories'] = []
+            # Filter subsubcategories based on the subcategory and gender
+            subsubcategories = ProductSubSubCategory.objects.filter(subcategory=subcat, product__category__name=cat['name']).distinct()
+            for subsubcat in subsubcategories:
+                subsubcat_data = subsubcategory_serializer(subsubcat).data
+                subcat_data['subsubcategories'].append(subsubcat_data)
+            cat['subcategories'].append(subcat_data)
 
-    # Get distinct categories related to the filtered products
-    men_categories = ProductCategory.objects.filter(products__in=men_products).distinct()
-    women_categories = ProductCategory.objects.filter(products__in=women_products).distinct()
-
-    # Serialize the data for categories
-    category_data = category_serializer(men_categories, many=True).data
-    women_category_data = category_serializer(women_categories, many=True).data
-
-    # Add subcategories for each category
-    for cat in category_data:
-        category_instance = ProductCategory.objects.get(id=cat['id'])
-        men_subcategories = ProductSubCategory.objects.filter(products__in=men_products, category=category_instance).distinct()
-        cat['subcategories'] = subcategory_serializer(men_subcategories, many=True).data
-
-    for cat in women_category_data:
-        category_instance = ProductCategory.objects.get(id=cat['id'])
-        women_subcategories = ProductSubCategory.objects.filter(products__in=women_products, category=category_instance).distinct()
-        cat['subcategories'] = subcategory_serializer(women_subcategories, many=True).data
-        
-        
-    # Combine data and return the response
-    response_data = {'men_category': category_data,'women_category_data':women_category_data}
+    response_data = {'categories': categories, 'colorfamily': ColourFamilySerializer(ColourFamily.objects.all(), many=True).data}
     return Response(response_data, status=status.HTTP_200_OK)
+            
+    # for cat in women_category_data:
+    #     cat['subcategories'] = []
+    #     # Filter subcategories based on the category and gender
+    #     subcategories = ProductSubCategory.objects.filter(category=cat['id'], products__category__name='Women').distinct()
+    #     for subcat in subcategories:
+    #         subcat_data = subcategory_serializer(subcat).data
+    #         subcat_data['subsubcategories'] = []
+    #         # Filter subsubcategories based on the subcategory and gender
+    #         subsubcategories = ProductSubSubCategory.objects.filter(subcategory=subcat, product__category__name='Women').distinct()
+    #         for subsubcat in subsubcategories:
+    #             subsubcat_data = subsubcategory_serializer(subsubcat).data
+    #             subcat_data['subsubcategories'].append(subsubcat_data)
+    #         cat['subcategories'].append(subcat_data)
+
+    # response_data = {'subcategories': subcategories, 'colorfamily':ColourFamilySerializer(ColourFamily.objects.all(),many=True).data}
+    # return Response(response_data, status=status.HTTP_200_OK)
 
 
+
+
+
+
+@api_view(['GET'])
+def discountevents(request):
+    events = DiscountEventsSerialize(DiscountEvents.objects.order_by('-id').all(),many=True).data
+    return Response({'events':events},status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -280,14 +288,14 @@ def export_products_to_excel():
                 'Product Title': product.name,
                 'FIT': product.fit,
                 'NECK TYPE': product.neck_type,
-                'Gender': product.gender,
+                # 'Gender': product.gender,
                 'FABRIC DETAILS': product.fabric_detail,
                 'Washcare': product.Washcare,
                 'Category': product.category.name if product.category else None,
                 'Sub-Category': product.subcategory.name if product.subcategory else None,
                 'Sub-Sub-Category': product.subsubcategory.name if product.subsubcategory else None,
                 'Color Family': product.color_family.name if product.color_family else None,
-                'SIZE': sqp.size,
+                'SIZE': str(sqp.size),
                 'inches': sqp.inches,
                 'Length (cm)': sqp.length,
                 'Width (cm)': sqp.width,
@@ -299,7 +307,9 @@ def export_products_to_excel():
                 'MC Desc.':product.mc_desc if product.mc_desc else None,
                 'Manufacturer name':product.manufacturer if product.manufacturer else None,
                 'STYLE':product.style if product.style else None,
-                'cm':sqp.centimeter
+                'cm':sqp.centimeter,
+                'Meta Tags': product.meta_tags,
+                'Meta Description':product.meta_description
             }
             data.append(row)
 

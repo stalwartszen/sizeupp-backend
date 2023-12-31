@@ -22,6 +22,7 @@
                                                         <th>No.</th>
                                                         <th>Customer Name</th>
                                                         <th>Product Name</th>
+                                                        <th>Rating</th>
                                                         <th>Comment</th>
                                                         <th>Published</th>
                                                     </tr>
@@ -32,6 +33,7 @@
                                                         <td>{{forloop.counter}}</td>
                                                         <td>{{i.user.first_name}} {{i.user.last_name}}</td>
                                                         <td>{{i.product.name}}</td>
+                                                        <td>{{i.rating}}</td>
                                                         {% comment %} <td>
                                                             <ul class="rating">
                                                                 <li>

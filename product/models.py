@@ -51,6 +51,7 @@ class ProductSubCategory(models.Model):
 class ProductSubSubCategory(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=400)
+    category = models.ForeignKey(ProductCategory,on_delete=models.CASCADE,null=True, blank=True)
     subcategory = models.ForeignKey(ProductSubCategory, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -112,15 +113,12 @@ class Product(models.Model):
     Washcare = models.TextField(null=True, blank=True)
     
     sqp =  models.ManyToManyField(SizeQuantityPrice)
-    
+    cf =  models.CharField(max_length=400, null=True, blank=True)
     color_family = models.ForeignKey(ColourFamily,on_delete=models.CASCADE,null=True, blank=True)
     color = models.CharField(max_length=400, null=True, blank=True)
     
     mrp = models.FloatField(max_length=400,null=True,blank=True)
-    
-    # gender_choice = (
-    # ('Men','Men'),('Women','Women')
-    # )
+
     subsubcategory = models.ForeignKey(ProductSubSubCategory,on_delete=models.CASCADE,null=True,blank=True)
     
     discount = models.BooleanField(default=False,null=True,blank=True)
@@ -183,7 +181,7 @@ class DiscountEvents(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     # img_offer_583x157 = models.ImageField(upload_to='Home/offer_583x157',null=True,blank=True)
     name = models.CharField(max_length=400)
-    subcategory = models.ManyToManyField(ProductSubCategory,blank=True)
+    subsubcategory = models.ManyToManyField(ProductSubSubCategory,blank=True)
     end_date = models.DateField()
     percentage = models.FloatField(null=True, blank=True,)
     active = models.BooleanField(default=False)

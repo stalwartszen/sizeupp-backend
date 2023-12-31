@@ -87,8 +87,7 @@ class OrderItem(models.Model):
     size = models.CharField(max_length=400,null=True,blank=True)
     mrp = models.CharField(max_length=400,null=True,blank=True)
     sub_total = models.FloatField(default=0)
-    # discount_price = models.FloatField(null=True,blank=True,default=0)
-    # discount_percentage = models.FloatField(null=True, blank=True,)
+   
     created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
@@ -137,7 +136,7 @@ class Order(models.Model):
     cupon_discount = models.DecimalField(max_digits=1000000,decimal_places=2,null=True, blank=True)  
     
     # discount_on_ = models.FloatField(default=0)
-    
+    event =  models.CharField(max_length=400,blank=True, null=True)
     discount_percentage = models.DecimalField(max_digits=1000000,decimal_places=2,null=True, blank=True)  
     
     delivery_status = models.CharField(max_length=20, choices=delivery_status_choices, default='Order Processing')

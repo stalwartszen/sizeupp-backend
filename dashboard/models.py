@@ -19,7 +19,7 @@ class HomeTopAd(models.Model):
     
 class HomeBannerScrolling(models.Model):
     img = models.ImageField(upload_to='Home/scrolling-banner-1155x670/')
-
+    start_date = models.DateTimeField(null=True,blank=True) 
 
 
     
